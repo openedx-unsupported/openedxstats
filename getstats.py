@@ -1,11 +1,15 @@
 import operator
 import os
+import settings
+import sqlite3
 
 from slacker import Slacker
 
-slack = Slacker(os.getenv('SLACK_API_TOKEN'))
+slack_api = Slacker(SLACK_API_TOKEN)
+slack_db = sqlite3.connect('slackstats.db')
+slack_db.execute('create table if not exists slack_stats (message_day INTEGER, user TEXT, email TEXT, count INTEGER)')
 
-response = slack.users.list()
+response = slack_api.users.list()
 
 users = response.body['members']
 
@@ -13,7 +17,7 @@ nonedx_user_msg_count = {}
 edx_user_msg_count = {}
 
 for user in users:
-    response = slack.search.messages(query='from:@' + user['name'] +\
+    response = slack_api.search.messages(query='from:@' + user['name'] +\
                                      ' after:2016-04-21')
     print user['name'] + "\t" + str(response.body['messages']['total'])
     if user['profile'].has_key('email') and user['profile']['email'] != None and\
