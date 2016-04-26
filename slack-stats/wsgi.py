@@ -5,7 +5,7 @@ It exposes the WSGI callable as a module-level variable named ``application``.
 """
 import os
 
-from os.path import abspath, dirname
+from os.path import abspath, dirname, join
 from sys import path
 
 import dotenv
@@ -13,7 +13,8 @@ import dotenv
 SITE_ROOT = dirname(dirname(abspath(__file__)))
 path.append(SITE_ROOT)
 
-dotenv.read_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+dotenv_path = join(dirname(__file__), '.env')
+dotenv.load_dotenv(dotenv_path)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "slack-stats.settings")
 
