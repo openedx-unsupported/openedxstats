@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'bootstrap3'
+    'bootstrap3',
+    'slackdata',
 ]
 
 PROJECT_APPS = []
