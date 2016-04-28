@@ -31,7 +31,7 @@ class MessageCountByDay(models.Model):
 
     user = models.ForeignKey(SlackUser, on_delete=models.CASCADE)
     date = models.DateField()
-    count = models.IntegerField(default=0)
+    count = models.IntegerField(null=True)
 
     class Meta:
         unique_together = (('user', 'date'),)
@@ -50,7 +50,6 @@ class MessageCountByDay(models.Model):
                 (row, created) = MessageCountByDay.objects.get_or_create(user=user, date=d)
                 if created or force:
                     count = slackapi.get_message_count_by_username(user.name, d, d + one_day)
-                    print count
                     if(count):
                         row.count = count
                         row.save()

@@ -29,10 +29,8 @@ def get_message_count_by_username(username, after_date, before_date=None):
     query_string = "from:@{user_name} after:{after_date} before:{before_date}".format(user_name=username,\
                                        after_date=after_date,\
                                        before_date=before_date)
-    print query_string
     response = slack_api.search.messages(query=query_string)
     if response.body['ok'] is True:
-        print response.body
         return response.body['messages']['total']
     else:
         return False
