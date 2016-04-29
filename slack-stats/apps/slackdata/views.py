@@ -1,11 +1,13 @@
+from django.db.models import Sum
 from django.shortcuts import render
-from .models import SlackUser
-from .serializers import SlackUserSerializer
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+from .models import SlackUser, MessageCountByDay
+from .serializers import SlackUserSerializer, UserCountSerializer
 # Create your views here.
 class JSONResponse(HttpResponse):
     """
@@ -23,4 +25,14 @@ def list_users(request):
     if request.method == 'GET':
         users = SlackUser.objects.all()
         serializer = SlackUserSerializer(users, many=True)
+        return JSONResponse(serializer.data)
+
+def get_top_n(request, top_n):
+    """
+    List top N users
+    """
+    if request.method == 'GET':
+        r = MessageCountByDay.objects.annotate(msg_count=Sum('count')).values('user__name', 'count')\
+            .order_by('-count')[:top_n]
+        serializer = UserCountSerializer(r, many=True)
         return JSONResponse(serializer.data)
