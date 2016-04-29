@@ -8,7 +8,9 @@ from rest_framework.parsers import JSONParser
 
 from .models import SlackUser, MessageCountByDay
 from .serializers import SlackUserSerializer, UserCountSerializer
+
 # Create your views here.
+
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -32,7 +34,24 @@ def get_top_n(request, top_n):
     List top N users
     """
     if request.method == 'GET':
-        r = MessageCountByDay.objects.annotate(msg_count=Sum('count')).values('user__name', 'count')\
+        r = MessageCountByDay.objects.annotate(msg_count=Sum('count'))\
+            .values('user__name', 'count')\
             .order_by('-count')[:top_n]
+        serializer = UserCountSerializer(r, many=True)
+        return JSONResponse(serializer.data)
+
+def get_top_by_email(request, exclude, email_pattern, top_n):
+    """
+    List top N users
+    """
+    if request.method == 'GET':
+        if(exclude == '-'):
+            r = MessageCountByDay.objects.exclude(user__email__endswith=(email_pattern))\
+                .annotate(msg_count=Sum('count')).values('user__name', 'count')\
+                .order_by('-count')[:top_n]
+        else:
+            r = MessageCountByDay.objects.filter(user__email__endswith=(email_pattern))\
+                .annotate(msg_count=Sum('count')).values('user__name', 'count')\
+                .order_by('-count')[:top_n]
         serializer = UserCountSerializer(r, many=True)
         return JSONResponse(serializer.data)
