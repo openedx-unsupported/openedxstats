@@ -1,5 +1,5 @@
 """
-WSGI config for slack-stats project.
+WSGI config for openedxstats project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 """
@@ -16,7 +16,7 @@ path.append(SITE_ROOT)
 dotenv_path = join(dirname(__file__), '.env')
 dotenv.load_dotenv(dotenv_path)
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "slack-stats.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openedxstats.settings")
 
 
 from django.core.wsgi import get_wsgi_application
