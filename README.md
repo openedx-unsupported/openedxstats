@@ -18,7 +18,7 @@ Once pulled, navigate to the root directory of the project. All requirements can
 *Coming soon*
 
 ##License
-Please see the file named LICENSE.txt
+Please see the file named LICENSE.rst
 
 ##Contact Info
 Please send all feature requests, questions, bugs, or other comments to: *Coming soon*
