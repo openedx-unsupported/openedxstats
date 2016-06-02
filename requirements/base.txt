@@ -5,6 +5,8 @@ Django==1.9.5
 django-bootstrap3==7.0.1
 django-dotenv==1.4.1
 django-model-utils==2.5
+django-filter==0.13.0
+djangorestframework==3.3.3
 lazy-object-proxy==1.2.2
 ordereddict==1.1
 psycopg2==2.6.1

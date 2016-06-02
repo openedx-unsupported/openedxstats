@@ -1,5 +1,6 @@
 import os
 import sys
+from django.core.exceptions import ImproperlyConfigured
 
 # PATH vars
 
@@ -152,3 +153,12 @@ except ImportError:
 # importing test settings file if necessary
 if IN_TESTING:
     from .testing import *  # noqa
+
+
+def get_env_variable(var_name):
+    """Get environment variable or return exception."""
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(var_name)
+        raise ImproperlyConfigured(error_msg)

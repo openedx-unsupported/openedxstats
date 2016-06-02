@@ -18,11 +18,6 @@ To run the program:
 1.) Start postgres server (user=postgres, db=openedxstats)
 2.) Start django server
 
-*TODO*: Need to add the following to requirements.txt:
-django-filter==0.13.0
-djangorestframework==3.3.3
-
-
 ## Functonality
 *Coming soon*
 
