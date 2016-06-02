@@ -35,6 +35,7 @@ INSTALLED_APPS = [
 
     'bootstrap3',
     'slackdata',
+    'sites',
 ]
 
 PROJECT_APPS = []
