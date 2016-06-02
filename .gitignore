@@ -55,12 +55,12 @@ venv
 *.iml
 *.iws
 
-slack-stats/settings/local.py
-slack-stats/settings/production.py
+openedxstats/settings/local.py
+openedxstats/settings/production.py
 
 # collect static output directory
-slack-stats/assets/
-slack-stats/static/
+openedxstats/assets/
+openedxstats/static/
 
 .DS_Store
 
@@ -68,7 +68,7 @@ slack-stats/static/
 node_modules/
 
 # bower packages
-slack-stats/assets-src/vendor/
+openedxstats/assets-src/vendor/
 .sass-cache/
 
 .env
