@@ -1,10 +1,27 @@
 from __future__ import unicode_literals
 
 from django.db import models
-import datetime
+
+# Models
+
+class GeoZone(models.Model):
+    """
+    A model describing a geographical zone.
+    """
+    name = models.CharField(primary_key=True, max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
-# Create your models here.
+class Language(models.Model):
+    """
+    A model describing a language.
+    """
+    name = models.CharField(primary_key=True, max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class Site(models.Model):
@@ -17,46 +34,55 @@ class Site(models.Model):
         ('Both', 'Both'),
         ('Unknown', 'Unknown'),
     )
+    # Don't use null=true for CharFields as the Django default for null text is an empty string
+    # Many of the sites do not have all of these fields, which is why many can be left blank
+    # Later, we should improve data integrity so that no blank fields are allowed
 
-    #id = models.IntegerField()    <--- Django automatically creates a serial id in postgres? Not known
-    site_type = models.CharField(max_length=255)
+    # id <--- Django automatically creates a serial id
+    site_type = models.CharField(max_length=255, default='General')
+    name = models.CharField(max_length=255, unique=True, blank=True)
+    url = models.CharField(max_length=255, unique=True)
+    course_count = models.IntegerField(blank=True, null=True)
+    last_checked = models.DateTimeField()
+    org_type = models.CharField(max_length=255, blank=True)
+    language = models.ManyToManyField(Language, through='SiteLanguage')
+    geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
+    github_fork = models.CharField(max_length=255, blank=True)
+    notes = models.TextField(blank=True)
+    course_type = models.CharField(max_length=10, choices=COURSE_TYPE_CHOICES, default='Unknown')
+    registered_user_count = models.IntegerField(blank=True, null=True)
+    active_learner_count = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_languages(self):
+        return ", ".join([l.language for l in self.language.all()])
+    get_languages.short_description = "Languages"
+
+    def get_geographies(self):
+        return ", ".join([g.geography for g in self.geography.all()])
+    get_geographies.short_description = "Geographies"
 
 
-
+class SiteGeoZone(models.Model):
     """
-
-CREATE TYPE course_type_enum AS ENUM ('MOOC', 'SPOC', 'both', 'unknown');
-
-CREATE TABLE IF NOT EXISTS sites(
-    id SERIAL PRIMARY KEY NOT NULL,
-    site_type Varchar(255) NOT NULL DEFAULT 'General',
-    name Varchar(255) UNIQUE NOT NULL,
-    url Varchar(255) UNIQUE NOT NULL,
-    course_count Integer,
-    last_checked timestamp NOT NULL,
-    org_type Varchar(255),
-    github_fork Varchar(255),
-    notes text,
-    course_type course_type_enum,
-    registered_user_count Integer,
-    active_learner_count Integer
-);
-
-CREATE TABLE IF NOT EXISTS geo_zones(
-    name Varchar(255) PRIMARY KEY NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS languages(
-    name Varchar(255) PRIMARY KEY NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS site_geo_zone(
-    site_id Integer REFERENCES sites(id),
-    geo_zone_name Varchar(255) REFERENCES geo_zones(name)
-);
-
-CREATE TABLE IF NOT EXISTS language_name(
-    site_id Integer REFERENCES sites(id),
-    language_name Varchar(255) REFERENCES languages(name)
-);
+    Mapping table for a site and GeoZones.
     """
+    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.site + '-' + self.geo_zone
+
+
+class SiteLanguage(models.Model):
+    """
+    Mapping table for a site and Languages.
+    """
+    site = models.ForeignKey('Site', on_delete=models.CASCADE)
+    language = models.ForeignKey('Language', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.site + '-' + self.language
+
