@@ -85,12 +85,12 @@
                     <tr class="clickable-row" data-href="{{ site.url }}">
                         <td >{{ site.site_type }}</td>
                         <td >{{ site.name }}</td>
-                        <td >{{ site.url }}</td>
+                        <td ><a href="{{ site.url }}"> {{ site.url }}</a></td>
                         <td >{{ site.course_count }}</td>
                         <td >{{ site.last_checked }}</td>
                         <td >{{ site.org_type }}</td>
-                        <td >{{ site.language }}</td>
-                        <td >{{ site.geography }}</td>
+                        <td >{% for site_language in site.language.all %}{{ site_language.pk }}{% endfor %}</td>
+                        <td >{% for site_geozone in site.geography.all %}{{ site_geozone.pk }}{% endfor %}</td>
                         <td >{{ site.github_fork }}</td>
                         <td >{{ site.notes }}</td>
                         <td >{{ site.course_type }}</td>
@@ -103,12 +103,14 @@
     </div>
 {% endblock %}
 
+
 {% block bootstrap3_extra_script %}
-    <script>
+    <!-- Uncomment to allow for clickable rows -->
+<!--    <script>
     jQuery(document).ready(function($) {
         $(".clickable-row").click(function() {
             window.document.location = $(this).data("href");
         });
     });
-    </script>
+    </script>-->
 {% endblock %}

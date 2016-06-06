@@ -10,7 +10,7 @@ class GeoZone(models.Model):
     """
     name = models.CharField(primary_key=True, max_length=255)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -20,7 +20,7 @@ class Language(models.Model):
     """
     name = models.CharField(primary_key=True, max_length=255)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 
@@ -45,8 +45,6 @@ class Site(models.Model):
     course_count = models.IntegerField()
     last_checked = models.DateTimeField()
     org_type = models.CharField(max_length=255, blank=True)
-    #language = models.CharField(max_length=255)
-    #geography = models.CharField(max_length=255, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage')
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
     github_fork = models.CharField(max_length=255, blank=True)
@@ -55,8 +53,8 @@ class Site(models.Model):
     registered_user_count = models.IntegerField(blank=True, null=True)
     active_learner_count = models.IntegerField(blank=True, null=True)
 
-    def __str__(self):
-        return self.name
+    def __unicode__(self):
+        return self.name + ' --- ' + self.url
 
     def get_languages(self):
         return ", ".join([l.name for l in self.language.all()])
@@ -75,7 +73,7 @@ class SiteGeoZone(models.Model):
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
     # TODO: Add in attributes that describe the relationship between Site and GeoZone
 
-    def __str__(self):
+    def __unicode__(self):
         return self.site.name + '-' + self.geo_zone.name
 
 
@@ -87,6 +85,6 @@ class SiteLanguage(models.Model):
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
     # TODO: Add in attributes that describe the relationship between Site and Language
 
-    def __str__(self):
+    def __unicode__(self):
         return self.site.name + "-" + self.language.name
 
