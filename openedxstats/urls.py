@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^$', HomePageView.as_view(), name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^', include('slackdata.urls')),
+    url(r'^', include('sites.urls')),
 ]

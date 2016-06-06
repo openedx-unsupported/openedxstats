@@ -40,11 +40,13 @@ class Site(models.Model):
 
     # id <--- Django automatically creates a serial id
     site_type = models.CharField(max_length=255, default='General')
-    name = models.CharField(max_length=255, unique=True, blank=True)
+    name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255, unique=True)
-    course_count = models.IntegerField(blank=True, null=True)
+    course_count = models.IntegerField()
     last_checked = models.DateTimeField()
     org_type = models.CharField(max_length=255, blank=True)
+    #language = models.CharField(max_length=255)
+    #geography = models.CharField(max_length=255, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage')
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
     github_fork = models.CharField(max_length=255, blank=True)
@@ -57,32 +59,34 @@ class Site(models.Model):
         return self.name
 
     def get_languages(self):
-        return ", ".join([l.language for l in self.language.all()])
+        return ", ".join([l.name for l in self.language.all()])
     get_languages.short_description = "Languages"
 
     def get_geographies(self):
-        return ", ".join([g.geography for g in self.geography.all()])
+        return ", ".join([g.name for g in self.geography.all()])
     get_geographies.short_description = "Geographies"
 
 
 class SiteGeoZone(models.Model):
     """
-    Mapping table for a site and GeoZones.
+    Junction table for a site and GeoZones.
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
+    # TODO: Add in attributes that describe the relationship between Site and GeoZone
 
     def __str__(self):
-        return self.site + '-' + self.geo_zone
+        return self.site.name + '-' + self.geo_zone.name
 
 
 class SiteLanguage(models.Model):
     """
-    Mapping table for a site and Languages.
+    Junction table for a site and Languages.
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
+    # TODO: Add in attributes that describe the relationship between Site and Language
 
     def __str__(self):
-        return self.site + '-' + self.language
+        return self.site.name + "-" + self.language.name
 
