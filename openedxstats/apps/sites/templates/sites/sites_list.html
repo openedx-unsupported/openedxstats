@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
-{% block bootstrap3_extra_head %}
-    <!--<link rel="stylesheet" type="text/css" href="{% static 'sites/css/tables.css' %}"/>-->
-{% endblock %}
 {% block title %} Open edX Sites List {% endblock %}
 {% block content %}
 <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -19,47 +15,6 @@
         </ul>
     </div>
 </nav>
-    <!--<div class="sites-table">
-        <table class="table-fill">
-            <thead>
-            <tr>
-                <th class="text-left">Site Type</th>
-                <th class="text-left">Name</th>
-                <th class="text-left">Url</th>
-                <th class="text-left">Course Count</th>
-                <th class="text-left">Last Checked</th>
-                <th class="text-left">Organization Type</th>
-                <th class="text-left">Language</th>
-                <th class="text-left">Geography</th>
-                <th class="text-left">Github Fork</th>
-                <th class="text-left">Notes</th>
-                <th class="text-left">Course Type</th>
-                <th class="text-left">Registered User Count</th>
-                <th class="text-left">Active Learner Count</th>
-            </tr>
-            </thead>
-            <tbody class="table-hover">
-            <tr>
-                {% for site in sites_list %}
-                    <tr class="clickable-row" data-href="{{ site.url }}">
-                        <td class="text-left">{{ site.site_type }}</td>
-                        <td class="text-left">{{ site.name }}</td>
-                        <td class="text-left">{{ site.url }}</td>
-                        <td class="text-left">{{ site.course_count }}</td>
-                        <td class="text-left">{{ site.last_checked }}</td>
-                        <td class="text-left">{{ site.org_type }}</td>
-                        <td class="text-left">{{ site.language }}</td>
-                        <td class="text-left">{{ site.geography }}</td>
-                        <td class="text-left">{{ site.github_fork }}</td>
-                        <td class="text-left">{{ site.notes }}</td>
-                        <td class="text-left">{{ site.course_type }}</td>
-                        <td class="text-left">{{ site.registered_user_count }}</td>
-                        <td class="text-left">{{ site.active_learner_count }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>-->
     <div class="container">
         <table class="table table-bordered">
             <thead>

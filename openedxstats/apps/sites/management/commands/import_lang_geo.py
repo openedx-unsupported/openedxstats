@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from ...models import *
 import csv
-import sys
 
 # TODO
 # TODO: Make this script work for all data, not just language and geozones!!!
@@ -42,45 +41,40 @@ class Command(BaseCommand):
                 if num_sites != len(input_rows):
                     print("ERROR: Number of rows in sites_site (%s) does not match number of rows in import csv(%s)!"
                           % (num_sites, len(input_rows)))
-                    sys.exit(1)
+                    return
 
                 print("Numbers match!")
                 print("Num_sites = %s \t Num_imports = %s" % (num_sites, len(input_rows)))
                 print("Begin import... "),
 
                 # Now, insert data and generate relationships
-                try:
-                    for idx, row in enumerate(input_rows):
-                        for jdx, col in enumerate(row):
-                            items = []
-                            if not col:
-                                continue
-                            elif ',' in col:
-                                items = col.split(',')
-                            else:
-                                items.append(col)
+                for idx, row in enumerate(input_rows):
+                    for jdx, col in enumerate(row):
+                        items = []
+                        if not col:
+                            continue
+                        elif ',' in col:
+                            items = col.split(',')
+                        else:
+                            items.append(col)
 
-                            for item in items:
-                                if jdx is 0:  # We are in the language column
-                                    language = Language(name=item)
-                                    language.save()
+                        for item in items:
+                            if jdx is 0:  # We are in the language column
+                                language = Language(name=item)
+                                language.save()
 
-                                    # Insert record into junction table to associate with site
-                                    site = Site.objects.get(url=list_of_sites[idx].url)
-                                    site_language = SiteLanguage(language_id=language, site_id=site.id)
-                                    site_language.save()
+                                # Insert record into junction table to associate with site
+                                site = Site.objects.get(url=list_of_sites[idx].url)
+                                site_language = SiteLanguage(language_id=language, site_id=site.id)
+                                site_language.save()
 
-                                elif jdx is 1:  # We are in the geography column
-                                    geo_zone = GeoZone(name=item)
-                                    geo_zone.save()
+                            elif jdx is 1:  # We are in the geography column
+                                geo_zone = GeoZone(name=item)
+                                geo_zone.save()
 
-                                    # Insert record into junction table to associate with site
-                                    site = Site.objects.get(url=list_of_sites[idx].url)
-                                    site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=site.id)
-                                    site_geozone.save()
+                                # Insert record into junction table to associate with site
+                                site = Site.objects.get(url=list_of_sites[idx].url)
+                                site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=site.id)
+                                site_geozone.save()
 
-                except (AttributeError, CommandError) as e:
-                    print('ERROR: ' + e.message)
-                    sys.exit(1)
-
-                print("Finished!")
+            print("Finished!")
