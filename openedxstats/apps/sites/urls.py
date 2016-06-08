@@ -1,15 +1,7 @@
-from django.conf.urls import *
-from django.conf import settings
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.conf.urls.static import static
-from sites import views
+from django.conf.urls import url
+from . import views
 
 urlpatterns = [
-               url(r'^sites/all$', views.ListView.as_view()),
+               url(r'^sites/all$', views.ListView.as_view(), name='sites_list'),
+               url(r'^sites/add_site/$', views.add_site, name='add_site'),
 ]
-
-# urlpatterns = ('',
-#                url(r'^sites/all$', views.ListView.as_view()),
-# )+ static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
-#
-# urlpatterns += staticfiles_urlpatterns()
