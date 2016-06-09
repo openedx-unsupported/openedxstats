@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %} Open edX Sites List {% endblock %}
+{% block content %}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Sites List</a></li>
+            <li><a href="#">Add/Update a Site</a></li>
+            <li><a href="#">Generate Report</a></li>
+            <li><a href="#">Etc etc etc</a></li>
+        </ul>
+    </div>
+</nav>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th >Site Type</th>
+                <th >Name</th>
+                <th >Url</th>
+                <th >Course Count</th>
+                <th >Last Checked</th>
+                <th >Organization Type</th>
+                <th >Language</th>
+                <th >Geography</th>
+                <th >Github Fork</th>
+                <th >Notes</th>
+                <th >Course Type</th>
+                <th >Registered User Count</th>
+                <th >Active Learner Count</th>
+            </tr>
+            </thead>
+            <tbody class="table table-bordered">
+            <tr>
+                {% for site in sites_list %}
+                    <tr class="clickable-row" data-href="{{ site.url }}">
+                        <td >{{ site.site_type }}</td>
+                        <td >{{ site.name }}</td>
+                        <td ><a href="{{ site.url }}"> {{ site.url }}</a></td>
+                        <td >{{ site.course_count }}</td>
+                        <td >{{ site.last_checked }}</td>
+                        <td >{{ site.org_type }}</td>
+                        <td >{% for site_language in site.language.all %}{{ site_language.pk }}{% endfor %}</td>
+                        <td >{% for site_geozone in site.geography.all %}{{ site_geozone.pk }}{% endfor %}</td>
+                        <td >{{ site.github_fork }}</td>
+                        <td >{{ site.notes }}</td>
+                        <td >{{ site.course_type }}</td>
+                        <td >{{ site.registered_user_count }}</td>
+                        <td >{{ site.active_learner_count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+
+{% block bootstrap3_extra_script %}
+    <!-- Uncomment to allow for clickable rows -->
+<!--    <script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.document.location = $(this).data("href");
+        });
+    });
+    </script>-->
+{% endblock %}

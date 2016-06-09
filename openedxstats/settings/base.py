@@ -1,5 +1,6 @@
 import os
 import sys
+from django.core.exceptions import ImproperlyConfigured
 
 # PATH vars
 
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
 
     'bootstrap3',
     'slackdata',
+    'sites',
 ]
 
 PROJECT_APPS = []
@@ -85,6 +87,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
+#PROJECT_DIR = os.path.dirname(__file__)
+#MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+#MEDIA_URL = '/media/'
+#STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 STATIC_URL = '/static/'
 
 
@@ -151,3 +157,12 @@ except ImportError:
 # importing test settings file if necessary
 if IN_TESTING:
     from .testing import *  # noqa
+
+
+def get_env_variable(var_name):
+    """Get environment variable or return exception."""
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "Set the {} environment variable".format(var_name)
+        raise ImproperlyConfigured(error_msg)
