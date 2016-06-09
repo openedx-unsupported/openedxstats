@@ -61,7 +61,7 @@ class Command(BaseCommand):
                                 items.append(col)
 
                             for item in items:
-                                if jdx is 0:  # We are in the language column
+                                if jdx == 0:  # We are in the language column
                                     language = Language(name=item)
                                     language.save()
 
@@ -70,7 +70,7 @@ class Command(BaseCommand):
                                     site_language = SiteLanguage(language_id=language, site_id=site.id)
                                     site_language.save()
 
-                                elif jdx is 1:  # We are in the geography column
+                                elif jdx == 1:  # We are in the geography column
                                     geo_zone = GeoZone(name=item)
                                     geo_zone.save()
 
