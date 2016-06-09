@@ -49,27 +49,29 @@ class Command(BaseCommand):
             # Now, insert data and generate relationships
             for row in input_rows:
                 for icol, col in enumerate(row):
+
                     if not col:
                         continue
 
                     items = col.split(',')
 
                     for item in items:
-                        if icol is 0:  # We are in the language column
+                        if icol == 0:  # We are in the language column
                             language = Language(name=item)
                             language.save()
 
+
                             # Insert record into junction table to associate with site
-                            site = Site.objects.get(url=list_of_sites[idx].url)
+                            site = Site.objects.get(url=list_of_sites[icol].url)
                             site_language = SiteLanguage(language_id=language, site_id=site.id)
                             site_language.save()
 
-                        elif icol is 1:  # We are in the geography column
+                        elif icol == 1:  # We are in the geography column
                             geo_zone = GeoZone(name=item)
                             geo_zone.save()
 
                             # Insert record into junction table to associate with site
-                            site = Site.objects.get(url=list_of_sites[idx].url)
+                            site = Site.objects.get(url=list_of_sites[icol].url)
                             site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=site.id)
                             site_geozone.save()
 
