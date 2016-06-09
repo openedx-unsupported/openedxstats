@@ -21,60 +21,56 @@ class Command(BaseCommand):
         parser.add_argument('csv_file', type=str, help='Specify file to use as source for input data.')
 
     def handle(self, *args, **options):
-        if options['csv_file']:
 
-            # Open the csv file, and iterate through each row, associating it with the correct site in the database by inserting
-            # the data into the junction tables
-            with open(options['csv_file'], 'rwb') as csvfile:
-                reader = csv.reader(csvfile)
-                iter_reader = iter(reader)
+        # Open the csv file, and iterate through each row, associating it with the correct site in the database by inserting
+        # the data into the junction tables
+        with open(options['csv_file'], 'rwb') as csvfile:
+            reader = csv.reader(csvfile)
+            iter_reader = iter(reader)
 
-                # Make sure the number of rows of sites matches the number of rows of the csv import file
-                list_of_sites = Site.objects.all()
-                num_sites = len(list_of_sites)
-                iter_reader.next()  # Skips header
-                input_rows = []
-                for row in iter_reader:
-                    input_rows.append(row)
+            # Make sure the number of rows of sites matches the number of rows of the csv import file
+            list_of_sites = Site.objects.all()
+            num_sites = len(list_of_sites)
+            iter_reader.next()  # Skips header
+            input_rows = []
+            for row in iter_reader:
+                input_rows.append(row)
 
-                # Throw error if row counts do not match
-                if num_sites != len(input_rows):
-                    print("ERROR: Number of rows in sites_site (%s) does not match number of rows in import csv(%s)!"
-                          % (num_sites, len(input_rows)))
-                    return
+            # Throw error if row counts do not match
+            if num_sites != len(input_rows):
+                print("ERROR: Number of rows in sites_site (%s) does not match number of rows in import csv(%s)!"
+                      % (num_sites, len(input_rows)))
+                return
 
-                print("Numbers match!")
-                print("Num_sites = %s \t Num_imports = %s" % (num_sites, len(input_rows)))
-                print("Begin import... "),
+            print("Numbers match!")
+            print("Num_sites = %s \t Num_imports = %s" % (num_sites, len(input_rows)))
+            print("Begin import... "),
 
-                # Now, insert data and generate relationships
-                for idx, row in enumerate(input_rows):
-                    for jdx, col in enumerate(row):
-                        items = []
-                        if not col:
-                            continue
-                        elif ',' in col:
-                            items = col.split(',')
-                        else:
-                            items.append(col)
+            # Now, insert data and generate relationships
+            for row in input_rows:
+                for icol, col in enumerate(row):
+                    if not col:
+                        continue
 
-                        for item in items:
-                            if jdx is 0:  # We are in the language column
-                                language = Language(name=item)
-                                language.save()
+                    items = col.split(',')
 
-                                # Insert record into junction table to associate with site
-                                site = Site.objects.get(url=list_of_sites[idx].url)
-                                site_language = SiteLanguage(language_id=language, site_id=site.id)
-                                site_language.save()
+                    for item in items:
+                        if icol is 0:  # We are in the language column
+                            language = Language(name=item)
+                            language.save()
 
-                            elif jdx is 1:  # We are in the geography column
-                                geo_zone = GeoZone(name=item)
-                                geo_zone.save()
+                            # Insert record into junction table to associate with site
+                            site = Site.objects.get(url=list_of_sites[idx].url)
+                            site_language = SiteLanguage(language_id=language, site_id=site.id)
+                            site_language.save()
 
-                                # Insert record into junction table to associate with site
-                                site = Site.objects.get(url=list_of_sites[idx].url)
-                                site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=site.id)
-                                site_geozone.save()
+                        elif icol is 1:  # We are in the geography column
+                            geo_zone = GeoZone(name=item)
+                            geo_zone.save()
 
-            print("Finished!")
+                            # Insert record into junction table to associate with site
+                            site = Site.objects.get(url=list_of_sites[idx].url)
+                            site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=site.id)
+                            site_geozone.save()
+
+        print("Finished!")
