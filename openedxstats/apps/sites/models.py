@@ -36,16 +36,15 @@ class Site(models.Model):
     )
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
-    # Later, we should improve data integrity so that no blank fields are allowed
 
     # id <--- Django automatically creates a serial id
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255, unique=True)
-    course_count = models.IntegerField()
-    last_checked = models.DateTimeField()
+    course_count = models.IntegerField(blank=True, null=True)
+    last_checked = models.DateTimeField(blank=True, null=True)
     org_type = models.CharField(max_length=255, blank=True)
-    language = models.ManyToManyField(Language, through='SiteLanguage')
+    language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
     github_fork = models.CharField(max_length=255, blank=True)
     notes = models.TextField(blank=True)

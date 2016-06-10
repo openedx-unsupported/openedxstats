@@ -1,5 +1,5 @@
 from django.test import TestCase
-from management.commands.import_lang_geo import import_data
+from management.commands.import_sites import import_data
 
 CSV_FILE = '~/Documents/postgres_data/edx_lang_geo_csv.csv'
 
