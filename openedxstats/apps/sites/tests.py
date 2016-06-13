@@ -17,8 +17,8 @@ class ImportScriptTestCase(TestCase):
                            "Number of sites imported: 268\n"
                            "Number of languages imported: 35\n"
                            "Number of geozones imported: 59\n"
-                           "Number of site_languages created: 268\n"
-                           "Number of site_geozones created: 268\n")
+                           "Number of site_languages created: 272\n"
+                           "Number of site_geozones created: 269\n")
         out = StringIO()
         with open(source, 'rwb'):
             call_command('import_sites', source, stdout = out)
