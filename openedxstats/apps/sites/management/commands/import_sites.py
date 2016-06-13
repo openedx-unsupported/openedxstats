@@ -39,7 +39,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Open the csv file
         with open(options['csv_file'], 'rwb') as csvfile:
-            import_data(csvfile)
+            result_string = import_data(csvfile)
+            print(result_string)
+            return result_string
+
 
 
 def check_for_required_cols(header_row):
@@ -140,11 +143,12 @@ def import_data(csvfile):
 
 
     print("Finished!")
-    print("\nReport: ")
-    print("Number of sites imported: %s" % total_count_stats["sites"])
-    print("Number of languages imported: %s" % total_count_stats["languages"])
-    print("Number of geozones imported: %s" % total_count_stats["geozones"])
-    print("Number of site_languages created: %s" % total_count_stats["site_languages"])
-    print("Number of site_geozones created: %s" % total_count_stats["site_languages"])
+    report_string = "\nReport:\n"
+    report_string += "Number of sites imported: %s\n" % total_count_stats["sites"]
+    report_string += "Number of languages imported: %s\n" % total_count_stats["languages"]
+    report_string += "Number of geozones imported: %s\n" % total_count_stats["geozones"]
+    report_string += "Number of site_languages created: %s\n" % total_count_stats["site_languages"]
+    report_string += "Number of site_geozones created: %s\n" % total_count_stats["site_languages"]
 
+    return report_string
 
