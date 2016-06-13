@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load bootstrap3 %}
 
 {% load staticfiles %}
 
@@ -17,12 +18,21 @@
             </ul>
         </div>
     </nav>
-    <div class="container">
-        <!-- Insert form here -->
-        <form action="{% url 'sites:add_site'%}" method="post">
-            {% csrf_token %}
-            {{ form }}
-            <input type="submit" value="Submit" />
-        </form>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Insert form here -->
+                <form action="{% url 'sites:add_site'%}" method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                </form>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    Something will be here soon maybe.
+                </p>
+            </div>
+        </div>
     </div>
 {% endblock %}
