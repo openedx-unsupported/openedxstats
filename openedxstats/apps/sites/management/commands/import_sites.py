@@ -66,6 +66,7 @@ def import_data(csvfile):
     :param csvfile:
     :return:
     """
+    total_count_stats = {"sites":0,"languages":0,"geozones":0,"site_languages":0,"site_geozones":0}
     reader = csv.reader(csvfile)
     iter_reader = iter(reader)
     try:
@@ -84,7 +85,7 @@ def import_data(csvfile):
     for irow,row in enumerate(input_rows):
         new_site = Site()
         language = None
-        geozone = None
+        geo_zone = None
 
         for icol,col in enumerate(row):
             col_name = str.lower(header_row[icol]).strip()
@@ -110,9 +111,14 @@ def import_data(csvfile):
                 for item in items:
                     if col_name == "language":
                         language = Language(name=item)
+                        if not Language.objects.filter(name=item).exists():
+                            total_count_stats["languages"] += 1
                         language.save()
+
                     elif col_name == "geography":
                         geo_zone = GeoZone(name=item)
+                        if not GeoZone.objects.filter(name=item).exists():
+                            total_count_stats["geozones"] += 1
                         geo_zone.save()
 
             else:
@@ -120,14 +126,25 @@ def import_data(csvfile):
 
         # Save objects
         new_site.save()
+        total_count_stats["sites"] += 1
         if language is not None:
             # Insert record into junction table to associate with site
             site_language = SiteLanguage(language_id=language, site_id=new_site.id)
             site_language.save()
-        if geozone is not None:
+            total_count_stats["site_languages"] +=1
+        if geo_zone is not None:
             # Insert record into junction table to associate with site
             site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=new_site.id)
             site_geozone.save()
+            total_count_stats["site_geozones"] += 1
 
 
     print("Finished!")
+    print("\nReport: ")
+    print("Number of sites imported: %s" % total_count_stats["sites"])
+    print("Number of languages imported: %s" % total_count_stats["languages"])
+    print("Number of geozones imported: %s" % total_count_stats["geozones"])
+    print("Number of site_languages created: %s" % total_count_stats["site_languages"])
+    print("Number of site_geozones created: %s" % total_count_stats["site_languages"])
+
+
