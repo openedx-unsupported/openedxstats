@@ -7,6 +7,9 @@ from django.utils.six import StringIO
 
 
 class ImportScriptTestCase(TestCase):
+    """
+    Tests for import_sites management command.
+    """
 
     def test_import_date_from_correctly_formatted_file(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
@@ -52,3 +55,20 @@ class ImportScriptTestCase(TestCase):
         with open(source, 'rwb'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
+
+    def test_check_for_idempotency(self):
+        source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
+        additional_source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv_one_addition.csv"
+        expected_output = ("Report:\n"
+                           "Number of sites imported: 1\n"
+                           "Number of languages imported: 0\n"
+                           "Number of geozones imported: 2\n"
+                           "Number of site_languages created: 1\n"
+                           "Number of site_geozones created: 2\n")
+        out = StringIO()
+        with open(source, 'rwb'):
+            call_command('import_sites', source)
+
+        with open(additional_source, 'rwb'):
+            call_command('import_sites', additional_source, stdout=out)
+            self.assertIn(expected_output, out.getvalue())

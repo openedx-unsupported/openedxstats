@@ -40,7 +40,7 @@ class Site(models.Model):
     # id <--- Django automatically creates a serial id
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=255, unique=True)
+    url = models.CharField(max_length=255, primary_key=True)
     course_count = models.IntegerField(blank=True, null=True)
     last_checked = models.DateTimeField(blank=True, null=True)
     org_type = models.CharField(max_length=255, blank=True)
@@ -73,7 +73,7 @@ class SiteGeoZone(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and GeoZone
 
     def __unicode__(self):
-        return self.site.name + '-' + self.geo_zone.name
+        return self.site.pk + '-' + self.geo_zone.name
 
 
 class SiteLanguage(models.Model):
@@ -85,5 +85,5 @@ class SiteLanguage(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and Language
 
     def __unicode__(self):
-        return self.site.name + "-" + self.language.name
+        return self.site.pk + "-" + self.language.name
 

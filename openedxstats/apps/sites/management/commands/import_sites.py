@@ -4,12 +4,6 @@ import csv
 from dateutil import parser
 from django.db.models.fields import NOT_PROVIDED
 
-# TODO
-# TODO: Make this script work for all data, not just language and geozones!!!
-# TODO: Make it idempotent
-# TODO: Make it so that it only imports if it doesn't exist
-# TODO: Spreadsheet is always right
-# TODO
 
 REQUIRED_COLS = ["url"] # Add fields to this list that the csv should have
 # HEADER_NAMES = Site.__meta.get_all_field_names.remove("geography").remove("language")
@@ -40,9 +34,7 @@ class Command(BaseCommand):
         # Open the csv file
         with open(options['csv_file'], 'rwb') as csvfile:
             result_string = import_data(csvfile)
-            print(result_string)
             return result_string
-
 
 
 def check_for_required_cols(header_row):
@@ -69,7 +61,7 @@ def import_data(csvfile):
     :param csvfile:
     :return:
     """
-    total_count_stats = {"sites":0,"languages":0,"geozones":0,"site_languages":0,"site_geozones":0}
+    total_count_stats = {"sites":0, "languages":0, "geozones":0, "site_languages":0, "site_geozones":0}
     reader = csv.reader(csvfile)
     iter_reader = iter(reader)
     try:
@@ -87,8 +79,8 @@ def import_data(csvfile):
     # Now, insert data and generate relationships
     for irow,row in enumerate(input_rows):
         new_site = Site()
-        language = None
-        geo_zone = None
+        lang_list = []
+        gz_list = []
 
         for icol,col in enumerate(row):
             col_name = str.lower(header_row[icol]).strip()
@@ -111,36 +103,43 @@ def import_data(csvfile):
 
             elif col_name in M2M_HEADER_NAMES:
                 items = col.split(',')
+
                 for item in items:
                     if col_name == "language":
                         language = Language(name=item)
                         if not Language.objects.filter(name=item).exists():
                             total_count_stats["languages"] += 1
                         language.save()
+                        lang_list.append(language)
 
                     elif col_name == "geography":
                         geo_zone = GeoZone(name=item)
                         if not GeoZone.objects.filter(name=item).exists():
                             total_count_stats["geozones"] += 1
                         geo_zone.save()
+                        gz_list.append(geo_zone)
 
             else:
                 raise CommandError("Unrecognized column name: %s" % col_name)
 
         # Save objects
+        if not Site.objects.filter(url=new_site.url).exists():
+            total_count_stats["sites"] += 1
         new_site.save()
-        total_count_stats["sites"] += 1
-        if language is not None:
-            # Insert record into junction table to associate with site
-            site_language = SiteLanguage(language_id=language, site_id=new_site.id)
-            site_language.save()
-            total_count_stats["site_languages"] +=1
-        if geo_zone is not None:
-            # Insert record into junction table to associate with site
-            site_geozone = SiteGeoZone(geo_zone_id=geo_zone, site_id=new_site.id)
-            site_geozone.save()
-            total_count_stats["site_geozones"] += 1
 
+        for lang in lang_list:
+            # Insert record into junction table to associate with site
+            if not SiteLanguage.objects.filter(site_id=new_site.url, language_id=lang.name).exists():
+                total_count_stats["site_languages"] += 1
+                site_language = SiteLanguage(site_id=new_site.url, language_id=lang.name)
+                site_language.save()
+
+        for gz in gz_list:
+            # Insert record into junction table to associate with site
+            if not SiteGeoZone.objects.filter(site_id=new_site.url, geo_zone_id=gz.name).exists():
+                total_count_stats["site_geozones"] += 1
+                site_geozone = SiteGeoZone(site_id=new_site.url, geo_zone_id=gz.name)
+                site_geozone.save()
 
     print("Finished!")
     report_string = "\nReport:\n"
@@ -148,7 +147,7 @@ def import_data(csvfile):
     report_string += "Number of languages imported: %s\n" % total_count_stats["languages"]
     report_string += "Number of geozones imported: %s\n" % total_count_stats["geozones"]
     report_string += "Number of site_languages created: %s\n" % total_count_stats["site_languages"]
-    report_string += "Number of site_geozones created: %s\n" % total_count_stats["site_languages"]
+    report_string += "Number of site_geozones created: %s\n" % total_count_stats["site_geozones"]
 
     return report_string
 
