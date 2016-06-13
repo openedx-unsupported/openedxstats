@@ -38,16 +38,15 @@ class Site(models.Model):
 
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
-    # Later, we should improve data integrity so that no blank fields are allowed
 
     # id <--- Django automatically creates a serial id
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=255, unique=True)
-    course_count = models.IntegerField()
-    last_checked = models.DateTimeField()
+    url = models.CharField(max_length=255, primary_key=True)
+    course_count = models.IntegerField(blank=True, null=True)
+    last_checked = models.DateTimeField(blank=True, null=True)
     org_type = models.CharField(max_length=255, blank=True)
-    language = models.ManyToManyField(Language, through='SiteLanguage')
+    language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
     github_fork = models.CharField(max_length=255, blank=True)
     notes = models.TextField(blank=True)
@@ -76,7 +75,7 @@ class SiteGeoZone(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and GeoZone
 
     def __unicode__(self):
-        return self.site.name + '-' + self.geo_zone.name
+        return self.site.pk + '-' + self.geo_zone.name
 
 
 class SiteLanguage(models.Model):
@@ -88,5 +87,5 @@ class SiteLanguage(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and Language
 
     def __unicode__(self):
-        return self.site.name + "-" + self.language.name
+        return self.site.pk + "-" + self.language.name
 
