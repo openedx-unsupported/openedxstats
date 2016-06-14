@@ -92,7 +92,7 @@ def import_data(csvfile):
             if is_blankable_field and not is_nullable_field and col is None:
                 col = ""
             # If field is blank, and attribute has default value, use default value
-            elif (col is None or col == "") and field_default_value != NOT_PROVIDED:
+            elif (col is None or col == "" or col.isspace()) and field_default_value != NOT_PROVIDED:
                 col = field_default_value
 
             if col_name in HEADER_NAMES:
@@ -105,19 +105,20 @@ def import_data(csvfile):
                 items = col.split(',')
 
                 for item in items:
-                    if col_name == "language":
-                        language = Language(name=item)
-                        if not Language.objects.filter(name=item).exists():
-                            total_count_stats["languages"] += 1
-                        language.save()
-                        lang_list.append(language)
+                    if len(item.strip()) > 0:
+                        if col_name == "language":
+                            language = Language(name=item)
+                            if not Language.objects.filter(name=item).exists():
+                                total_count_stats["languages"] += 1
+                            language.save()
+                            lang_list.append(language)
 
-                    elif col_name == "geography":
-                        geo_zone = GeoZone(name=item)
-                        if not GeoZone.objects.filter(name=item).exists():
-                            total_count_stats["geozones"] += 1
-                        geo_zone.save()
-                        gz_list.append(geo_zone)
+                        elif col_name == "geography":
+                            geo_zone = GeoZone(name=item)
+                            if not GeoZone.objects.filter(name=item).exists():
+                                total_count_stats["geozones"] += 1
+                            geo_zone.save()
+                            gz_list.append(geo_zone)
 
             else:
                 raise CommandError("Unrecognized column name: %s" % col_name)
