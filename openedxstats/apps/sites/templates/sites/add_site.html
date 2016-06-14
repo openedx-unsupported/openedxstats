@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
-
 {% load staticfiles %}
+{% block bootstrap3_extra_head %}
+    {{ form.media }}
+{% endblock %}
 
-{% block title %} Open edX Sites List {% endblock %}
+
+{% block title %} Add Site {% endblock %}
 {% block content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
@@ -11,8 +14,8 @@
                 <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
             </div>
             <ul class="nav navbar-nav">
-                <li href="/all"><a href="#">Sites List</a></li>
-                <li class="active"><a href="#">Add/Update a Site</a></li>
+                <li><a href="/sites/all">Sites List</a></li>
+                <li class="active"><a href="/sites/add_site">Add/Update a Site</a></li>
                 <li><a href="#">Generate Report</a></li>
                 <li><a href="#">Etc etc etc</a></li>
             </ul>
@@ -21,6 +24,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6">
+                <!-- Insert form here -->
+
                 <!-- Insert form here -->
                 <form action="{% url 'sites:add_site'%}" method="post" class="form">
                     {% csrf_token %}
@@ -34,5 +39,6 @@
                 </p>
             </div>
         </div>
+    <br />
     </div>
 {% endblock %}

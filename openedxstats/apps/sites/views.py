@@ -11,9 +11,6 @@ class ListView(generic.ListView):
     template_name = 'sites/sites_list.html'
     context_object_name = 'sites_list'
 
-    #def get_queryset(self):
-    #    return Site.objects.all()
-
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
 def add_site(request):
