@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib import messages
 from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from .forms import SiteForm, LanguageForm, GeoZoneForm
 
@@ -17,7 +18,7 @@ def add_site(request):
     # This is where I will add an if statement to check if we are passing in an existing id or making a new object
     # For now, we will just make a new object
     s = Site()
-
+    #import pdb;pdb.set_trace()
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
@@ -34,6 +35,7 @@ def add_site(request):
                 site_geozone = SiteGeoZone.objects.create(geo_zone=g, site=s)
                 site_geozone.save()
 
+            messages.success(request, 'Success! A new site has been added!')
             return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = SiteForm()
@@ -48,6 +50,7 @@ def add_language(request):
         form = LanguageForm(request.POST, instance=l)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Success! A new language has been added!')
             return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = LanguageForm()
@@ -62,6 +65,7 @@ def add_geozone(request):
         form = GeoZoneForm(request.POST, instance=g)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Success! A new geozone has been added!')
             return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = GeoZoneForm()

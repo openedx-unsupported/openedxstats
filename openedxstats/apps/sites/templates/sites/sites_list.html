@@ -2,19 +2,21 @@
 
 {% block title %} Open edX Sites List {% endblock %}
 {% block content %}
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/sites/all">Sites List</a></li>
+                <li><a href="/sites/add_site">Add/Update a Site</a></li>
+                <li><a href="/sites/add_language">Add Language</a></li>
+                <li><a href="/sites/add_geozone">Add GeoZone</a></li>
+            </ul>
         </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="/sites/all">Sites List</a></li>
-            <li><a href="/sites/add_site">Add/Update a Site</a></li>
-            <li><a href="/sites/add_language">Add Language</a></li>
-            <li><a href="/sites/add_geozone">Add GeoZone</a></li>
-        </ul>
-    </div>
-</nav>
+    </nav>
+    <!-- Table -->
     <div class="container">
         <table class="table table-bordered table-responsive">
             <thead>

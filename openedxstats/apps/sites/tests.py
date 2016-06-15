@@ -4,6 +4,8 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
+from .models import Site, GeoZone, Language
+from .forms import SiteForm, GeoZoneForm, LanguageForm
 
 
 class ImportScriptTestCase(TestCase):
@@ -15,10 +17,10 @@ class ImportScriptTestCase(TestCase):
         source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
         expected_output = ("Report:\n"
                            "Number of sites imported: 268\n"
-                           "Number of languages imported: 35\n"
-                           "Number of geozones imported: 59\n"
-                           "Number of site_languages created: 272\n"
-                           "Number of site_geozones created: 269\n")
+                           "Number of languages imported: 34\n"
+                           "Number of geozones imported: 58\n"
+                           "Number of site_languages created: 271\n"
+                           "Number of site_geozones created: 198\n")
         out = StringIO()
         with open(source, 'rwb'):
             call_command('import_sites', source, stdout = out)
@@ -72,3 +74,53 @@ class ImportScriptTestCase(TestCase):
         with open(additional_source, 'rwb'):
             call_command('import_sites', additional_source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
+
+
+class SubmitSiteFormTestCase(TestCase):
+    """
+    Tests for the add site form.
+    """
+
+    def test_form_validation_for_blank_url(self):
+        form = SiteForm(data={'url':''})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['url'], ['This field is required']
+        )
+
+    def test_form_validation_for_existing_url(self):
+        new_site = Site(url='https://lagunitas.stanford.edu')
+        new_site.save()
+        form = SiteForm(data={'url': 'https://lagunitas.stanford.edu'})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['url'], ['Site with this Url already exists.']
+        )
+
+
+
+
+    def test_add_a_single_site_with_all_fields(self):
+        site = Site()
+        form_data = {'site_type':'General',
+                     'name':'Test',
+                     'url':'https://convolutedurl.biz',
+                     'course_count':'1337',
+                     'last_checked':'06/13/2016',
+                     'org_type':'Academic',
+                     'language':['English', 'Chinese'],
+                     'geography':['US', 'China'],
+                     'github_fork':'Estranged-Spork',
+                     'notes':'What a day it is to be alive.',
+                     'course_type':'Righteous',
+                     'registered_user_count':'3333',
+                     'active_learner_count':'1111'
+                     }
+
+        self.assertEqual(0, len(Site.objects.all()))
+
+        response = self.client.post('/sites/add_site/', form_data)
+        #print(response.content)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, len(Site.objects.all()))
+        self.assertEqual(form_data['url'], response['url'])
