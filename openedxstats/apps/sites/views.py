@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from .models import Site, SiteLanguage, SiteGeoZone
-from .forms import SiteForm
+from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
+from .forms import SiteForm, LanguageForm, GeoZoneForm
 
 class ListView(generic.ListView):
     model = Site
@@ -39,3 +39,32 @@ def add_site(request):
         form = SiteForm()
 
     return render(request, 'add_site.html', {'form':form})
+
+
+def add_language(request):
+    l = Language()
+
+    if request.method == 'POST':
+        form = LanguageForm(request.POST, instance=l)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('sites:sites_list'))
+    else:
+        form = LanguageForm()
+
+    return render(request, 'add_language.html', {'form':form})
+
+
+def add_geozone(request):
+    g = GeoZone()
+
+    if request.method == 'POST':
+        form = GeoZoneForm(request.POST, instance=g)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('sites:sites_list'))
+    else:
+        form = GeoZoneForm()
+
+    return render(request, 'add_geozone.html', {'form': form})
+

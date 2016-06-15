@@ -1,5 +1,5 @@
 from django import forms
-from .models import Site
+from .models import Site, Language, GeoZone
 from datetimewidget.widgets import DateWidget
 
 default_url_errors = {
@@ -14,7 +14,7 @@ class SiteForm(forms.ModelForm):
     #course_count = forms.IntegerField()
     #last_checked = forms.DateField()
     #org_type = forms.CharField(max_length=255, help_text="E.g. Industrial, Academic, etc.")
-    #language = forms.SelectMultiple()
+    #language = forms.ModelMultipleChoiceField(Language.objects.all())   # Does the same thing as the one below
     #geography = forms.SelectMultiple()
     #github_fork = forms.URLField()
     #notes = forms.CharField(widget=forms.TextInput)
@@ -34,3 +34,24 @@ class SiteForm(forms.ModelForm):
         widgets = {
             'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3)
         }
+
+    # TODO: Make it so we have an inline option to create a new language or geozone
+        # With nested formset, maybe can be done, but need to display created choice on page somehow
+            # AJAX can probably solve this, although this is a big undertaking, should make simple version first
+
+    # TODO: For the time being, just implement separate forms
+
+
+class LanguageForm(forms.ModelForm):
+
+    class Meta:
+        model = Language
+        fields = '__all__'
+
+
+class GeoZoneForm(forms.ModelForm):
+
+    class Meta:
+        model = GeoZone
+        fields = '__all__'
+
