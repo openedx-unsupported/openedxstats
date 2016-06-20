@@ -126,21 +126,21 @@ def import_data(csvfile):
         # Save objects
         if not Site.objects.filter(url=new_site.url).exists():
             total_count_stats["sites"] += 1
-        new_site.save()
+            new_site.save()
 
-        for lang in lang_list:
-            # Insert record into junction table to associate with site
-            if not SiteLanguage.objects.filter(site_id=new_site.url, language_id=lang.name).exists():
-                total_count_stats["site_languages"] += 1
-                site_language = SiteLanguage(site_id=new_site.url, language_id=lang.name)
-                site_language.save()
+            for lang in lang_list:
+                # Insert record into junction table to associate with site
+                if not SiteLanguage.objects.filter(site_id=new_site.pk, language_id=lang.name).exists():
+                    total_count_stats["site_languages"] += 1
+                    site_language = SiteLanguage(site_id=new_site.pk, language_id=lang.name)
+                    site_language.save()
 
-        for gz in gz_list:
-            # Insert record into junction table to associate with site
-            if not SiteGeoZone.objects.filter(site_id=new_site.url, geo_zone_id=gz.name).exists():
-                total_count_stats["site_geozones"] += 1
-                site_geozone = SiteGeoZone(site_id=new_site.url, geo_zone_id=gz.name)
-                site_geozone.save()
+            for gz in gz_list:
+                # Insert record into junction table to associate with site
+                if not SiteGeoZone.objects.filter(site_id=new_site.pk, geo_zone_id=gz.name).exists():
+                    total_count_stats["site_geozones"] += 1
+                    site_geozone = SiteGeoZone(site_id=new_site.pk, geo_zone_id=gz.name)
+                    site_geozone.save()
 
     print("Finished!")
     report_string = "\nReport:\n"

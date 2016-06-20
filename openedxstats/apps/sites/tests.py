@@ -3,6 +3,9 @@ from management.commands.import_sites import import_data, check_for_required_col
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
+from django.core.urlresolvers import reverse
+from django.utils.datastructures import MultiValueDict
+from django.utils.http import urlencode
 from django.utils.six import StringIO
 from django.http import HttpRequest
 from .models import Site, GeoZone, Language
@@ -102,49 +105,125 @@ class SubmitSiteFormTestCase(TestCase):
 
 
 
-    def test_add_a_single_site_with_all_fields(self):
-        site = Site()
-        request = HttpRequest()
-        request.method = 'POST'
-        # request.POST = {'site_type':'General',
-        #              'name':'Test',
-        #              'url':'https://convolutedurl.biz',
-        #              'course_count':'1337',
-        #              'last_checked':'06/13/2016',
-        #              'org_type':'Academic',
-        #              'language':['English', 'Chinese'],
-        #              'geography':['US', 'China'],
-        #              'github_fork':'Estranged-Spork',
-        #              'notes':'What a day it is to be alive.',
-        #              'course_type':'Righteous',
-        #              'registered_user_count':'3333',
-        #              'active_learner_count':'1111'
-        #              }
+    def test_add_a_single_site_with_required_fields(self):
+        form_data = {
+            'site_type': 'General',
+            'name': 'Test',
+            'url': 'https://convolutedurl.biz',
+            'course_type': 'Unknown',
+        }
 
-        request.POST['site_type'] = 'General'
-        request.POST['name'] = 'Test'
-        request.POST['url'] = 'https://convolutedurl.biz'
-        #request.POST['course_count'] = '1337'
-        #request.POST['last_checked'] = '06/13/2016'
-        #request.POST['org_type'] = 'Academic'
-        #request.POST['geography'] = ['English', 'Chinese']
-        #request.POST['github_fork'] = ['US', 'China']
-        #request.POST['notes'] = 'Estranged-Spork'
-        #request.POST['course_type'] = 'What a day it is to be alive.'
-        #request.POST['registered_user_count'] = '3333'
-        #request.POST['active_learner_count'] = '1111'
+        self.assertEqual(0, Site.objects.count())
 
-        self.assertEqual(0, len(Site.objects.all()))
+        response = self.client.post('/sites/add_site/', form_data)
 
-        response = add_site(request)
-
-
-        #response = self.client.post('/sites/add_site/', form_data)
-        #print(response.content)
-        #self.assertEqual(200, response.status_code)
         self.assertEqual(1, Site.objects.count())
         saved_site = Site.objects.first()
-        #self.assertEqual(saved_site['url'], form_data['url'])
+        self.assertEqual(saved_site.url, form_data['url'])
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
+
+
+    def test_add_a_single_site_with_all_fields(self):
+        form_data = {
+            'site_type': 'General',
+            'name': 'Test',
+            'url': 'https://convolutedurl.biz',
+            'course_count': '1337',
+            'last_checked': '2016-03-24',
+            'org_type': 'Academic',
+            #'language': ['English', 'Chinese'],
+            #'geography': ['US', 'China'],
+            'github_fork': 'Estranged-Spork',
+            'notes': 'What a day it is to be alive.',
+            'course_type': 'Unknown',
+            'registered_user_count': '3333',
+            'active_learner_count': '1111',
+        }
+
+        self.assertEqual(0, Site.objects.count())
+
+        response = self.client.post('/sites/add_site/', form_data)
+        # Need to urlencode in order to pass languages and geographies
+        #response = self.client.post('/sites/add_site/',
+        #                       urlencode(MultiValueDict(form_data), doseq=True),
+        #                       content_type='application/x-www-form-urlencoded')
+
+        self.assertEqual(1, Site.objects.count())
+        saved_site = Site.objects.first()
+        self.assertEqual(saved_site.url, form_data['url'])
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/sites/all')
+
+
+    def test_add_language(self):
+        form_data = {
+            'name': 'ANewLanguage',
+        }
+
+        self.assertEqual(0, Language.objects.count())
+        response = self.client.post('/sites/add_language/', form_data)
+
+        self.assertEqual(1, Language.objects.count())
+        saved_language = Language.objects.first()
+        self.assertEqual(saved_language.name, form_data['name'])
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/sites/all')
+
+
+    def test_add_language_that_already_exists(self):
+        new_language = Language(name='ANewLanguage')
+        new_language.save()
+        form = LanguageForm(data={'name': 'ANewLanguage'})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['name'], ['Language with this Name already exists.']
+        )
+
+
+    def test_add_geozone(self):
+        form_data = {
+            'name': 'ANewGeozone',
+        }
+
+        self.assertEqual(0, GeoZone.objects.count())
+        response = self.client.post('/sites/add_geozone/', form_data)
+
+        self.assertEqual(1, GeoZone.objects.count())
+        saved_geozone = GeoZone.objects.first()
+        self.assertEqual(saved_geozone.name, form_data['name'])
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/sites/all')
+
+
+    def test_add_geozone_that_already_exists(self):
+        new_geozone = GeoZone(name='ANewGeozone')
+        new_geozone.save()
+        form = GeoZoneForm(data={'name': 'ANewGeozone'})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['name'], ['Geo zone with this Name already exists.']
+        )
+
+
+    def test_get_blank_site_form(self):
+        response = self.client.get('/sites/add_site/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, Site.objects.count())
+
+
+    def test_get_blank_language_form(self):
+        response = self.client.get('/sites/add_language/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, Language.objects.count())
+
+
+    def test_get_blank_geozone_form(self):
+        response = self.client.get('/sites/add_geozone/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, GeoZone.objects.count())
+

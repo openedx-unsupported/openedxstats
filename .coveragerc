@@ -1,0 +1,3 @@
+[run]
+source = openedxstats/apps/sites
+branch = true

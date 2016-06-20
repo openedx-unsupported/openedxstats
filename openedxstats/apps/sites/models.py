@@ -39,9 +39,10 @@ class Site(models.Model):
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
 
+    #id <-- Automatic serial primary key created by django
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=255, primary_key=True)
+    url = models.CharField(max_length=255, unique=True)
     course_count = models.IntegerField(blank=True, null=True)
     last_checked = models.DateField(blank=True, null=True)
     org_type = models.CharField(max_length=255, blank=True)
