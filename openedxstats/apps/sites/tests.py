@@ -4,8 +4,10 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
+from django.http import HttpRequest
 from .models import Site, GeoZone, Language
 from .forms import SiteForm, GeoZoneForm, LanguageForm
+from .views import add_site
 
 
 class ImportScriptTestCase(TestCase):
@@ -102,25 +104,47 @@ class SubmitSiteFormTestCase(TestCase):
 
     def test_add_a_single_site_with_all_fields(self):
         site = Site()
-        form_data = {'site_type':'General',
-                     'name':'Test',
-                     'url':'https://convolutedurl.biz',
-                     'course_count':'1337',
-                     'last_checked':'06/13/2016',
-                     'org_type':'Academic',
-                     'language':['English', 'Chinese'],
-                     'geography':['US', 'China'],
-                     'github_fork':'Estranged-Spork',
-                     'notes':'What a day it is to be alive.',
-                     'course_type':'Righteous',
-                     'registered_user_count':'3333',
-                     'active_learner_count':'1111'
-                     }
+        request = HttpRequest()
+        request.method = 'POST'
+        # request.POST = {'site_type':'General',
+        #              'name':'Test',
+        #              'url':'https://convolutedurl.biz',
+        #              'course_count':'1337',
+        #              'last_checked':'06/13/2016',
+        #              'org_type':'Academic',
+        #              'language':['English', 'Chinese'],
+        #              'geography':['US', 'China'],
+        #              'github_fork':'Estranged-Spork',
+        #              'notes':'What a day it is to be alive.',
+        #              'course_type':'Righteous',
+        #              'registered_user_count':'3333',
+        #              'active_learner_count':'1111'
+        #              }
+
+        request.POST['site_type'] = 'General'
+        request.POST['name'] = 'Test'
+        request.POST['url'] = 'https://convolutedurl.biz'
+        #request.POST['course_count'] = '1337'
+        #request.POST['last_checked'] = '06/13/2016'
+        #request.POST['org_type'] = 'Academic'
+        #request.POST['geography'] = ['English', 'Chinese']
+        #request.POST['github_fork'] = ['US', 'China']
+        #request.POST['notes'] = 'Estranged-Spork'
+        #request.POST['course_type'] = 'What a day it is to be alive.'
+        #request.POST['registered_user_count'] = '3333'
+        #request.POST['active_learner_count'] = '1111'
 
         self.assertEqual(0, len(Site.objects.all()))
 
-        response = self.client.post('/sites/add_site/', form_data)
+        response = add_site(request)
+
+
+        #response = self.client.post('/sites/add_site/', form_data)
         #print(response.content)
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(1, len(Site.objects.all()))
-        self.assertEqual(form_data['url'], response['url'])
+        #self.assertEqual(200, response.status_code)
+        self.assertEqual(1, Site.objects.count())
+        saved_site = Site.objects.first()
+        #self.assertEqual(saved_site['url'], form_data['url'])
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/sites/all')
