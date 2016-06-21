@@ -17,7 +17,7 @@ class GeoZone(models.Model):
     """
     name = models.CharField(primary_key=True, max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -27,7 +27,7 @@ class Language(models.Model):
     """
     name = models.CharField(primary_key=True, max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -54,7 +54,7 @@ class Site(models.Model):
     registered_user_count = models.IntegerField(blank=True, null=True)
     active_learner_count = models.IntegerField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name + ' --- ' + self.url
 
     # Used for displaying values in admin view
@@ -76,7 +76,7 @@ class SiteGeoZone(models.Model):
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
     # TODO: Add in attributes that describe the relationship between Site and GeoZone, and for history tracking
 
-    def __unicode__(self):
+    def __str__(self):
         return self.site.url + '---' + self.geo_zone.name
 
 
@@ -88,6 +88,6 @@ class SiteLanguage(models.Model):
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
     # TODO: Add in attributes that describe the relationship between Site and Language, and for history tracking
 
-    def __unicode__(self):
+    def __str__(self):
         return self.site.url + '---' + self.language.name
 

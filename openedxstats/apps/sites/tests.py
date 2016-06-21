@@ -235,8 +235,8 @@ class ModelsTestCase(TestCase):
 
         # Renamed from assertItemsEqual in python 2
         self.assertCountEqual(new_site.get_languages(), "lang1, lang2")
-        self.assertEqual(new_site.__unicode__(), " --- ")
-        self.assertEqual(sitelang2.__unicode__(), "---lang2")
+        self.assertEqual(new_site.__str__(), " --- ")
+        self.assertEqual(sitelang2.__str__(), "---lang2")
 
     def test_site_get_geographies_method_with_unicode(self):
         new_site = Site()
@@ -254,6 +254,6 @@ class ModelsTestCase(TestCase):
 
         # Renamed from assertItemsEqual in python 2
         self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
-        self.assertEqual(sitegeozone1.__unicode__(), "https://www.κόσμε.co---Greece")
-        self.assertEqual(geozone2.__unicode__(), "\u00e9")
+        self.assertEqual(sitegeozone1.__str__(), "https://www.κόσμε.co---Greece")
+        self.assertEqual(geozone2.__str__(), "\u00e9")
 
