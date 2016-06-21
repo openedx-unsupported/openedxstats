@@ -1,19 +1,13 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from .management.commands.import_sites import import_data
-#from management.commands.import_sites import import_data, check_for_required_cols
+from .management.commands.import_sites import import_data, check_for_required_cols
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
-from django.core.urlresolvers import reverse
-from django.utils.datastructures import MultiValueDict
-from django.utils.http import urlencode
 from django.utils.six import StringIO
-from django.http import HttpRequest
-from .models import Site, GeoZone, Language
+from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from .forms import SiteForm, GeoZoneForm, LanguageForm
-from .views import add_site
 
 
 class ImportScriptTestCase(TestCase):
@@ -31,9 +25,8 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_geozones created: 198\n")
         out = StringIO()
         with open(source, 'r+'):
-            call_command('import_sites', source, stdout = out)
+            call_command('import_sites', source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
-
 
     def test_import_wrongly_formatted_data_from_file(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/wrongly_formatted_data.csv"
@@ -91,7 +84,7 @@ class SubmitSiteFormTestCase(TestCase):
     """
 
     def test_form_validation_for_blank_url(self):
-        form = SiteForm(data={'url':''})
+        form = SiteForm(data={'url': ''})
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['url'], ['This field is required']
@@ -105,7 +98,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(
             form.errors['url'], ['Site with this Url already exists.']
         )
-
 
     def test_add_a_single_site_with_required_fields(self):
         form_data = {
@@ -126,17 +118,25 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
 
-
     def test_add_a_single_site_with_all_fields(self):
+        lang1 = Language(name="English")
+        lang2 = Language(name="Chinese")
+        lang1.save()
+        lang2.save()
+        geozone1 = GeoZone(name="Greece")
+        geozone2 = GeoZone(name="\u00e9")
+        geozone1.save()
+        geozone2.save()
+
         form_data = {
             'site_type': 'General',
-            'name': 'Test',
+            'name': 'κόσμε',
             'url': 'https://convolutedurl.biz',
             'course_count': '1337',
             'last_checked': '2016-03-24',
             'org_type': 'Academic',
-            #'language': ['English', 'Chinese'],
-            #'geography': ['US', 'China'],
+            'language': ('English', 'Chinese'),
+            'geography': ('Greece', '\u00e9'),
             'github_fork': 'Estranged-Spork',
             'notes': 'What a day it is to be alive.',
             'course_type': 'Unknown',
@@ -147,10 +147,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(0, Site.objects.count())
 
         response = self.client.post('/sites/add_site/', form_data)
-        # Need to urlencode in order to pass languages and geographies
-        #response = self.client.post('/sites/add_site/',
-        #                       urlencode(MultiValueDict(form_data), doseq=True),
-        #                       content_type='application/x-www-form-urlencoded')
 
         self.assertEqual(1, Site.objects.count())
         saved_site = Site.objects.first()
@@ -158,7 +154,6 @@ class SubmitSiteFormTestCase(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
-
 
     def test_add_language(self):
         form_data = {
@@ -175,16 +170,14 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
 
-
     def test_add_language_that_already_exists(self):
-        new_language = Language(name='ANewLanguage')
+        new_language = Language(name='κόσμε')
         new_language.save()
-        form = LanguageForm(data={'name': 'ANewLanguage'})
+        form = LanguageForm(data={'name': 'κόσμε'})
         self.assertFalse(form.is_valid())
         self.assertEqual(
             form.errors['name'], ['Language with this Name already exists.']
         )
-
 
     def test_add_geozone(self):
         form_data = {
@@ -201,7 +194,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
 
-
     def test_add_geozone_that_already_exists(self):
         new_geozone = GeoZone(name='ANewGeozone')
         new_geozone.save()
@@ -211,21 +203,57 @@ class SubmitSiteFormTestCase(TestCase):
             form.errors['name'], ['Geo zone with this Name already exists.']
         )
 
-
     def test_get_blank_site_form(self):
         response = self.client.get('/sites/add_site/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, Site.objects.count())
-
 
     def test_get_blank_language_form(self):
         response = self.client.get('/sites/add_language/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, Language.objects.count())
 
-
     def test_get_blank_geozone_form(self):
         response = self.client.get('/sites/add_geozone/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
+
+
+class ModelsTestCase(TestCase):
+    def test_site_get_languages_method(self):
+        new_site = Site()
+        new_site.save()
+        lang1 = Language(name="lang1")
+        lang2 = Language(name="lang2")
+        lang1.save()
+        lang2.save()
+        sitelang1 = SiteLanguage(site_id=new_site.pk, language_id=lang1.pk)
+        sitelang2 = SiteLanguage(site_id=new_site.pk, language_id=lang2.pk)
+
+        sitelang1.save()
+        sitelang2.save()
+
+        # Renamed from assertItemsEqual in python 2
+        self.assertCountEqual(new_site.get_languages(), "lang1, lang2")
+        self.assertEqual(new_site.__unicode__(), " --- ")
+        self.assertEqual(sitelang2.__unicode__(), "---lang2")
+
+    def test_site_get_geographies_method_with_unicode(self):
+        new_site = Site()
+        new_site.url = "https://www.κόσμε.co"
+        new_site.save()
+        geozone1 = GeoZone(name="Greece")
+        geozone2 = GeoZone(name="\u00e9")
+        geozone1.save()
+        geozone2.save()
+        sitegeozone1 = SiteGeoZone(site_id=new_site.pk, geo_zone_id=geozone1.pk)
+        sitegeozone2 = SiteGeoZone(site_id=new_site.pk, geo_zone_id=geozone2.pk)
+
+        sitegeozone1.save()
+        sitegeozone2.save()
+
+        # Renamed from assertItemsEqual in python 2
+        self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
+        self.assertEqual(sitegeozone1.__unicode__(), "https://www.κόσμε.co---Greece")
+        self.assertEqual(geozone2.__unicode__(), "\u00e9")
 

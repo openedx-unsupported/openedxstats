@@ -77,7 +77,7 @@ class SiteGeoZone(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and GeoZone, and for history tracking
 
     def __unicode__(self):
-        return self.site.pk + '-' + self.geo_zone.name
+        return self.site.url + '---' + self.geo_zone.name
 
 
 class SiteLanguage(models.Model):
@@ -89,5 +89,5 @@ class SiteLanguage(models.Model):
     # TODO: Add in attributes that describe the relationship between Site and Language, and for history tracking
 
     def __unicode__(self):
-        return self.site.pk + "-" + self.language.name
+        return self.site.url + '---' + self.language.name
 
