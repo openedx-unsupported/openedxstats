@@ -6,7 +6,7 @@
 {% endblock %}
 
 
-{% block title %} Add Site {% endblock %}
+{% block title %} Add Language {% endblock %}
 {% block content %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container-fluid">
@@ -15,8 +15,8 @@
             </div>
             <ul class="nav navbar-nav">
                 <li><a href="/sites/all">Sites List</a></li>
-                <li class="active"><a href="/sites/add_site">Add/Update a Site</a></li>
-                <li><a href="/sites/add_language">Add Language</a></li>
+                <li><a href="/sites/add_site">Add/Update a Site</a></li>
+                <li class="active"><a href="/sites/add_language">Add Language</a></li>
                 <li><a href="/sites/add_geozone">Add GeoZone</a></li>
             </ul>
         </div>
@@ -25,9 +25,7 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Insert form here -->
-
-                <!-- Insert form here -->
-                <form action="{% url 'sites:add_site'%}" method="post" class="form">
+                <form action="{% url 'sites:add_language'%}" method="post" class="form">
                     {% csrf_token %}
                     {% bootstrap_form form %}
                     <input type="submit" class="btn btn-primary" value="Submit" />
@@ -41,4 +39,5 @@
         </div>
     <br />
     </div>
+
 {% endblock %}
