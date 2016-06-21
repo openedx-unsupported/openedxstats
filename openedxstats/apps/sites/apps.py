@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class SitesConfig(AppConfig):
-    name = 'openedxstats.apps.sites'
+    name = 'sites'

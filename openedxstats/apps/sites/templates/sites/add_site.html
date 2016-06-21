@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% load staticfiles %}
+
+{% block title %} Open edX Sites List {% endblock %}
+{% block content %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li href="/all"><a href="#">Sites List</a></li>
+                <li class="active"><a href="#">Add/Update a Site</a></li>
+                <li><a href="#">Generate Report</a></li>
+                <li><a href="#">Etc etc etc</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Insert form here -->
+                <form action="{% url 'sites:add_site'%}" method="post" class="form">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                </form>
+            </div>
+            <div class="col-md-6">
+                <p>
+                    Something will be here soon maybe.
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -2,6 +2,13 @@ from __future__ import unicode_literals
 
 from django.db import models
 
+COURSE_TYPE_CHOICES = (
+    ('MOOC', 'MOOC'),
+    ('SPOC', 'SPOC'),
+    ('Both', 'Both'),
+    ('Unknown', 'Unknown'),
+)
+
 # Models
 
 class GeoZone(models.Model):
@@ -28,12 +35,7 @@ class Site(models.Model):
     """
     A model describing an open edX website.
     """
-    COURSE_TYPE_CHOICES = (
-        ('MOOC', 'MOOC'),
-        ('SPOC', 'SPOC'),
-        ('Both', 'Both'),
-        ('Unknown', 'Unknown'),
-    )
+
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
 
