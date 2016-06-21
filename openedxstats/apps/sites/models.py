@@ -57,10 +57,12 @@ class Site(models.Model):
     def __unicode__(self):
         return self.name + ' --- ' + self.url
 
+    # Used for displaying values in admin view
     def get_languages(self):
         return ", ".join([l.name for l in self.language.all()])
     get_languages.short_description = "Languages"
 
+    # Used for displaying values in admin view
     def get_geographies(self):
         return ", ".join([g.name for g in self.geography.all()])
     get_geographies.short_description = "Geographies"

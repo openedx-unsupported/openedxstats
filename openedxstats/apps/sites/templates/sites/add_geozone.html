@@ -8,19 +8,9 @@
 
 {% block title %} Add GeoZone {% endblock %}
 {% block content %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li><a href="/sites/all">Sites List</a></li>
-                <li><a href="/sites/add_site">Add/Update a Site</a></li>
-                <li><a href="/sites/add_language">Add Language</a></li>
-                <li class="active"><a href="/sites/add_geozone">Add GeoZone</a></li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Navbar -->
+    {% include "navbar.html" %}
+    <!-- Content -->
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6">

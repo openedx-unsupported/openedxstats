@@ -1,5 +1,8 @@
+from __future__ import unicode_literals
+
 from django.test import TestCase
-from management.commands.import_sites import import_data, check_for_required_cols
+from .management.commands.import_sites import import_data
+#from management.commands.import_sites import import_data, check_for_required_cols
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
@@ -27,19 +30,20 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_languages created: 271\n"
                            "Number of site_geozones created: 198\n")
         out = StringIO()
-        with open(source, 'rwb'):
+        with open(source, 'r+'):
             call_command('import_sites', source, stdout = out)
             self.assertIn(expected_output, out.getvalue())
 
 
     def test_import_wrongly_formatted_data_from_file(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/wrongly_formatted_data.csv"
-        with open(source, 'rwb') as csvfile:
+        with open(source, 'r+') as csvfile:
             with self.assertRaises(FieldDoesNotExist):
                 import_data(csvfile)  # Import data
 
     def test_import_data_from_minimum_req_cols_csv(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/urls_only.csv"
+
         expected_output = ("Report:\n"
                            "Number of sites imported: 3\n"
                            "Number of languages imported: 0\n"
@@ -47,19 +51,19 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_languages created: 0\n"
                            "Number of site_geozones created: 0\n")
         out = StringIO()
-        with open(source, 'rwb'):
+        with open(source, 'r+'):
             call_command('import_sites', source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
 
     def test_import_from_blank_csv_file(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/blank.csv"
-        with open(source, 'rwb'):
+        with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
     def test_import_from_wrong_file_type(self):
         source = "/Users/zacharyrobbins/Documents/postgres_data/text_file.txt"
-        with open(source, 'rwb'):
+        with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
@@ -73,10 +77,10 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_languages created: 1\n"
                            "Number of site_geozones created: 2\n")
         out = StringIO()
-        with open(source, 'rwb'):
+        with open(source, 'r+'):
             call_command('import_sites', source)
 
-        with open(additional_source, 'rwb'):
+        with open(additional_source, 'r+'):
             call_command('import_sites', additional_source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
 
@@ -101,8 +105,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(
             form.errors['url'], ['Site with this Url already exists.']
         )
-
-
 
 
     def test_add_a_single_site_with_required_fields(self):

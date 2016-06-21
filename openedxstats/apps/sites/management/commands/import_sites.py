@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.core.management.base import BaseCommand, CommandError
 from ...models import *
 import csv
@@ -32,7 +34,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Open the csv file
-        with open(options['csv_file'], 'rwb') as csvfile:
+        with open(options['csv_file'], 'r+') as csvfile:
             result_string = import_data(csvfile)
             return result_string
 
@@ -65,7 +67,7 @@ def import_data(csvfile):
     reader = csv.reader(csvfile)
     iter_reader = iter(reader)
     try:
-        header_row = iter_reader.next()  # Skip header
+        header_row = next(iter_reader)  # Skip header
     except:
         raise CommandError("Empty or improperly configured csv")
     check_for_required_cols(header_row)

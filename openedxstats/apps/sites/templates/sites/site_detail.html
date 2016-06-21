@@ -1,77 +1,111 @@
 {% extends "base.html" %}
 
+{% block bootstrap3_extra_head %}
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <style>
+        .table-align-right {
+            width: auto;
+            margin-right: 0px;
+            margin-left: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block title %} Site Detail {% endblock %}
 
 {% block content %}
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">Open edX Stats Dashboard</a>
+    {% include "navbar.html" %}
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <!--<h1>Site Detail</h1>-->
             </div>
-            <ul class="nav navbar-nav">
-                <li><a href="/sites/all">Sites List</a></li>
-                <li><a href="/sites/add_site">Add/Update a Site</a></li>
-                <li><a href="/sites/add_language">Add Language</a></li>
-                <li><a href="/sites/add_geozone">Add GeoZone</a></li>
-            </ul>
+            <div class="col-md-6">
+                <table class="table-align-right">
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-default btn-primary" aria-label="Edit"
+                                    data-toggle="tooltip"
+                                    data-placement="top" title="Edit">
+                                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit
+                            </button>
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>
+                            <button type="button" class="btn btn-default btn-danger" aria-label="Delete"
+                                    data-toggle="tooltip"
+                                    data-placement="top" title="Delete">
+                                <span class="glyphicon glyphicon-trash"></span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
-    </nav>
-    <!-- Table -->
-    <div class="container">
-        <table class="table table-bordered table-responsive">
-            <tr>
-                <th>Site Type</th>
-                <td>{{ site.site_type }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ site.name }}</td>
-            </tr>
-            <tr>
-                <th>URL</th>
-                <td><a href="{{ site.url }}"> {{ site.url }}</a></td>
-            </tr>
-            <tr>
-                <th>Course Count</th>
-                <td>{{ site.course_count }}</td>
-            </tr>
-            <tr>
-                <th>Last Checked</th>
-                <td>{{ site.last_checked }}</td>
-            </tr>
-            <tr>
-                <th>Org Type</th>
-                <td>{{ site.org_type }}</td>
-            </tr>
-            <tr>
-                <th>Language</th>
-                <td>{% for site_language in site.language.all %}{{ site_language.pk }} {% endfor %}</td>
-            </tr>
-            <tr>
-                <th>Geography</th>
-                <td>{% for site_geozone in site.geography.all %}{{ site_geozone.pk }} {% endfor %}</td>
-            </tr>
-            <tr>
-                <th>Github Fork</th>
-                <td>{{ site.github_fork }}</td>
-            </tr>
-            <tr>
-                <th>Notes</th>
-                <td>{{ site.notes }}</td>
-            </tr>
-            <tr>
-                <th>Course Type</th>
-                <td>{{ site.course_type }}</td>
-            </tr>
-            <tr>
-                <th>Registered User Count</th>
-                <td>{{ site.registered_user_count }}</td>
-            </tr>
-            <tr>
-                <th>Active Learner Count</th>
-                <td>{{ site.active_learner_count }}</td>
-            </tr>
-        </table>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-bordered table-responsive">
+                    <tr>
+                        <th>Site Type</th>
+                        <td>{{ site.site_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <td>{{ site.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>URL</th>
+                        <td><a href="{{ site.url }}"> {{ site.url }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Course Count</th>
+                        <td>{{ site.course_count }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Checked</th>
+                        <td>{{ site.last_checked }}</td>
+                    </tr>
+                    <tr>
+                        <th>Org Type</th>
+                        <td>{{ site.org_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Language</th>
+                        <td>{% for site_language in site.language.all %}{{ site_language.pk }} {% endfor %}</td>
+                    </tr>
+                    <tr>
+                        <th>Geography</th>
+                        <td>{% for site_geozone in site.geography.all %}{{ site_geozone.pk }} {% endfor %}</td>
+                    </tr>
+                    <tr>
+                        <th>Github Fork</th>
+                        <td>{{ site.github_fork }}</td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th>
+                        <td>{{ site.notes }}</td>
+                    </tr>
+                    <tr>
+                        <th>Course Type</th>
+                        <td>{{ site.course_type }}</td>
+                    </tr>
+                    <tr>
+                        <th>Registered User Count</th>
+                        <td>{{ site.registered_user_count }}</td>
+                    </tr>
+                    <tr>
+                        <th>Active Learner Count</th>
+                        <td>{{ site.active_learner_count }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 {% endblock %}

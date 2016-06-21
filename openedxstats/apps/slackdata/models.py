@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
-import datetime
-
-import slackapi
+from datetime import datetime
+from . import slackapi
 
 # Create your models here.
 
@@ -38,7 +37,7 @@ class MessageCountByDay(models.Model):
         index_together = (('user', 'date'),)
 
     @classmethod
-    def populate_from_api(cls, after_date, before_date=datetime.datetime.today(), force=False, username=None):
+    def populate_from_api(cls, after_date, before_date=datetime.today(), force=False, username=None):
         if(not username):
             users = SlackUser.objects.all()
         else:

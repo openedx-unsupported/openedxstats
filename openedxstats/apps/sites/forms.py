@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django import forms
 from .models import Site, Language, GeoZone
 from datetimewidget.widgets import DateWidget
