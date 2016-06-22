@@ -77,6 +77,8 @@ class ImportScriptTestCase(TestCase):
             call_command('import_sites', additional_source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
 
+    # TODO: Add a test to make sure that sites are correctly marked as not current and current when importing duplicate data
+
 
 class SubmitSiteFormTestCase(TestCase):
     """
@@ -217,6 +219,9 @@ class SubmitSiteFormTestCase(TestCase):
         response = self.client.get('/sites/add_geozone/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
+
+    # TODO: Add a test to make sure that sites are being marked as current and not current correctly when adding a duplicate site
+    # TODO: Consider adding an update tab to "Add a site" so that you can populate form with existing data to easily update
 
 
 class ModelsTestCase(TestCase):
