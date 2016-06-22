@@ -4,7 +4,8 @@
 {% block bootstrap3_extra_head %}
     <style type="text/css">
         .action-button-cell {
-            padding: 10px;
+            padding-left: 2px;
+            padding-right: 2px;
         }
     </style>
     <script>
@@ -18,7 +19,7 @@
     {% include "navbar.html" %}
     <!-- Content -->
     <div class="container">
-        <table class="table table-bordered table-responsive">
+        <table class="table table-bordered table-responsive table-sm">
             <thead>
             <tr>
                 <th>Site Type</th>
@@ -26,19 +27,26 @@
                 <th>Url</th>
                 <th>Course Count</th>
                 <th>Last Checked</th>
+                <th>Current Version?</th>
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody class="table table-bordered table-bordered">
+            <tbody class="table table-bordered table-bordered table-sm">
             <tr>
                 {% for site in sites_list %}
                     <tr>
-                        <td>{{ site.site_type }}</td>
-                        <td>{{ site.name }}</td>
-                        <td><a href="{{ site.url }}"> {{ site.url }}</a></td>
-                        <td>{{ site.course_count }}</td>
-                        <td>{{ site.last_checked }}</td>
-                        <td>
+                        <td style="vertical-align: middle;">{{ site.site_type }}</td>
+                        <td style="vertical-align: middle;">{{ site.name }}</td>
+                        <td style="vertical-align: middle;"><a href="{{ site.url }}"> {{ site.url }}</a></td>
+                        <td style="vertical-align: middle;">{{ site.course_count }}</td>
+                        <td style="vertical-align: middle;">{{ site.last_checked }}</td>
+                        <td style="vertical-align: middle; width: 1%; text-align: center">
+                            {% if site.active_end_date == None %}
+                                <span class="glyphicon glyphicon-ok" aria-hidden="true"
+                                      style="color: green; font-size: 30px;"></span>
+                            {% endif %}
+                        </td>
+                        <td style="width: 1%; vertical-align: middle;">
                             <table>
                                 <tr>
                                     <td class="action-button-cell">

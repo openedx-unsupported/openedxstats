@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from datetime import datetime
 
 COURSE_TYPE_CHOICES = (
     ('MOOC', 'MOOC'),
@@ -39,10 +40,10 @@ class Site(models.Model):
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
 
-    #id <-- Automatic serial primary key created by django
+    #id <-- Automatic surrogate serial primary key created by django
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=255, unique=True)
+    url = models.CharField(max_length=255)
     course_count = models.IntegerField(blank=True, null=True)
     last_checked = models.DateField(blank=True, null=True)
     org_type = models.CharField(max_length=255, blank=True)
@@ -53,6 +54,10 @@ class Site(models.Model):
     course_type = models.CharField(max_length=10, choices=COURSE_TYPE_CHOICES, default='Unknown')
     registered_user_count = models.IntegerField(blank=True, null=True)
     active_learner_count = models.IntegerField(blank=True, null=True)
+
+    # Historical data tracking
+    active_start_date = models.DateTimeField(default=datetime.now)
+    active_end_date = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.name + ' --- ' + self.url
@@ -66,6 +71,10 @@ class Site(models.Model):
     def get_geographies(self):
         return ", ".join([g.name for g in self.geography.all()])
     get_geographies.short_description = "Geographies"
+
+    class Meta:
+        unique_together = ("url", "active_start_date")
+
 
 
 class SiteGeoZone(models.Model):

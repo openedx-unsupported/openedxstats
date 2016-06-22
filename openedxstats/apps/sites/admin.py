@@ -12,7 +12,7 @@ class SiteAdmin(admin.ModelAdmin):
     search_fields = ['site_type', 'name', 'org_type', 'course_type']
     list_display = ('site_type', 'name', 'url', 'course_count', 'last_checked', 'org_type',
                     'get_languages', 'get_geographies', 'github_fork', 'notes', 'course_type', 'registered_user_count',
-                    'active_learner_count')
+                    'active_learner_count', 'active_start_date', 'active_end_date')
 
 
 # Register models

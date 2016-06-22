@@ -26,7 +26,8 @@ class SiteForm(forms.ModelForm):
 
     class Meta:
         model = Site
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['active_end_date']
         # If the corresponding attribute in site form is uncommented above, these help messages won't show
         help_texts = {
             "language": "Select multiple languages with CMD+Click",
@@ -35,7 +36,8 @@ class SiteForm(forms.ModelForm):
             #'last_checked': 'This text is persistent on the page, conflicts with error help text provided by bootstrap',
         }
         widgets = {
-            'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3)
+            'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3),
+            'active_start_date': forms.HiddenInput(),
         }
 
     # TODO: Make it so we have an inline option to create a new language or geozone

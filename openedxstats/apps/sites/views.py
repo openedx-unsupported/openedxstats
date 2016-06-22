@@ -33,11 +33,20 @@ def add_site(request):
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
+            # Fetch most recent version of site and give it an active end date (since it is not longer the most
+            # recent record)
+            form.save(commit=False)
+            new_form_created_time = form.cleaned_data.pop('active_start_date')
+            most_recent_version_of_site = Site.objects.filter(url=form.cleaned_data.pop('url')).latest('active_start_date')
+            most_recent_version_of_site.active_end_date = new_form_created_time
+            most_recent_version_of_site.save()
+
+
             languages = form.cleaned_data.pop('language')
             geozones = form.cleaned_data.pop('geography')
             form.save()
 
-            # site.language.clear()    # delete existing languages (for when I implment update)
+            # site.language.clear()    # delete existing languages (for if/when I implement update)
             for l in languages:
                 site_language = SiteLanguage.objects.create(language=l, site=s)
                 site_language.save()
