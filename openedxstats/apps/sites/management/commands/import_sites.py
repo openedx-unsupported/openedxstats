@@ -126,23 +126,27 @@ def import_data(csvfile):
                 raise CommandError("Unrecognized column name: %s" % col_name)
 
         # Save objects
-        if not Site.objects.filter(url=new_site.url).exists():
-            total_count_stats["sites"] += 1
-            new_site.save()
+        if Site.objects.filter(url=new_site.url).exists():
+            old_version = Site.objects.filter(url=new_site.url).latest('active_start_date')
+            old_version.active_end_date = new_site.active_start_date
+            old_version.save()
 
-            for lang in lang_list:
-                # Insert record into junction table to associate with site
-                if not SiteLanguage.objects.filter(site_id=new_site.pk, language_id=lang.name).exists():
-                    total_count_stats["site_languages"] += 1
-                    site_language = SiteLanguage(site_id=new_site.pk, language_id=lang.name)
-                    site_language.save()
+        total_count_stats["sites"] += 1
+        new_site.save()
 
-            for gz in gz_list:
-                # Insert record into junction table to associate with site
-                if not SiteGeoZone.objects.filter(site_id=new_site.pk, geo_zone_id=gz.name).exists():
-                    total_count_stats["site_geozones"] += 1
-                    site_geozone = SiteGeoZone(site_id=new_site.pk, geo_zone_id=gz.name)
-                    site_geozone.save()
+        for lang in lang_list:
+            # Insert record into junction table to associate with site
+            if not SiteLanguage.objects.filter(site_id=new_site.pk, language_id=lang.name).exists():
+                total_count_stats["site_languages"] += 1
+                site_language = SiteLanguage(site_id=new_site.pk, language_id=lang.name)
+                site_language.save()
+
+        for gz in gz_list:
+            # Insert record into junction table to associate with site
+            if not SiteGeoZone.objects.filter(site_id=new_site.pk, geo_zone_id=gz.name).exists():
+                total_count_stats["site_geozones"] += 1
+                site_geozone = SiteGeoZone(site_id=new_site.pk, geo_zone_id=gz.name)
+                site_geozone.save()
 
     print("Finished!")
     report_string = "\nReport:\n"

@@ -8,9 +8,12 @@
             padding-right: 2px;
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('#sites').DataTable();           // Table sorting
+            $('[data-toggle="tooltip"]').tooltip();  // Tooltips
         });
     </script>
 {% endblock %}
@@ -19,7 +22,7 @@
     {% include "navbar.html" %}
     <!-- Content -->
     <div class="container">
-        <table class="table table-bordered table-responsive table-sm">
+        <table id="sites" class="table table-bordered table-responsive table-sm">
             <thead>
             <tr>
                 <th>Site Type</th>
@@ -31,7 +34,18 @@
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody class="table table-bordered table-bordered table-sm">
+            <tfoot>
+            <tr>
+                <th>Site Type</th>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Course Count</th>
+                <th>Last Checked</th>
+                <th>Current Version?</th>
+                <th>Actions</th>
+            </tr>
+            </tfoot>
+            <tbody>
             <tr>
                 {% for site in sites_list %}
                     <tr>
