@@ -23,10 +23,7 @@ class SiteDetailView(generic.DetailView):
 def add_site(request):
     # This is where I will add an if statement to check if we are passing in an existing id or making a new object
     # For now, we will just make a new object
-
-    #import pudb; pudb.set_trace()
     s = Site()
-
 
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
