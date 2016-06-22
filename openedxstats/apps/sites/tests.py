@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.test import TestCase
 from .management.commands.import_sites import import_data, check_for_required_cols
 from django.core.management.base import CommandError
