@@ -12,10 +12,42 @@
     <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#sites').dataTable({                  // Table sorting
+            sitesTable = $('#sites').dataTable({                  // Table sorting
                 "lengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]]
             });
+            $('#mySearchField').keyup(function () {
+                    sitesTable.search($(this).val()).draw();
+            })
             $('[data-toggle="tooltip"]').tooltip();  // Tooltips
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#mySearchField').html('<input type="text" placeholder="Enter a date" />');
+            $('#mySearchField').on('keyup', function() {
+                table
+                        .columns(5,6)
+
+            })
+
+            });
+
+            // DataTable
+            var table = $('#example').DataTable();
+
+            // Apply the search
+            table.column()
+            table.columns().every(function () {
+                var that = this;
+
+                $('input', this.footer()).on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                                .search(this.value)
+                                .draw();
+                    }
+                });
+            });
         });
     </script>
 {% endblock %}
