@@ -4,9 +4,11 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
+from django.http.request import HttpRequest
+from datetime import date
 from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from .forms import SiteForm, GeoZoneForm, LanguageForm
-
+from .views import add_site
 
 class ImportScriptTestCase(TestCase):
     """
@@ -148,7 +150,14 @@ class SubmitSiteFormTestCase(TestCase):
 
         self.assertEqual(1, Site.objects.count())
         saved_site = Site.objects.first()
+        self.assertEqual(saved_site.site_type, form_data['site_type'])
+        self.assertEqual(saved_site.name, form_data['name'])
         self.assertEqual(saved_site.url, form_data['url'])
+        self.assertEqual(saved_site.course_count, 1337)
+        self.assertEqual(saved_site.last_checked, date(2016, 3, 24))
+        self.assertCountEqual(saved_site.language.all(), [lang1, lang2])
+        self.assertCountEqual(saved_site.geography.all(), [geozone1, geozone2])
+        self.assertEqual(saved_site.course_type, form_data['course_type'])
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
