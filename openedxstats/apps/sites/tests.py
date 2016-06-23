@@ -1,14 +1,15 @@
+import os.path
 from django.test import TestCase
-from .management.commands.import_sites import import_data, check_for_required_cols
+from .management.commands.import_sites import import_data
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
-from django.http.request import HttpRequest
 from datetime import date
 from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from .forms import SiteForm, GeoZoneForm, LanguageForm
-from .views import add_site
+
+BASE = os.path.dirname(os.path.abspath(__file__))
 
 class ImportScriptTestCase(TestCase):
     """
@@ -16,7 +17,7 @@ class ImportScriptTestCase(TestCase):
     """
 
     def test_import_date_from_correctly_formatted_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 268\n"
                            "Number of languages imported: 34\n"
@@ -29,14 +30,13 @@ class ImportScriptTestCase(TestCase):
             self.assertIn(expected_output, out.getvalue())
 
     def test_import_wrongly_formatted_data_from_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/wrongly_formatted_data.csv"
+        source = os.path.join(BASE, "test_data/wrongly_formatted_data.csv")
         with open(source, 'r+') as csvfile:
             with self.assertRaises(FieldDoesNotExist):
                 import_data(csvfile)  # Import data
 
     def test_import_data_from_minimum_req_cols_csv(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/urls_only.csv"
-
+        source = os.path.join(BASE, "test_data/urls_only.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 3\n"
                            "Number of languages imported: 0\n"
@@ -49,20 +49,20 @@ class ImportScriptTestCase(TestCase):
             self.assertIn(expected_output, out.getvalue())
 
     def test_import_from_blank_csv_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/blank.csv"
+        source = os.path.join(BASE, "test_data/blank.csv")
         with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
     def test_import_from_wrong_file_type(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/text_file.txt"
+        source = os.path.join(BASE, "test_data/text_file.txt")
         with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
     def test_check_for_idempotency(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
-        additional_source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv_one_addition.csv"
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 1\n"
                            "Number of languages imported: 0\n"
