@@ -1,14 +1,15 @@
-from __future__ import unicode_literals
-
+import os.path
 from django.test import TestCase
-from .management.commands.import_sites import import_data, check_for_required_cols
+from .management.commands.import_sites import import_data
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
+from datetime import date
 from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from .forms import SiteForm, GeoZoneForm, LanguageForm
 
+BASE = os.path.dirname(os.path.abspath(__file__))
 
 class ImportScriptTestCase(TestCase):
     """
@@ -16,7 +17,7 @@ class ImportScriptTestCase(TestCase):
     """
 
     def test_import_date_from_correctly_formatted_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 268\n"
                            "Number of languages imported: 34\n"
@@ -29,14 +30,13 @@ class ImportScriptTestCase(TestCase):
             self.assertIn(expected_output, out.getvalue())
 
     def test_import_wrongly_formatted_data_from_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/wrongly_formatted_data.csv"
+        source = os.path.join(BASE, "test_data/wrongly_formatted_data.csv")
         with open(source, 'r+') as csvfile:
             with self.assertRaises(FieldDoesNotExist):
                 import_data(csvfile)  # Import data
 
     def test_import_data_from_minimum_req_cols_csv(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/urls_only.csv"
-
+        source = os.path.join(BASE, "test_data/urls_only.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 3\n"
                            "Number of languages imported: 0\n"
@@ -49,20 +49,20 @@ class ImportScriptTestCase(TestCase):
             self.assertIn(expected_output, out.getvalue())
 
     def test_import_from_blank_csv_file(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/blank.csv"
+        source = os.path.join(BASE, "test_data/blank.csv")
         with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
     def test_import_from_wrong_file_type(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/text_file.txt"
+        source = os.path.join(BASE, "test_data/text_file.txt")
         with open(source, 'r+'):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
     def test_check_for_idempotency(self):
-        source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv.csv"
-        additional_source = "/Users/zacharyrobbins/Documents/postgres_data/edx_sites_csv_one_addition.csv"
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 1\n"
                            "Number of languages imported: 0\n"
@@ -152,7 +152,14 @@ class SubmitSiteFormTestCase(TestCase):
 
         self.assertEqual(1, Site.objects.count())
         saved_site = Site.objects.first()
+        self.assertEqual(saved_site.site_type, form_data['site_type'])
+        self.assertEqual(saved_site.name, form_data['name'])
         self.assertEqual(saved_site.url, form_data['url'])
+        self.assertEqual(saved_site.course_count, 1337)
+        self.assertEqual(saved_site.last_checked, date(2016, 3, 24))
+        self.assertCountEqual(saved_site.language.all(), [lang1, lang2])
+        self.assertCountEqual(saved_site.geography.all(), [geozone1, geozone2])
+        self.assertEqual(saved_site.course_type, form_data['course_type'])
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
@@ -240,8 +247,8 @@ class ModelsTestCase(TestCase):
 
         # Renamed from assertItemsEqual in python 2
         self.assertCountEqual(new_site.get_languages(), "lang1, lang2")
-        self.assertEqual(new_site.__str__(), " --- ")
-        self.assertEqual(sitelang2.__str__(), "---lang2")
+        self.assertEqual(str(new_site), " --- ")
+        self.assertEqual(str(sitelang2), "---lang2")
 
     def test_site_get_geographies_method_with_unicode(self):
         new_site = Site()
@@ -259,6 +266,6 @@ class ModelsTestCase(TestCase):
 
         # Renamed from assertItemsEqual in python 2
         self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
-        self.assertEqual(sitegeozone1.__str__(), "https://www.κόσμε.co---Greece")
-        self.assertEqual(geozone2.__str__(), "\u00e9")
+        self.assertEqual(str(sitegeozone1), "https://www.κόσμε.co---Greece")
+        self.assertEqual(str(geozone2), "\u00e9")
 

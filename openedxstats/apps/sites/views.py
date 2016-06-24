@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -33,10 +33,7 @@ class SiteDelete(generic.DeleteView):
 def add_site(request):
     # This is where I will add an if statement to check if we are passing in an existing id or making a new object
     # For now, we will just make a new object
-
-    #import pudb; pudb.set_trace()
     s = Site()
-
 
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
