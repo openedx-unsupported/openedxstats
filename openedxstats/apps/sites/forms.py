@@ -25,6 +25,7 @@ class SiteForm(forms.ModelForm):
     class Meta:
         model = Site
         fields = '__all__'
+        # If the corresponding attribute in site form is uncommented above, these help messages won't show
         help_texts = {
             "language": "Select multiple languages with CMD+Click",
             "geography": "Select multiple geo-zones with CMD+Click",

@@ -12,13 +12,19 @@ class ListView(generic.ListView):
     template_name = 'sites/sites_list.html'
     context_object_name = 'sites_list'
 
+class SiteDetailView(generic.DetailView):
+    model = Site
+
+    template_name = 'sites/site_detail.html'
+    context_object_name = 'site'
+
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
 def add_site(request):
     # This is where I will add an if statement to check if we are passing in an existing id or making a new object
     # For now, we will just make a new object
     s = Site()
-    #import pdb;pdb.set_trace()
+
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
