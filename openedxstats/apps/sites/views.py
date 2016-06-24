@@ -8,6 +8,11 @@ from django.contrib import messages
 from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from .forms import SiteForm, LanguageForm, GeoZoneForm
 
+
+# TODO: Give functionality to delete buttons on sites_list and site_detail pages
+
+
+
 class ListView(generic.ListView):
     model = Site
 

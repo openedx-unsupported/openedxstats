@@ -14,6 +14,11 @@ HEADER_NAMES = ["site_type", "name", "url", "course_count", "last_checked", "org
 M2M_HEADER_NAMES = ["geography", "language"]
 
 
+# TODO: Need to allow for import script to detect column 'last_checked' or 'active_start_date', and put them both
+# TODO: into active start date respectively. 
+
+
+
 class Command(BaseCommand):
     """
     Allows for import of site data from a csv file to the app database.
