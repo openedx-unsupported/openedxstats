@@ -39,11 +39,13 @@
                         </td>
                         <td>&nbsp;</td>
                         <td>
-                            <button type="button" class="btn btn-default btn-danger" aria-label="Delete"
-                                    data-toggle="tooltip"
-                                    data-placement="top" title="Delete">
-                                <span class="glyphicon glyphicon-trash"></span> Delete
-                            </button>
+                            <a href="/sites/delete_site/{{ site.pk }}">
+                                <button type="button" class="btn btn-default btn-danger" aria-label="Delete"
+                                        data-toggle="tooltip"
+                                        data-placement="top" title="Delete">
+                                    <span class="glyphicon glyphicon-trash"></span> Delete
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 </table>

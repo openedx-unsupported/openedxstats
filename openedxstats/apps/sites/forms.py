@@ -59,4 +59,3 @@ class GeoZoneForm(forms.ModelForm):
     class Meta:
         model = GeoZone
         fields = '__all__'
-

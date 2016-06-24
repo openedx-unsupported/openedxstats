@@ -5,8 +5,7 @@
     {{ form.media }}
 {% endblock %}
 
-
-{% block title %} Add Site {% endblock %}
+{% block title %}{% endblock %}
 {% block content %}
     <!-- Navbar -->
     {% include "navbar.html" %}
@@ -15,16 +14,12 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Insert form here -->
-                <form action="{% url 'sites:add_site' %}" method="post" class="form">
+                <form action="{% url "sites:delete_site" pk=site.id %}" method="post" class="form">
                     {% csrf_token %}
-                    {% bootstrap_form form %}
-                    <input type="submit" class="btn btn-primary" value="Submit"/>
+                    <p>Are you sure you want to delete "{{ site.url }}"?</p>
+                    <input type="submit" class="btn btn-default btn-danger" value="Delete"/>
+                    <button class="btn btn-default" value="Cancel">Cancel</button>
                 </form>
-            </div>
-            <div class="col-md-6">
-                <p>
-                    Something will be here soon maybe.
-                </p>
             </div>
         </div>
         <br/>

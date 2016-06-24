@@ -1,16 +1,12 @@
 from __future__ import unicode_literals
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from .forms import SiteForm, LanguageForm, GeoZoneForm
-
-
-# TODO: Give functionality to delete buttons on sites_list and site_detail pages
-
 
 
 class ListView(generic.ListView):
@@ -19,11 +15,18 @@ class ListView(generic.ListView):
     template_name = 'sites/sites_list.html'
     context_object_name = 'sites_list'
 
+
 class SiteDetailView(generic.DetailView):
     model = Site
 
     template_name = 'sites/site_detail.html'
     context_object_name = 'site'
+
+
+class SiteDelete(generic.DeleteView):
+    model = Site
+    template_name = 'sites/delete_site.html'
+    success_url = reverse_lazy('sites:sites_list')
 
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help

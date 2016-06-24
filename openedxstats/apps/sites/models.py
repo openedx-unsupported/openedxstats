@@ -83,7 +83,6 @@ class SiteGeoZone(models.Model):
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
-    # TODO: Add in attributes that describe the relationship between Site and GeoZone, and for history tracking
 
     def __str__(self):
         return self.site.url + '---' + self.geo_zone.name
@@ -95,7 +94,6 @@ class SiteLanguage(models.Model):
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
-    # TODO: Add in attributes that describe the relationship between Site and Language, and for history tracking
 
     def __str__(self):
         return self.site.url + '---' + self.language.name

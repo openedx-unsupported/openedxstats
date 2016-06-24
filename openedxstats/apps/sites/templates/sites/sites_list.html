@@ -23,12 +23,6 @@
             });
             // Date filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                // TODO: Debugging printouts - REMOVE
-                //console.log("-----");
-                //console.log("Input = " + $('#dateInput').val());
-                //console.log("Parsed Input = " + Date.parse($('#dateInput').val()));
-                //console.log(data[4]);
-                //console.log(Date.parse(data[4]));
                 return Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
                         && Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5]);
             });
@@ -131,10 +125,12 @@
                                     </td>
                                 {% endif %}
                                 <td class="action-button-cell">
-                                    <button type="button" class="btn btn-danger" aria-label="Delete"
-                                            data-toggle="tooltip" data-placement="bottom" title="Delete">
-                                        <span class="glyphicon glyphicon-trash"></span>
-                                    </button>
+                                    <a href="/sites/delete_site/{{ site.pk }}">
+                                        <button type="button" class="btn btn-danger" aria-label="Delete"
+                                                data-toggle="tooltip" data-placement="bottom" title="Delete">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </a>
                                 </td>
                             </tr>
                         </table>
