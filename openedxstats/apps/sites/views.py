@@ -5,6 +5,7 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
+
 from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from .forms import SiteForm, LanguageForm, GeoZoneForm
 
@@ -41,11 +42,13 @@ def add_site(request):
             # Fetch most recent version of site and give it an active end date (since it is not longer the most
             # recent record)
             form.save(commit=False)
-            new_form_created_time = form.cleaned_data.pop('active_start_date')
-            most_recent_version_of_site = Site.objects.filter(url=form.cleaned_data.pop('url')).latest('active_start_date')
-            most_recent_version_of_site.active_end_date = new_form_created_time
-            most_recent_version_of_site.save()
-
+            try:
+                new_form_created_time = form.cleaned_data.pop('active_start_date')
+                most_recent_version_of_site = Site.objects.filter(url=form.cleaned_data.pop('url')).latest('active_start_date')
+                most_recent_version_of_site.active_end_date = new_form_created_time
+                most_recent_version_of_site.save()
+            except Site.DoesNotExist:
+                pass # First version of site
 
             languages = form.cleaned_data.pop('language')
             geozones = form.cleaned_data.pop('geography')

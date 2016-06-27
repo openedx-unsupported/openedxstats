@@ -5,7 +5,7 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
-from datetime import date
+from datetime import datetime
 from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from .forms import SiteForm, GeoZoneForm, LanguageForm
 
@@ -64,11 +64,11 @@ class ImportScriptTestCase(TestCase):
         source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
         additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
         expected_output = ("Report:\n"
-                           "Number of sites imported: 1\n"
+                           "Number of sites imported: 269\n"
                            "Number of languages imported: 0\n"
                            "Number of geozones imported: 2\n"
-                           "Number of site_languages created: 1\n"
-                           "Number of site_geozones created: 2\n")
+                           "Number of site_languages created: 272\n"
+                           "Number of site_geozones created: 200\n")
         out = StringIO()
         with open(source, 'r+'):
             call_command('import_sites', source)
@@ -92,14 +92,14 @@ class SubmitSiteFormTestCase(TestCase):
             form.errors['url'], ['This field is required']
         )
 
+
     def test_form_validation_for_existing_url(self):
-        new_site = Site(url='https://lagunitas.stanford.edu')
+        new_site = Site(url='https://lagunitas.stanford.edu', active_start_date='2016-10-10')
         new_site.save()
-        form = SiteForm(data={'url': 'https://lagunitas.stanford.edu'})
+        form = SiteForm(data={'url': 'https://lagunitas.stanford.edu', 'active_start_date': '2016-10-10'})
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['url'], ['Site with this Url already exists.']
-        )
+        self.assertEqual(form.errors['__all__'], ["Site with this Url and Active start date already exists."])
+
 
     def test_add_a_single_site_with_required_fields(self):
         form_data = {
@@ -107,6 +107,7 @@ class SubmitSiteFormTestCase(TestCase):
             'name': 'Test',
             'url': 'https://convolutedurl.biz',
             'course_type': 'Unknown',
+            'active_start_date': '2016-10-10',
         }
 
         self.assertEqual(0, Site.objects.count())
@@ -120,6 +121,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
 
+    # FIXME
     def test_add_a_single_site_with_all_fields(self):
         lang1 = Language(name="English")
         lang2 = Language(name="Chinese")
@@ -144,6 +146,7 @@ class SubmitSiteFormTestCase(TestCase):
             'course_type': 'Unknown',
             'registered_user_count': '3333',
             'active_learner_count': '1111',
+            'active_start_date': '2016-03-24',
         }
 
         self.assertEqual(0, Site.objects.count())
@@ -156,7 +159,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_site.name, form_data['name'])
         self.assertEqual(saved_site.url, form_data['url'])
         self.assertEqual(saved_site.course_count, 1337)
-        self.assertEqual(saved_site.last_checked, date(2016, 3, 24))
+        self.assertEqual(saved_site.active_start_date, datetime(2016, 3, 24, 0, 0))
         self.assertCountEqual(saved_site.language.all(), [lang1, lang2])
         self.assertCountEqual(saved_site.geography.all(), [geozone1, geozone2])
         self.assertEqual(saved_site.course_type, form_data['course_type'])
