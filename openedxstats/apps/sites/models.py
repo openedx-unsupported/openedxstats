@@ -43,7 +43,7 @@ class Site(models.Model):
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255)
     course_count = models.IntegerField(blank=True, null=True)
-    #last_checked = models.DateField(blank=True, null=True) # FIXME: Should remove! Is equivalent to active_start_date
+    last_checked = models.DateField(blank=True, null=True) # FIXME: Should remove! Is equivalent to active_start_date
     org_type = models.CharField(max_length=255, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)

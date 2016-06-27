@@ -11,20 +11,23 @@
             padding-top: 5px;
             padding-bottom: 15px;
         }
-
     </style>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('[data-toggle="tooltip"]').tooltip();  // Tooltips
-            var sitesTable = $('#sites').DataTable({  // Table sorting
-                "lengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "All"]]
+            // Tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+            // Table sorting
+            var sitesTable = $('#sites').DataTable({
+                "lengthMenu": [[25, 50, 100, 500, -1], [25, 50, 100, 500, "All"]],
+                "order": [[5, "asc"], [1, "asc"]]
             });
             // Date filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 return Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
-                        && Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5]);
+                        && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
+                            || isNaN(Date.parse(data[5])));
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
         });
@@ -41,7 +44,8 @@
                     Use the date search bar to enter a datetime <em>(YYYY-MM-DD HH:MM)</em> you wish to see a list of
                     sites active at that time for. For instance, if you enter <em>2016-04-03 05:37</em>, the version of
                     each site that was 'current' at that time will be displayed. You may also use <em>YYYY-MM-DD</em>
-                    format for less precise searching. If you want to see all versions of a single site, try entering
+                    format for less precise searching. If you enter any date in the future, you will be returned all of
+                    the most current site versions. If you want to see all versions of a single site, try entering
                     it's name (or better yet, url) into the generic search bar on the right. Use the links above to
                     perform other actions like adding a new site or site version, language, or geozone.
                 </p>
@@ -97,6 +101,8 @@
                     <td id="filter" class="col-md-1" style="vertical-align: middle;">
                         {% if site.active_end_date != None %}
                             {{ site.active_end_date|date:"Y-m-d" }} {{ site.active_end_date|time:"h:i" }}
+                        {% else %}
+                            &nbsp;
                         {% endif %}
                     </td>
                     <td class="col-md-1" style="vertical-align: middle; width: 1%; text-align: center">
