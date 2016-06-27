@@ -30,6 +30,11 @@
                             || isNaN(Date.parse(data[5])));
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
+            $('#dateInput').keyup(function (e) {
+                if (e.keyCode == 13) {
+                    sitesTable.draw()
+                }
+            });
         });
     </script>
 {% endblock %}
@@ -96,13 +101,11 @@
                     <td style="vertical-align: middle;"><a href="{{ site.url }}"> {{ site.url }}</a></td>
                     <td class="col-md-1" style="vertical-align: middle;">{{ site.course_count }}</td>
                     <td id="filter" class="col-md-1" style="vertical-align: middle;">
-                        {{ site.active_start_date|date:"Y-m-d" }} {{ site.active_start_date|time:"h:i" }}
+                        {{ site.active_start_date|date:"Y-m-d" }}
                     </td>
                     <td id="filter" class="col-md-1" style="vertical-align: middle;">
                         {% if site.active_end_date != None %}
-                            {{ site.active_end_date|date:"Y-m-d" }} {{ site.active_end_date|time:"h:i" }}
-                        {% else %}
-                            &nbsp;
+                            {{ site.active_end_date|date:"Y-m-d" }}
                         {% endif %}
                     </td>
                     <td class="col-md-1" style="vertical-align: middle; width: 1%; text-align: center">
