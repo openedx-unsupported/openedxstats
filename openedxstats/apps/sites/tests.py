@@ -60,6 +60,9 @@ class ImportScriptTestCase(TestCase):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
+    """
+    THIS NO LONGER WORKS WITH HISTORICAL TRACKING
+
     def test_check_for_idempotency(self):
         source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
         additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
@@ -76,9 +79,52 @@ class ImportScriptTestCase(TestCase):
         with open(additional_source, 'r+'):
             call_command('import_sites', additional_source, stdout=out)
             self.assertIn(expected_output, out.getvalue())
+    """
+
+    def test_duplicate_data(self):
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
+
+        with open(source, 'r+'):
+            call_command('import_sites', source)
+
+        with open(additional_source, 'r+'):
+            with self.assertRaises(CommandError):
+                call_command('import_sites', additional_source)
+
+    def test_import_duplicate_cols(self):
+        source = os.path.join(BASE, "test_data/duplicate_cols.csv")
+
+        with open(source, 'r+'):
+            with self.assertRaises(CommandError):
+                call_command('import_sites', source)
+
+    def test_import_duplicate_date_cols(self):
+        source = os.path.join(BASE, "test_data/duplicate_date_cols.csv")
+
+        with open(source, 'r+'):
+            with self.assertRaises(CommandError):
+                call_command('import_sites', source)
+
+    def test_import_newer_version(self):
+        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        additional_source = os.path.join(BASE, "test_data/one_updated_site.csv")
+
+        with open(source, 'r+'):
+            call_command('import_sites', source)
+
+        with open(additional_source, 'r+'):
+            call_command('import_sites', additional_source)
+            updated_site = Site.objects.filter(url='https://lagunita.stanford.edu').latest('active_start_date')
+            self.assertEqual(updated_site.active_start_date, datetime(2016, 3, 26, 0, 0))
+            self.assertIsNotNone(Site.object)
+            self.assertEqual(Site.objects.filter(url='https://lagunita.stanford.edu').count(), 2)
+            self.assertEqual(Site.objects.count(), 269)
+
+
 
     # TODO: Add a test to make sure that sites are correctly marked as not current and current when importing duplicate data
-
+    # TODO: Add tests to check if active_end_date is present, and how to correctly handle that if there are previous versions too
 
 class SubmitSiteFormTestCase(TestCase):
     """
@@ -137,7 +183,6 @@ class SubmitSiteFormTestCase(TestCase):
             'name': 'κόσμε',
             'url': 'https://convolutedurl.biz',
             'course_count': '1337',
-            'last_checked': '2016-03-24',
             'org_type': 'Academic',
             'language': ('English', 'Chinese'),
             'geography': ('Greece', '\u00e9'),

@@ -1,6 +1,6 @@
 from django import forms
 from .models import Site, Language, GeoZone
-from datetimewidget.widgets import DateWidget
+from datetimewidget.widgets import DateTimeWidget
 
 default_url_errors = {
     'required': 'This field is required',
@@ -34,8 +34,9 @@ class SiteForm(forms.ModelForm):
             #'last_checked': 'This text is persistent on the page, conflicts with error help text provided by bootstrap',
         }
         widgets = {
-            'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3),
-            'active_start_date': forms.HiddenInput(),
+            #'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3),
+            #'active_start_date': forms.HiddenInput(),
+            'active_start_date': DateTimeWidget(attrs={'id': 'active_start_date'}, bootstrap_version=3),
         }
 
     # TODO: Make it so we have an inline option to create a new language or geozone

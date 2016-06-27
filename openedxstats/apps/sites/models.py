@@ -43,7 +43,8 @@ class Site(models.Model):
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255)
     course_count = models.IntegerField(blank=True, null=True)
-    last_checked = models.DateField(blank=True, null=True) # FIXME: Should remove! Is equivalent to active_start_date
+    active_start_date = models.DateTimeField(default=datetime.now)
+    active_end_date = models.DateTimeField(null=True)
     org_type = models.CharField(max_length=255, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
@@ -52,10 +53,6 @@ class Site(models.Model):
     course_type = models.CharField(max_length=10, choices=COURSE_TYPE_CHOICES, default='Unknown')
     registered_user_count = models.IntegerField(blank=True, null=True)
     active_learner_count = models.IntegerField(blank=True, null=True)
-
-    # Historical data tracking
-    active_start_date = models.DateTimeField(default=datetime.now)
-    active_end_date = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.name + ' --- ' + self.url
