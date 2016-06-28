@@ -136,9 +136,18 @@ class SubmitSiteFormTestCase(TestCase):
     def test_form_validation_for_existing_url(self):
         new_site = Site(url='https://lagunitas.stanford.edu', active_start_date='2016-10-10')
         new_site.save()
-        form = SiteForm(data={'url': 'https://lagunitas.stanford.edu', 'active_start_date': '2016-10-10'})
+        form_data = {'url': 'https://lagunitas.stanford.edu', 'active_start_date': '2016-10-10'}
+        form = SiteForm(data=form_data)
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['__all__'], ["Site with this Url and Active start date already exists."])
+
+        # Will give an error message
+        response = self.client.post('/sites/add_site/', form_data, follow=True)
+        self.assertEqual(Site.objects.count(), 1)
+        storage = response.context['messages']
+        self.assertEqual(len(storage), 1)
+        for msg in storage:
+            self.assertIn("Oops! Something went wrong!", msg.message)
 
     def test_add_a_new_version(self):
         new_site = Site(url='https://test.com', active_start_date='2016-10-10 15:55', course_type='SPOC')
@@ -273,6 +282,14 @@ class SubmitSiteFormTestCase(TestCase):
             form.errors['name'], ['Language with this Name already exists.']
         )
 
+        # Will give an error message
+        response = self.client.post('/sites/add_language/', {'name': 'κόσμε'}, follow=True)
+        self.assertEqual(Language.objects.count(), 1)
+        storage = response.context['messages']
+        self.assertEqual(len(storage), 1)
+        for msg in storage:
+            self.assertIn("Oops! Something went wrong!", msg.message)
+
     def test_add_geozone(self):
         form_data = {
             'name': 'ANewGeozone',
@@ -296,6 +313,14 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(
             form.errors['name'], ['Geo zone with this Name already exists.']
         )
+
+        # Will give an error message
+        response = self.client.post('/sites/add_geozone/', {'name': 'ANewGeozone'}, follow=True)
+        self.assertEqual(GeoZone.objects.count(), 1)
+        storage = response.context['messages']
+        self.assertEqual(len(storage), 1)
+        for msg in storage:
+            self.assertIn("Oops! Something went wrong!", msg.message)
 
     def test_get_blank_site_form(self):
         response = self.client.get('/sites/add_site/')

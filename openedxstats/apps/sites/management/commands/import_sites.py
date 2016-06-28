@@ -140,9 +140,6 @@ def import_data(csvfile):
                             geo_zone.save()
                             gz_list.append(geo_zone)
 
-            else:
-                raise CommandError("Unrecognized column name: %s" % col_name)
-
         # Save objects
         # Check if an old version exists
         if Site.objects.filter(url=new_site.url).exists():

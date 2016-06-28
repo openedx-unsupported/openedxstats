@@ -94,7 +94,10 @@ def add_language(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Success! A new language has been added!')
-            return HttpResponseRedirect(reverse('sites:sites_list'))
+        else:
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
+
+        return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = LanguageForm()
 
@@ -109,7 +112,10 @@ def add_geozone(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Success! A new geozone has been added!')
-            return HttpResponseRedirect(reverse('sites:sites_list'))
+        else:
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
+
+        return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = GeoZoneForm()
 
