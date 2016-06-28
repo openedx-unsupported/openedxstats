@@ -1,11 +1,10 @@
 from __future__ import unicode_literals
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
-
 from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from .forms import SiteForm, LanguageForm, GeoZoneForm
 
@@ -39,20 +38,30 @@ def add_site(request):
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
-            # Fetch most recent version of site and give it an active end date (since it is not longer the most
-            # recent record)
-            form.save(commit=False)
-            try:
-                new_form_created_time = form.cleaned_data.pop('active_start_date')
-                most_recent_version_of_site = Site.objects.filter(url=form.cleaned_data.pop('url')).latest('active_start_date')
-                most_recent_version_of_site.active_end_date = new_form_created_time
-                most_recent_version_of_site.save()
-            except Site.DoesNotExist:
-                pass # First version of site
+            #try:
+            new_site = form.save(commit=False)
+            new_form_created_time = new_site.active_start_date #form.cleaned_data.pop('active_start_date')
+
+            if Site.objects.filter(url=new_site.url).count() > 0:
+                next_most_recent_version_of_site = None
+                for site in Site.objects.filter(url=new_site.url).order_by('active_start_date'):
+                    if site.active_start_date > new_form_created_time:
+                        next_most_recent_version_of_site = site
+                        break
+
+                if next_most_recent_version_of_site is not None:
+                    # The version being submitted is older than current version
+                    new_site.active_end_date = next_most_recent_version_of_site.active_start_date
+                else:
+                    # The version being submitted is newer than current version
+                    next_most_recent_version_of_site = Site.objects.filter(url=new_site.url).order_by(
+                        '-active_start_date').first()
+                    next_most_recent_version_of_site.active_end_date = new_form_created_time
+                    next_most_recent_version_of_site.save()
 
             languages = form.cleaned_data.pop('language')
             geozones = form.cleaned_data.pop('geography')
-            form.save()
+            new_site.save()
 
             # site.language.clear()    # delete existing languages (for if/when I implement update)
             for l in languages:
@@ -64,7 +73,13 @@ def add_site(request):
                 site_geozone.save()
 
             messages.success(request, 'Success! A new site has been added!')
-            return HttpResponseRedirect(reverse('sites:sites_list'))
+            #except Exception as e:
+            #    messages.error(request, 'Oops! Something went wrong! Details: %s' % e.message)
+            #    print("ERROR in add_site, should making error toast notification")
+        else:
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
+
+        return HttpResponseRedirect(reverse('sites:sites_list'))
     else:
         form = SiteForm()
 

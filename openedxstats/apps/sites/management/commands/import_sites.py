@@ -4,21 +4,27 @@ import csv
 from dateutil import parser
 from django.db.models.fields import NOT_PROVIDED
 
-
-REQUIRED_COLS = ["url"] # Add fields to this list that the csv must have
+# Fields that the csv must have
+REQUIRED_COLS = ["url"]
+# Fields that we allow to be imported from the csv
 HEADER_NAMES = ["site_type", "name", "url", "course_count", "last_checked", "org_type", "github_fork", "notes",
                 "course_type", "registered_user_count", "active_learner_count", "active_start_date", "active_end_date"]
+# Fields that represent m2m relationships (and may have more than one value)
 M2M_HEADER_NAMES = ["geography", "language"]
 
 
 class Command(BaseCommand):
     """
     Allows for import of site data from a csv file to the app database.
-    Example command input:  python manage.py import_sites test_data/example.csv
+    Example command input:  python manage.py import_sites test_data/edx_sites_csv.csv
+
+    *****
+    The Open edX Sites list current as of June 2016 is already correctly formatted in test_data/edx_sites_csv.csv
+    *****
 
     IMPORTANT NOTES:
     - The csv file's first row MUST be a header row, with all of the column names
-    - All rows following the header row should be data
+    - All rows following the header row should be data that conforms to the columns discovered in the header row
     - The CSV file must at least have the cols in REQUIRED_COLS
     - Data under last_checked or active_start_date must be in a valid date or datetime format, or the parser will raise
       an error
@@ -136,15 +142,6 @@ def import_data(csvfile):
 
             else:
                 raise CommandError("Unrecognized column name: %s" % col_name)
-
-
-        # TODO: Needs to be able to correctly import versions with existing versions
-        # Assuming the same url for all records here
-        # - If we import something with a later start date, we should make it current version and invalidate olders
-        # - If we import something with an earlier start date, we should make it an old version
-            # - With the next oldest version's start date as it's end date if it doesn't have an explicit end date
-        # - If we import something with the exact same start date as an existing version, throw an error
-        # TODO: Actually we don't need to do all this since we are only using the import script once
 
         # Save objects
         # Check if an old version exists

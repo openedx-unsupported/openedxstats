@@ -33,7 +33,7 @@ class ImportScriptTestCase(TestCase):
         source = os.path.join(BASE, "test_data/wrongly_formatted_data.csv")
         with open(source, 'r+') as csvfile:
             with self.assertRaises(FieldDoesNotExist):
-                import_data(csvfile)  # Import data
+                import_data(csvfile)
 
     def test_import_data_from_minimum_req_cols_csv(self):
         source = os.path.join(BASE, "test_data/urls_only.csv")
@@ -121,10 +121,6 @@ class ImportScriptTestCase(TestCase):
             self.assertEqual(Site.objects.count(), 269)
 
 
-
-    # TODO: Add a test to make sure that sites are correctly marked as not current and current when importing duplicate data
-    # TODO: Add tests to check if active_end_date is present, and how to correctly handle that if there are previous versions too
-
 class SubmitSiteFormTestCase(TestCase):
     """
     Tests for the add site form.
@@ -137,7 +133,6 @@ class SubmitSiteFormTestCase(TestCase):
             form.errors['url'], ['This field is required']
         )
 
-
     def test_form_validation_for_existing_url(self):
         new_site = Site(url='https://lagunitas.stanford.edu', active_start_date='2016-10-10')
         new_site.save()
@@ -145,6 +140,50 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['__all__'], ["Site with this Url and Active start date already exists."])
 
+    def test_add_a_new_version(self):
+        new_site = Site(url='https://test.com', active_start_date='2016-10-10 15:55', course_type='SPOC')
+        new_site.save()
+        form_data = {
+            'site_type': 'TEST',
+            'url': 'https://test.com',
+            'active_start_date': '2016-10-10 16:30',
+            'course_type': 'Both'
+        }
+        form = SiteForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.client.post('/sites/add_site/', form_data)
+
+        updated_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').first()
+        old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
+        self.assertEqual(Site.objects.count(), 2)
+        self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
+        self.assertEqual(updated_site.course_type, 'Both')
+        self.assertEqual(old_site.active_end_date, datetime(2016, 10, 10, 16, 30))
+        self.assertIsNone(updated_site.active_end_date)
+
+    def test_add_an_old_version(self):
+        new_site = Site(url='https://test.com', active_start_date='2016-10-10 16:30', course_type='SPOC')
+        new_site.save()
+        form_data = {
+            'site_type': 'TEST',
+            'url': 'https://test.com',
+            'active_start_date': '2016-10-10 14:30',
+            'course_type': 'Both'
+        }
+        form = SiteForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.client.post('/sites/add_site/', form_data)
+
+        updated_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').first()
+        old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
+        self.assertEqual(Site.objects.count(), 2)
+        self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
+        self.assertEqual(updated_site.course_type, 'SPOC')
+        self.assertEqual(old_site.active_start_date, datetime(2016, 10, 10, 14, 30))
+        self.assertEqual(old_site.active_end_date, datetime(2016, 10, 10, 16, 30))
+        self.assertIsNone(updated_site.active_end_date)
 
     def test_add_a_single_site_with_required_fields(self):
         form_data = {
@@ -166,7 +205,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/sites/all')
 
-    # FIXME
     def test_add_a_single_site_with_all_fields(self):
         lang1 = Language(name="English")
         lang2 = Language(name="Chinese")
@@ -274,7 +312,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
 
-    # TODO: Add a test to make sure that sites are being marked as current and not current correctly when adding a duplicate site
     # TODO: Consider adding an update tab to "Add a site" so that you can populate form with existing data to easily update
 
 

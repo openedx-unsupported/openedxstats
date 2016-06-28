@@ -21,7 +21,7 @@
             // Table sorting
             var sitesTable = $('#sites').DataTable({
                 "lengthMenu": [[25, 50, 100, 500, -1], [25, 50, 100, 500, "All"]],
-                "order": [[5, "asc"], [1, "asc"]]
+                "order": [[5, "asc"], [4, "desc"]]
             });
             // Date filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
