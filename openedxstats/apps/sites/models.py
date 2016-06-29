@@ -19,9 +19,6 @@ class GeoZone(models.Model):
     def __str__(self):
         return self.name
 
-    #class Meta:
-    #    app_label = 'sites'
-
 
 class Language(models.Model):
     """
@@ -31,9 +28,6 @@ class Language(models.Model):
 
     def __str__(self):
         return self.name
-
-    #class Meta:
-    #    app_label = 'sites'
 
 
 class Site(models.Model):
@@ -75,8 +69,6 @@ class Site(models.Model):
 
     class Meta:
         unique_together = ("url", "active_start_date")
-    #    app_label = 'sites'
-
 
 
 class SiteGeoZone(models.Model):
@@ -89,9 +81,6 @@ class SiteGeoZone(models.Model):
     def __str__(self):
         return self.site.url + '---' + self.geo_zone.name
 
-    #class Meta:
-    #    app_label = 'sites'
-
 
 class SiteLanguage(models.Model):
     """
@@ -102,7 +91,3 @@ class SiteLanguage(models.Model):
 
     def __str__(self):
         return self.site.url + '---' + self.language.name
-
-    #class Meta:
-    #    app_label = 'sites'
-

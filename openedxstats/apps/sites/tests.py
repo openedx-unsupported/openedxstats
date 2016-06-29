@@ -60,27 +60,6 @@ class ImportScriptTestCase(TestCase):
             with self.assertRaises(CommandError):
                 call_command('import_sites', source)
 
-    """
-    THIS NO LONGER WORKS WITH HISTORICAL TRACKING
-
-    def test_check_for_idempotency(self):
-        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
-        additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
-        expected_output = ("Report:\n"
-                           "Number of sites imported: 269\n"
-                           "Number of languages imported: 0\n"
-                           "Number of geozones imported: 2\n"
-                           "Number of site_languages created: 272\n"
-                           "Number of site_geozones created: 200\n")
-        out = StringIO()
-        with open(source, 'r+'):
-            call_command('import_sites', source)
-
-        with open(additional_source, 'r+'):
-            call_command('import_sites', additional_source, stdout=out)
-            self.assertIn(expected_output, out.getvalue())
-    """
-
     def test_duplicate_data(self):
         source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
         additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
@@ -146,8 +125,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(Site.objects.count(), 1)
         storage = response.context['messages']
         self.assertEqual(len(storage), 1)
-        for msg in storage:
-            self.assertIn("Oops! Something went wrong!", msg.message)
+        self.assertIn("Site with this Url and Active start date already exists.", list(storage)[0].message)
 
     def test_add_a_new_version(self):
         new_site = Site(url='https://test.com', active_start_date='2016-10-10 15:55', course_type='SPOC')
@@ -287,8 +265,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(Language.objects.count(), 1)
         storage = response.context['messages']
         self.assertEqual(len(storage), 1)
-        for msg in storage:
-            self.assertIn("Oops! Something went wrong!", msg.message)
+        self.assertIn("Language with this Name already exists.", list(storage)[0].message)
 
     def test_add_geozone(self):
         form_data = {
@@ -319,8 +296,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(GeoZone.objects.count(), 1)
         storage = response.context['messages']
         self.assertEqual(len(storage), 1)
-        for msg in storage:
-            self.assertIn("Oops! Something went wrong!", msg.message)
+        self.assertIn("Geo zone with this Name already exists.", list(storage)[0].message)
 
     def test_get_blank_site_form(self):
         response = self.client.get('/sites/add_site/')
