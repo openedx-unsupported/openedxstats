@@ -2,7 +2,6 @@ from django.db import models
 from datetime import datetime
 from openedxstats.apps.slackdata import slackapi
 
-# Create your models here.
 
 class SlackUser(models.Model):
     """
@@ -21,8 +20,6 @@ class SlackUser(models.Model):
             row.deleted = True if user['deleted'] else False
             row.save()
 
-    #class Meta:
-        #app_label = 'slackdata'
 
 class MessageCountByDay(models.Model):
     """
@@ -36,7 +33,6 @@ class MessageCountByDay(models.Model):
     class Meta:
         unique_together = (('user', 'date'),)
         index_together = (('user', 'date'),)
-        #app_label = 'slackdata'
 
     @classmethod
     def populate_from_api(cls, after_date, before_date=datetime.today(), force=False, username=None):
