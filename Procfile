@@ -1,0 +1,1 @@
+web: gunicorn openedxstats.wsgi --log-file -

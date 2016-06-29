@@ -1,6 +1,7 @@
 astroid==1.4.5
 click==6.6
 colorama==0.3.7
+dj-database-url==0.4.1
 Django==1.9.5
 django-bootstrap3==7.0.1
 django-datetime-widget==0.9.3
