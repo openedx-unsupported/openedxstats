@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 COURSE_TYPE_CHOICES = (
     ('MOOC', 'MOOC'),
@@ -37,12 +38,13 @@ class Site(models.Model):
     # Don't use null=true for CharFields as the Django default for null text is an empty string
     # Many of the sites do not have all of these fields, which is why many can be left blank
 
-    #id <-- Automatic serial primary key created by django
+    # id <-- Automatic surrogate serial primary key created by django
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
-    url = models.CharField(max_length=255, unique=True)
+    url = models.CharField(max_length=255)
     course_count = models.IntegerField(blank=True, null=True)
-    last_checked = models.DateField(blank=True, null=True)
+    active_start_date = models.DateTimeField(default=datetime.now)
+    active_end_date = models.DateTimeField(null=True)
     org_type = models.CharField(max_length=255, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
@@ -65,6 +67,9 @@ class Site(models.Model):
         return ", ".join(g.name for g in self.geography.all())
     get_geographies.short_description = "Geographies"
 
+    class Meta:
+        unique_together = ("url", "active_start_date")
+
 
 class SiteGeoZone(models.Model):
     """
@@ -72,7 +77,6 @@ class SiteGeoZone(models.Model):
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
-    # TODO: Add in attributes that describe the relationship between Site and GeoZone, and for history tracking
 
     def __str__(self):
         return self.site.url + '---' + self.geo_zone.name
@@ -84,8 +88,6 @@ class SiteLanguage(models.Model):
     """
     site = models.ForeignKey('Site', on_delete=models.CASCADE)
     language = models.ForeignKey('Language', on_delete=models.CASCADE)
-    # TODO: Add in attributes that describe the relationship between Site and Language, and for history tracking
 
     def __str__(self):
         return self.site.url + '---' + self.language.name
-

@@ -4,28 +4,35 @@ import csv
 from dateutil import parser
 from django.db.models.fields import NOT_PROVIDED
 
-
-REQUIRED_COLS = ["url"] # Add fields to this list that the csv should have
-# HEADER_NAMES = Site.__meta.get_all_field_names.remove("geography").remove("language")
+# Fields that the csv must have
+REQUIRED_COLS = ["url"]
+# Fields that we allow to be imported from the csv
 HEADER_NAMES = ["site_type", "name", "url", "course_count", "last_checked", "org_type", "github_fork", "notes",
-                "course_type", "registered_user_count", "active_learner_count"]
+                "course_type", "registered_user_count", "active_learner_count", "active_start_date", "active_end_date"]
+# Fields that represent m2m relationships (and may have more than one value)
 M2M_HEADER_NAMES = ["geography", "language"]
 
 
 class Command(BaseCommand):
     """
     Allows for import of site data from a csv file to the app database.
-    Example command input:  python manage.py import_sites ~/Documents/data.csv
+    Example command input:  python manage.py import_sites test_data/edx_sites_csv.csv
+
+    *****
+    The Open edX Sites list current as of June 2016 is already correctly formatted in test_data/edx_sites_csv.csv
+    *****
 
     IMPORTANT NOTES:
     - The csv file's first row MUST be a header row, with all of the column names
-    - All rows following the header row should be data
+    - All rows following the header row should be data that conforms to the columns discovered in the header row
     - The CSV file must at least have the cols in REQUIRED_COLS
-    - Data under last_checked must be in a valid date or datetime format, or the parser will raise an error
-        - If it is a date, not a datetime, then the parser will raise a warning and set the time to 00:00:00
+    - Data under last_checked or active_start_date must be in a valid date or datetime format, or the parser will raise
+      an error
+    - If no value is provided for site_type, course_type, or active_start_date, they will default to values of
+      'General', 'Unknown', and the current datetime, respectively.
     """
 
-    help = 'Imports language and geography data from a correctly formatted csv file.'
+    help = 'Imports Open edX site data from a correctly formatted csv file.'
 
     def add_arguments(self, parser):
         parser.add_argument('csv_file', type=str, help='Specify file to use as source for input data.')
@@ -39,15 +46,24 @@ class Command(BaseCommand):
 
 def check_for_required_cols(header_row):
     """
-    Checks to make sure that there are required columns in the csv file header_row
+    Checks to make sure that there are required columns in the csv file header_row and that there are not duplicate
+    columns. Also checks that there is only one of either 'last_checked' or 'active_start_date'
+    (since they are referencing the same thing)
     The header_row should be the first row in the csv file
     :param header_row:
     :return:
     """
     required_cols = list(REQUIRED_COLS)
+    checked_cols = []
     for col in header_row:
         if col in required_cols:
             required_cols.remove(col)
+        if col in checked_cols:
+            raise CommandError("Duplicate column detected: %s" % col)
+        if (col == 'last_checked' and 'active_start_date' in checked_cols)\
+                or (col == 'active_start_date' and 'last_checked' in checked_cols):
+            raise CommandError("Can't have both a 'last_checked' and 'active_start_date' column!")
+        checked_cols.append(col)
 
     if len(required_cols) > 0:
         raise CommandError("Missing required cols in csv file: %s" % required_cols)
@@ -68,6 +84,7 @@ def import_data(csvfile):
         header_row = next(iter_reader)  # Skip header
     except:
         raise CommandError("Empty or improperly configured csv")
+
     check_for_required_cols(header_row)
 
     input_rows = []
@@ -84,6 +101,8 @@ def import_data(csvfile):
 
         for icol,col in enumerate(row):
             col_name = str.lower(header_row[icol]).strip()
+            if col_name == 'last_checked':
+                col_name = 'active_start_date'
             is_blankable_field = Site._meta.get_field(col_name).blank
             is_nullable_field = Site._meta.get_field(col_name).null
             field_default_value = Site._meta.get_field(col_name).default
@@ -97,8 +116,9 @@ def import_data(csvfile):
 
             if col_name in HEADER_NAMES:
                 # If date, format to datetime object
-                if col_name == 'last_checked':
+                if col_name in ['active_start_date', 'active_end_date']:
                     col = parser.parse(col)
+
                 setattr(new_site,col_name,col)
 
             elif col_name in M2M_HEADER_NAMES:
@@ -120,27 +140,34 @@ def import_data(csvfile):
                             geo_zone.save()
                             gz_list.append(geo_zone)
 
-            else:
-                raise CommandError("Unrecognized column name: %s" % col_name)
-
         # Save objects
-        if not Site.objects.filter(url=new_site.url).exists():
-            total_count_stats["sites"] += 1
-            new_site.save()
+        # Check if an old version exists
+        if Site.objects.filter(url=new_site.url).exists():
+            old_version = Site.objects.filter(url=new_site.url).latest('active_start_date')
+            if old_version.active_start_date == new_site.active_start_date:
+                raise CommandError(
+                    "Cannot insert duplicate records. Key (url, active_start_date)=(%s, %s) already exists." % (
+                    new_site.url, new_site.active_start_date))
+            else:
+                old_version.active_end_date = new_site.active_start_date
+                old_version.save()
 
-            for lang in lang_list:
-                # Insert record into junction table to associate with site
-                if not SiteLanguage.objects.filter(site_id=new_site.pk, language_id=lang.name).exists():
-                    total_count_stats["site_languages"] += 1
-                    site_language = SiteLanguage(site_id=new_site.pk, language_id=lang.name)
-                    site_language.save()
+        total_count_stats["sites"] += 1
+        new_site.save()
 
-            for gz in gz_list:
-                # Insert record into junction table to associate with site
-                if not SiteGeoZone.objects.filter(site_id=new_site.pk, geo_zone_id=gz.name).exists():
-                    total_count_stats["site_geozones"] += 1
-                    site_geozone = SiteGeoZone(site_id=new_site.pk, geo_zone_id=gz.name)
-                    site_geozone.save()
+        for lang in lang_list:
+            # Insert record into junction table to associate with site
+            if not SiteLanguage.objects.filter(site_id=new_site.pk, language_id=lang.name).exists():
+                total_count_stats["site_languages"] += 1
+                site_language = SiteLanguage(site_id=new_site.pk, language_id=lang.name)
+                site_language.save()
+
+        for gz in gz_list:
+            # Insert record into junction table to associate with site
+            if not SiteGeoZone.objects.filter(site_id=new_site.pk, geo_zone_id=gz.name).exists():
+                total_count_stats["site_geozones"] += 1
+                site_geozone = SiteGeoZone(site_id=new_site.pk, geo_zone_id=gz.name)
+                site_geozone.save()
 
     print("Finished!")
     report_string = "\nReport:\n"
@@ -151,4 +178,3 @@ def import_data(csvfile):
     report_string += "Number of site_geozones created: %s\n" % total_count_stats["site_geozones"]
 
     return report_string
-

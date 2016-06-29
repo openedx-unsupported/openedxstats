@@ -39,11 +39,13 @@
                         </td>
                         <td>&nbsp;</td>
                         <td>
-                            <button type="button" class="btn btn-default btn-danger" aria-label="Delete"
-                                    data-toggle="tooltip"
-                                    data-placement="top" title="Delete">
-                                <span class="glyphicon glyphicon-trash"></span> Delete
-                            </button>
+                            <a href="/sites/delete_site/{{ site.pk }}">
+                                <button type="button" class="btn btn-default btn-danger" aria-label="Delete"
+                                        data-toggle="tooltip"
+                                        data-placement="top" title="Delete">
+                                    <span class="glyphicon glyphicon-trash"></span> Delete
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 </table>
@@ -67,10 +69,6 @@
                     <tr>
                         <th>Course Count</th>
                         <td>{{ site.course_count }}</td>
-                    </tr>
-                    <tr>
-                        <th>Last Checked</th>
-                        <td>{{ site.last_checked }}</td>
                     </tr>
                     <tr>
                         <th>Org Type</th>
@@ -103,6 +101,14 @@
                     <tr>
                         <th>Active Learner Count</th>
                         <td>{{ site.active_learner_count }}</td>
+                    </tr>
+                    <tr>
+                        <th>Record Active Start Date</th>
+                        <td>{{ site.active_start_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Record Active End Date</th>
+                        <td>{{ site.active_end_date }}</td>
                     </tr>
                 </table>
             </div>

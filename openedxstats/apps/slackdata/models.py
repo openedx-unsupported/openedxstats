@@ -1,8 +1,7 @@
 from django.db import models
 from datetime import datetime
-from . import slackapi
+from openedxstats.apps.slackdata import slackapi
 
-# Create your models here.
 
 class SlackUser(models.Model):
     """
@@ -20,6 +19,7 @@ class SlackUser(models.Model):
             row.email = user['email']
             row.deleted = True if user['deleted'] else False
             row.save()
+
 
 class MessageCountByDay(models.Model):
     """

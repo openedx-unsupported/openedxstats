@@ -1,6 +1,6 @@
 from django import forms
-from .models import Site, Language, GeoZone
-from datetimewidget.widgets import DateWidget
+from openedxstats.apps.sites.models import Site, Language, GeoZone
+from datetimewidget.widgets import DateTimeWidget
 
 default_url_errors = {
     'required': 'This field is required',
@@ -11,7 +11,7 @@ class SiteForm(forms.ModelForm):
     #site_type = forms.CharField(max_length=255, help_text="Type of site, enter 'General' if unsure.")
     #name = forms.CharField(max_length=255)
     url = forms.URLField(max_length=1000, required=True, error_messages=default_url_errors)
-    #course_count = forms.IntegerField()
+    #course_count = forms.IntegerField(min_value=0)
     #last_checked = forms.DateField()
     #org_type = forms.CharField(max_length=255, help_text="E.g. Industrial, Academic, etc.")
     #language = forms.ModelMultipleChoiceField(Language.objects.all())   # Does the same thing as the one below
@@ -19,12 +19,12 @@ class SiteForm(forms.ModelForm):
     #github_fork = forms.URLField()
     #notes = forms.CharField(widget=forms.TextInput)
     #course_type = forms.ChoiceField(choices=COURSE_TYPE_CHOICES)
-    #registered_user_count = forms.IntegerField()
-    #active_learner_count = forms.IntegerField()
+    #registered_user_count = forms.IntegerField(min_value=0)
+    #active_learner_count = forms.IntegerField(min_value=0)
 
     class Meta:
         model = Site
-        fields = '__all__'
+        exclude = ['active_end_date']
         # If the corresponding attribute in site form is uncommented above, these help messages won't show
         help_texts = {
             "language": "Select multiple languages with CMD+Click",
@@ -33,7 +33,7 @@ class SiteForm(forms.ModelForm):
             #'last_checked': 'This text is persistent on the page, conflicts with error help text provided by bootstrap',
         }
         widgets = {
-            'last_checked': DateWidget(attrs={'id': "last_checked"}, bootstrap_version=3)
+            'active_start_date': DateTimeWidget(attrs={'id': 'active_start_date'}, bootstrap_version=3),
         }
 
     # TODO: Make it so we have an inline option to create a new language or geozone
@@ -55,4 +55,3 @@ class GeoZoneForm(forms.ModelForm):
     class Meta:
         model = GeoZone
         fields = '__all__'
-

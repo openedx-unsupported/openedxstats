@@ -2,7 +2,7 @@ import datetime
 from datetime import datetime
 
 from django.core.management.base import BaseCommand, CommandError
-from slackdata.models import SlackUser, MessageCountByDay
+from ...models import SlackUser, MessageCountByDay
 
 class Command(BaseCommand):
     help = 'Load data from api to db'
