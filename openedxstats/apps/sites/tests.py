@@ -1,13 +1,13 @@
 import os.path
 from django.test import TestCase
-from .management.commands.import_sites import import_data
+from openedxstats.apps.sites.management.commands.import_sites import import_data
 from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
 from datetime import datetime
-from .models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
-from .forms import SiteForm, GeoZoneForm, LanguageForm
+from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
+from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 

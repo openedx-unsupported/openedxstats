@@ -36,8 +36,8 @@ INSTALLED_APPS = [
 
     'bootstrap3',
     'datetimewidget',
-    'slackdata',
-    'sites',
+    'openedxstats.apps.slackdata',
+    'openedxstats.apps.sites',
 ]
 
 PROJECT_APPS = []

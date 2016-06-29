@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views
+from openedxstats.apps.sites import views
 
 app_name = 'sites'
 urlpatterns = [

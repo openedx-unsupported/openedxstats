@@ -6,8 +6,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
-from .models import SlackUser, MessageCountByDay
-from .serializers import SlackUserSerializer, UserCountSerializer
+from openedxstats.apps.slackdata.models import SlackUser, MessageCountByDay
+from openedxstats.apps.slackdata.serializers import SlackUserSerializer, UserCountSerializer
 
 # Create your views here.
 

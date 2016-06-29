@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import SlackUser
+from openedxstats.apps.slackdata.models import SlackUser
 
 class SlackUserSerializer(serializers.ModelSerializer):
     class Meta:

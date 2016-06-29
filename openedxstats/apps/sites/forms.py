@@ -1,5 +1,5 @@
 from django import forms
-from .models import Site, Language, GeoZone
+from openedxstats.apps.sites.models import Site, Language, GeoZone
 from datetimewidget.widgets import DateTimeWidget
 
 default_url_errors = {

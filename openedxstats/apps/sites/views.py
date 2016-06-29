@@ -5,8 +5,8 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
-from .models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
-from .forms import SiteForm, LanguageForm, GeoZoneForm
+from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
+from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
 
 class ListView(generic.ListView):
