@@ -20,10 +20,10 @@ sys.path.insert(0, root('apps'))
 SECRET_KEY = 'CHANGE THIS!!!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 IN_TESTING = sys.argv[1:2] == ['test']
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.herokuapp.com']
 
 # Application definition
 
@@ -97,6 +97,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     root('assets'),
 )
+
+# Whitenoise config
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 TEMPLATES = [
     {

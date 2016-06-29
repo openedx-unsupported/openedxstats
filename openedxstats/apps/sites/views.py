@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
+import re
 
 
 class ListView(generic.ListView):
@@ -38,7 +39,6 @@ def add_site(request):
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
-            #try:
             new_site = form.save(commit=False)
             new_form_created_time = new_site.active_start_date #form.cleaned_data.pop('active_start_date')
 
@@ -73,13 +73,13 @@ def add_site(request):
                 site_geozone.save()
 
             messages.success(request, 'Success! A new site has been added!')
-            #except Exception as e:
-            #    messages.error(request, 'Oops! Something went wrong! Details: %s' % e.message)
-            #    print("ERROR in add_site, should making error toast notification")
-        else:
-            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
+            return HttpResponseRedirect(reverse('sites:sites_list'))
 
-        return HttpResponseRedirect(reverse('sites:sites_list'))
+        else:
+            # Display errors
+            form_errors_string = generate_form_errors_string(form.errors)
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
+
     else:
         form = SiteForm()
 
@@ -94,10 +94,11 @@ def add_language(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Success! A new language has been added!')
+            return HttpResponseRedirect(reverse('sites:sites_list'))
         else:
-            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
-
-        return HttpResponseRedirect(reverse('sites:sites_list'))
+            # Display errors
+            form_errors_string = generate_form_errors_string(form.errors)
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
     else:
         form = LanguageForm()
 
@@ -112,12 +113,23 @@ def add_geozone(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Success! A new geozone has been added!')
+            return HttpResponseRedirect(reverse('sites:sites_list'))
         else:
-            messages.error(request, 'Oops! Something went wrong! Details: %s' % form.errors)
-
-        return HttpResponseRedirect(reverse('sites:sites_list'))
+            # Display errors
+            form_errors_string = generate_form_errors_string(form.errors)
+            messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
     else:
         form = GeoZoneForm()
 
     return render(request, 'add_geozone.html', {'form': form})
 
+
+def generate_form_errors_string(form_errors):
+    form_errors_string = ""
+    for i, err in enumerate(form_errors):
+        err_description = re.search(r'<li>(.*?)</li>', str(form_errors[err]), re.I).group(1)
+        form_errors_string += err + ": " + err_description + ", "
+        if i == len(form_errors) - 1:
+            form_errors_string = form_errors_string[:-2]
+
+    return form_errors_string
