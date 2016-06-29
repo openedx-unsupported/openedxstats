@@ -1,5 +1,6 @@
 import os
 import sys
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 
 # PATH vars
@@ -22,7 +23,7 @@ SECRET_KEY = 'CHANGE THIS!!!'
 DEBUG = True
 IN_TESTING = sys.argv[1:2] == ['test']
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.herokuapp.com']
 
 # Application definition
 
@@ -97,6 +98,9 @@ STATICFILES_DIRS = (
     root('assets'),
 )
 
+# Whitenoise config
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -144,6 +148,10 @@ BOOTSTRAP3 = {
     'required_css_class': 'bootstrap3-required',
     'javascript_in_head': True,
 }
+
+# Update database configuration with $DATABASE_URL
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # .local.py overrides all the common settings.
 try:
