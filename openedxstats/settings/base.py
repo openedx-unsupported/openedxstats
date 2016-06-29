@@ -91,12 +91,15 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Additional locations of static files
 
-STATICFILES_DIRS = (
-    root('assets'),
-)
+#STATICFILES_DIRS = (
+#    root('assets'),
+#)
 
 # Whitenoise config
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
