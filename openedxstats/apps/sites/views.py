@@ -124,31 +124,6 @@ def add_geozone(request):
 
     return render(request, 'add_geozone.html', {'form': form})
 
-"""
-def user_login(request):
-    u = User()
-    registered = False
-
-    if request.method == 'POST':
-        #user_form = UserForm(data=request.POST, instance=u)
-        username = request.POST['username']
-        password = request.POST['password']
-
-        user = authenticate(username=username, password=password)
-
-        if user:
-            if user.is_active:
-                login(request, user)
-                return HttpResponseRedirect(reverse('sites:sites_list'))
-            else:
-                return HttpResponse("Your account is disabled")
-        else:
-            return HttpResponse("Invalid login")
-    else:
-        return render(request, 'login.html')
-"""
-
-
 
 # Helper methods
 def generate_form_errors_string(form_errors):
