@@ -100,7 +100,7 @@
                     <td style="vertical-align: middle;">{{ site.site_type }}</td>
                     <td style="vertical-align: middle;">{{ site.name }}</td>
                     <td style="vertical-align: middle;"><a href="{{ site.url }}"> {{ site.url }}</a></td>
-                    <td class="col-md-1" style="vertical-align: middle;">{{ site.course_count }}</td>
+                    <td class="col-md-1" style="vertical-align: middle;">{{ site.course_count|default_if_none:"" }}</td>
                     <td id="filter" class="col-md-1" style="vertical-align: middle;">
                         {{ site.active_start_date|date:"Y-m-d" }}
                     </td>
