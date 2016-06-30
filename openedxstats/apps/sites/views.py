@@ -5,8 +5,9 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.models import User
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
-from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
+from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
 import re
 
 
@@ -123,7 +124,33 @@ def add_geozone(request):
 
     return render(request, 'add_geozone.html', {'form': form})
 
+"""
+def user_login(request):
+    u = User()
+    registered = False
 
+    if request.method == 'POST':
+        #user_form = UserForm(data=request.POST, instance=u)
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect(reverse('sites:sites_list'))
+            else:
+                return HttpResponse("Your account is disabled")
+        else:
+            return HttpResponse("Invalid login")
+    else:
+        return render(request, 'login.html')
+"""
+
+
+
+# Helper methods
 def generate_form_errors_string(form_errors):
     form_errors_string = ""
     for i, err in enumerate(form_errors):

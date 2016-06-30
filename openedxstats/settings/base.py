@@ -56,7 +56,14 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'openedxstats.middleware.LoginRequiredMiddleware'
 ]
+
+# Login URL and exempt pages (for use in LoginRequiredMiddleware)
+LOGIN_URL = '/login/'
+LOGIN_EXEMPT_URLS = (
+    r'/logout',
+)
 
 ROOT_URLCONF = 'openedxstats.urls'
 

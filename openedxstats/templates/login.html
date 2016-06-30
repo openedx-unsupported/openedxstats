@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+{% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{% static 'sites/favicon.ico' %}">
+    {{ form.media }}
+{% endblock %}
+
+{% block title %} Login {% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                {% if next %}
+                    {% if user.is_authenticated %}
+                        <p>Your account doesn't have access to this page. To proceed,
+                            please login with an account that has access.</p>
+                    {% else %}
+                        <p>Please login to access this site.</p>
+                    {% endif %}
+                {% endif %}
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <input type="submit" class="btn btn-primary" value="Login"/>
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
