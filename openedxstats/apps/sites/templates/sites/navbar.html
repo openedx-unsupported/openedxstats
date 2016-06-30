@@ -10,5 +10,11 @@
             <li><a href="/sites/add_language">Add Language</a></li>
             <li><a href="/sites/add_geozone">Add GeoZone</a></li>
         </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a class="navbar-link" href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+        <p class="navbar-text navbar-right">
+            Signed in as {{ user.username }}
+        </p>
     </div>
 </nav>
