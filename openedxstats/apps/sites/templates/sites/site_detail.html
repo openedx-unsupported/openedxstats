@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-
+{%  load staticfiles %}
 {% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     <script>
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
@@ -68,7 +69,7 @@
                     </tr>
                     <tr>
                         <th>Course Count</th>
-                        <td>{{ site.course_count }}</td>
+                        <td>{{ site.course_count|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <th>Org Type</th>
@@ -96,11 +97,11 @@
                     </tr>
                     <tr>
                         <th>Registered User Count</th>
-                        <td>{{ site.registered_user_count }}</td>
+                        <td>{{ site.registered_user_count|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <th>Active Learner Count</th>
-                        <td>{{ site.active_learner_count }}</td>
+                        <td>{{ site.active_learner_count|default_if_none:"" }}</td>
                     </tr>
                     <tr>
                         <th>Record Active Start Date</th>
