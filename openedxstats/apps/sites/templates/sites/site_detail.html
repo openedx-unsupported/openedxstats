@@ -4,6 +4,8 @@
     <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     <script>
         $(document).ready(function () {
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>

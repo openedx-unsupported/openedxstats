@@ -2,6 +2,12 @@
 {% load bootstrap3 %}
 {% load staticfiles %}
 {% block bootstrap3_extra_head %}
+    <script>
+        $(document).ready(function () {
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
+        });
+    </script>
     <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     {{ form.media }}
 {% endblock %}

@@ -5,6 +5,8 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from datetime import datetime
 from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
@@ -105,6 +107,12 @@ class SubmitSiteFormTestCase(TestCase):
     Tests for the add site form.
     """
 
+    def setUp(self):
+        user = User.objects.create_user('testuser', 'testuser@edx.com', 'password')
+        if user is None:
+            self.fail("Could not create testuser in setUp()")
+        self.client.login(username='testuser', password='password')
+
     def test_form_validation_for_blank_url(self):
         form = SiteForm(data={'url': ''})
         self.assertFalse(form.is_valid())
@@ -190,7 +198,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_site.url, form_data['url'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all')
+        self.assertEqual(response['location'], '/sites/all/')
 
     def test_add_a_single_site_with_all_fields(self):
         lang1 = Language(name="English")
@@ -234,7 +242,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_site.course_type, form_data['course_type'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all')
+        self.assertEqual(response['location'], '/sites/all/')
 
     def test_add_language(self):
         form_data = {
@@ -249,7 +257,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_language.name, form_data['name'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all')
+        self.assertEqual(response['location'], '/sites/all/')
 
     def test_add_language_that_already_exists(self):
         new_language = Language(name='κόσμε')
@@ -280,7 +288,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_geozone.name, form_data['name'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all')
+        self.assertEqual(response['location'], '/sites/all/')
 
     def test_add_geozone_that_already_exists(self):
         new_geozone = GeoZone(name='ANewGeozone')
