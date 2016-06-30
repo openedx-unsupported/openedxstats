@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-
+{%  load staticfiles %}
 {% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     <script>
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
