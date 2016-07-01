@@ -17,6 +17,9 @@
     <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Nav active class selection
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
             // Tooltips
             $('[data-toggle="tooltip"]').tooltip();
             // Table sorting

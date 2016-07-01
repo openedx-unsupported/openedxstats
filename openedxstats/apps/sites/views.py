@@ -5,8 +5,9 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
+from django.contrib.auth.models import User
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
-from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
+from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
 import re
 
 
@@ -124,6 +125,7 @@ def add_geozone(request):
     return render(request, 'add_geozone.html', {'form': form})
 
 
+# Helper methods
 def generate_form_errors_string(form_errors):
     form_errors_string = ""
     for i, err in enumerate(form_errors):

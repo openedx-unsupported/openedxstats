@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from openedxstats.apps.sites.models import Site, Language, GeoZone
 from datetimewidget.widgets import DateTimeWidget
 
@@ -48,4 +49,12 @@ class GeoZoneForm(forms.ModelForm):
 
     class Meta:
         model = GeoZone
+        fields = '__all__'
+
+
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
         fields = '__all__'

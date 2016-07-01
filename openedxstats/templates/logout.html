@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+{% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{% static 'sites/favicon.ico' %}">
+    {{ form.media }}
+{% endblock %}
+
+{% block title %} Logged Out {% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <p>You have been successfully logged out.</p>
+                <a href="{% url 'login' %}">
+                    <button type="button" class="btn btn-primary">Login Again</button>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
