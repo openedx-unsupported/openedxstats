@@ -91,3 +91,16 @@ class SiteLanguage(models.Model):
 
     def __str__(self):
         return self.site.url + '---' + self.language.name
+
+
+class SiteSummarySnapshot(models.Model):
+    """
+    Object representing a snapshot of the aggregate statistics of all sites known at the time.
+    """
+    timestamp = models.DateTimeField(default=datetime.now)
+    num_sites = models.IntegerField()
+    num_courses = models.IntegerField()
+    notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.timestamp + '---' + self.num_sites + '---' + self.num_courses
