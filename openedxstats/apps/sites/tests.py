@@ -115,18 +115,6 @@ class ImportOTDataTestCase(TestCase):
             self.assertEqual(SiteSummarySnapshot.objects.count(), 93)
 
 
-    def test_import_wrong_cols(self):
-        pass
-
-    def test_db_check(self):
-        source = os.path.join(BASE, "test_data/over_time_data.csv")
-
-        with open(source, 'r+'):
-            call_command('import_ot_data', source)
-
-
-
-
 class SubmitSiteFormTestCase(TestCase):
     """
     Tests for the add site form.
