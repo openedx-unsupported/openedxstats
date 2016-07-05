@@ -5,13 +5,13 @@ from django.core.management.base import CommandError
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from datetime import datetime
-from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage
+from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 
 BASE = os.path.dirname(os.path.abspath(__file__))
+
 
 class ImportScriptTestCase(TestCase):
     """
@@ -100,6 +100,31 @@ class ImportScriptTestCase(TestCase):
             self.assertEqual(updated_site.active_start_date, datetime(2016, 3, 26, 0, 0))
             self.assertEqual(Site.objects.filter(url='https://lagunita.stanford.edu').count(), 2)
             self.assertEqual(Site.objects.count(), 269)
+
+
+class ImportOTDataTestCase(TestCase):
+    """
+    Tests for the import ot_data management command.
+    """
+
+    def test_import_from_correctly_formatted_file(self):
+        source = os.path.join(BASE, "test_data/over_time_data.csv")
+
+        with open(source, 'r+'):
+            call_command('import_ot_data', source)
+            self.assertEqual(SiteSummarySnapshot.objects.count(), 93)
+
+
+    def test_import_wrong_cols(self):
+        pass
+
+    def test_db_check(self):
+        source = os.path.join(BASE, "test_data/over_time_data.csv")
+
+        with open(source, 'r+'):
+            call_command('import_ot_data', source)
+
+
 
 
 class SubmitSiteFormTestCase(TestCase):
