@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{%  load staticfiles %}
+{% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
+    <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.js' %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.time.js' %}"></script>
+    <script>
+        $(document).ready(function () {
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
+        });
+    </script>
+
+    <style>
+        .table-align-right {
+            width: auto;
+            margin-right: 0px;
+            margin-left: auto;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block title %} Over-Time Site and Course Statistics {% endblock %}
+
+{% block content %}
+    <!-- Navbar -->
+    {% include "navbar.html" %}
+    <!-- Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="otChart" class="container" style="width: 100%; height: 600px; font-size: 20px;"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bootstrap3_extra_script %}
+    <script>
+        window.onload = function () {
+            // Grab csrf token to allow for ajax requests
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+
+            // Declare vars
+            var jsonToSend = {'csrfmiddlewaretoken': csrftoken};
+            var snapshotList;
+            var otTimestamps = [];
+            var otSites = [];
+            var otCourses = [];
+            var otNotes = [];
+
+            // Grab data for chart
+            $.ajax({
+                url: location.href,
+                data: jsonToSend,
+                contentType: 'application/json',
+                dataType: 'json',
+                type: 'POST',
+                success: function (data) {
+                    snapshotList = JSON.parse(data);
+                    for (var x in snapshotList) {
+                        if (snapshotList[x].hasOwnProperty('fields')) {
+                            for (var attr in snapshotList[x].fields) {
+                                if (snapshotList[x].fields.hasOwnProperty(attr)) {
+                                    //console.log(snapshotList[x].fields[attr]);
+                                    var value = snapshotList[x].fields[attr];
+                                    // create data set for chart
+                                    switch (attr) {
+                                        case 'timestamp':
+                                            otTimestamps.push(Math.round(new Date(value).getTime()));
+                                            break;
+                                        case 'num_sites':
+                                            otSites.push(value);
+                                            break;
+                                        case 'num_courses':
+                                            otCourses.push(value);
+                                            break;
+                                        case 'notes':
+                                            otNotes.push(value);
+                                            break;
+                                        default:
+                                            console.error("This was not a field: " + attr + ": " + snapshotList[x].fields[attr]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    initializeChart();
+                },
+                failure: function (data) {
+                    console.error("Error fetching data for chart!");
+                }
+            });
+
+            function initializeChart() {
+                // Create chart
+                $(function () {
+                    var sites = [];
+                    var courses = [];
+                    for (x in otSites) {
+                        sites.push([otTimestamps[x], otSites[x]]);
+                        courses.push([otTimestamps[x], otCourses[x]]);
+                    }
+                    console.log(sites);
+
+                    $.plot("#otChart", [
+                        {data: sites, label: "Sites", color: "#0000ff"},
+                        {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
+                    ], {
+                        xaxes: [{mode: "time"}],
+                        yaxes: [{min: 0}, {
+                            alignTicksWithAxis: true,
+                            position: 'right'
+                        }],
+                        legend: {position: "nw"}
+                    });
+                });
+            }
+        }
+    </script>
+{% endblock %}

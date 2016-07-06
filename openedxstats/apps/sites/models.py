@@ -103,4 +103,4 @@ class SiteSummarySnapshot(models.Model):
     notes = models.TextField(blank=True)
 
     def __str__(self):
-        return self.timestamp + '---' + self.num_sites + '---' + self.num_courses
+        return str(self.timestamp) + '---' + str(self.num_sites) + '---' + str(self.num_courses)
