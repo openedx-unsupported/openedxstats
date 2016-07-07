@@ -4,6 +4,7 @@
     <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.time.js' %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.axislabels.js' %}"></script>
     <script>
         $(document).ready(function () {
             var url = window.location;
@@ -138,10 +139,31 @@
                         {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
                     ], {
                         xaxes: [{mode: "time"}],
-                        yaxes: [{min: 0}, {
-                            alignTicksWithAxis: true,
-                            position: 'right'
-                        }],
+                        yaxes: [
+                            {
+                                min: 0,
+                                position: 'left',
+                                axisLabel: "Sites",
+                                axisLabelUseCanvas: true,
+                                axisLabelPadding: 15,
+                                axisLabelFontSizePixels: 20,
+                                font: {
+                                    color: "#0000ff"
+                                }
+                            },
+                            {
+                                min: 0,
+                                alignTicksWithAxis: true,
+                                position: 'right',
+                                axisLabel: "Courses",
+                                axisLabelUseCanvas: true,
+                                axisLabelPadding: 15,
+                                axisLabelFontSizePixels: 20,
+                                font: {
+                                    color: "#ff0000"
+                                }
+                            }
+                        ],
                         legend: {position: "nw"}
                     });
                 });
