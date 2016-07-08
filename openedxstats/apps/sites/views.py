@@ -76,13 +76,17 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         return daily_summary_obj_list
 
     def post(self, request, *args, **kwargs):
-        # Get old data (pre-historical tracking implementation)
-        old_ot_data = list(SiteSummarySnapshot.objects.all())
-        # Gets oldest site summary snapshot from db, after this point we will generate statistics from site versions
-        start_datetime = SiteSummarySnapshot.objects.all().order_by('-timestamp').first().timestamp + timedelta(days=1)
-        # Generate new data
-        new_ot_data = self.generate_summary_data(start_datetime)
+        old_ot_data = []
+        new_ot_data = []
+        if SiteSummarySnapshot.objects.count() > 0 or Site.objects.count() > 0:
+            # Get old data (pre-historical tracking implementation)
+            old_ot_data = list(SiteSummarySnapshot.objects.all())
+            # Gets oldest site summary snapshot from db, after this point we will generate statistics from site versions
+            start_datetime = SiteSummarySnapshot.objects.all().order_by('-timestamp').first().timestamp + timedelta(days=1)
+            # Generate new data
+            new_ot_data = self.generate_summary_data(start_datetime)
 
+        # TODO: Remove
         #for obj in old_ot_data:
         #    print(obj)
         #for obj in new_ot_data:
@@ -92,10 +96,10 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         return self.render_to_json_response(serialized_data)
 
     def render_to_response(self, context):
-        if self.request.is_ajax():
-            return self.render_to_json_response(context)
-        else:
-            return super(OTChartView, self).render_to_response(context)
+        #if self.request.is_ajax():
+        #    return self.render_to_json_response(context)
+        #else:
+        return super(OTChartView, self).render_to_response(context)
 
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help

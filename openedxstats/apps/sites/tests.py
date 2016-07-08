@@ -7,8 +7,12 @@ from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User
 from datetime import datetime
+import json
 from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
+from openedxstats.apps.sites.views import OTChartView
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.serializers import serialize
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -374,4 +378,41 @@ class ModelsTestCase(TestCase):
         self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
         self.assertEqual(str(sitegeozone1), "https://www.κόσμε.co---Greece")
         self.assertEqual(str(geozone2), "\u00e9")
+
+
+class OTChartTestCase(TestCase):
+    def setUp(self):
+        user = User.objects.create_user('testuser', 'testuser@edx.com', 'password')
+        if user is None:
+            self.fail("Could not create testuser in setUp()")
+        self.client.login(username='testuser', password='password')
+
+    def test_nothing_imported_from_ajax_call(self):
+        # Ajax request
+        response = self.client.post('/sites/ot_chart/', context_type='application/json',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), json.dumps("[]"))
+
+    # FIXME
+    def test_json_data_returned_after_ajax_call(self):
+        snapshot = SiteSummarySnapshot(
+            timestamp=datetime(2016, 7, 1, 0, 0, 0),
+            num_sites=100,
+            num_courses=1000,
+            notes="test"
+        )
+        snapshot.save()
+        # Ajax request
+        response = self.client.post('/sites/ot_chart/', context_type='application/json',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        expected_json = serialize('json', [snapshot, ])
+        response_json = json.loads(response.content.decode())
+
+        print(expected_json)
+        print(response_json)
+        self.assertEqual(expected_json, [item[0] for item in response_json])
+
+
 
