@@ -7,9 +7,11 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.core import serializers
 from django.http import JsonResponse
+from django.db.models import Count, Sum, Q
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot
-from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
+from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 import re
+from datetime import datetime, date, timedelta
 
 
 class ListView(generic.ListView):
@@ -44,9 +46,49 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
     template_name = 'sites/ot_chart.html'
     context_object_name = 'snapshot_list'
 
+    def daterange(self, start_date, end_date):
+        """
+        This function is used to generate a date range, with one day increments. Notice the +1 adjustment on day, and -1
+        adjustment on seconds. This is used to ensure each day is actually a datetime of the last second of that day, to
+        allow for correct aggregation when querying the database with these dates.
+        """
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(n+1, seconds=-1)
+
+    def generate_summary_data(self, start_datetime):
+        """
+        Generate site total and course totals by day since ending of site summary snapshots were recorded
+        """
+        daily_summary_obj_list = []
+        for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
+            day_stats = Site.objects.filter(
+                Q(active_start_date__lte=day) & (Q(active_end_date__gte=day) | Q(active_end_date=None))).values(
+                'active_start_date').aggregate(
+                sites=Count('active_start_date'), courses=Sum('course_count')
+            )
+            daily_summary_obj = SiteSummarySnapshot(
+                timestamp=day,
+                num_sites=day_stats['sites'],
+                num_courses=day_stats['courses'],
+                notes="Auto-generated day summary"
+            )
+            daily_summary_obj_list.append(daily_summary_obj)
+        return daily_summary_obj_list
+
     def post(self, request, *args, **kwargs):
-        queryset = SiteSummarySnapshot.objects.all()
-        serialized_data = serializers.serialize('json', queryset)
+        # Get old data (pre-historical tracking implementation)
+        old_ot_data = list(SiteSummarySnapshot.objects.all())
+        # Gets oldest site summary snapshot from db, after this point we will generate statistics from site versions
+        start_datetime = SiteSummarySnapshot.objects.all().order_by('-timestamp').first().timestamp + timedelta(days=1)
+        # Generate new data
+        new_ot_data = self.generate_summary_data(start_datetime)
+
+        #for obj in old_ot_data:
+        #    print(obj)
+        #for obj in new_ot_data:
+        #    print(obj)
+
+        serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
         return self.render_to_json_response(serialized_data)
 
     def render_to_response(self, context):

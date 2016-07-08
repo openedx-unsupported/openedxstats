@@ -93,7 +93,6 @@
                         if (snapshotList[x].hasOwnProperty('fields')) {
                             for (var attr in snapshotList[x].fields) {
                                 if (snapshotList[x].fields.hasOwnProperty(attr)) {
-                                    //console.log(snapshotList[x].fields[attr]);
                                     var value = snapshotList[x].fields[attr];
                                     // create data set for chart
                                     switch (attr) {
@@ -132,8 +131,6 @@
                         sites.push([otTimestamps[x], otSites[x]]);
                         courses.push([otTimestamps[x], otCourses[x]]);
                     }
-                    console.log(sites);
-
                     $.plot("#otChart", [
                         {data: sites, label: "Sites", color: "#0000ff"},
                         {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
