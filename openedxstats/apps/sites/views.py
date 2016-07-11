@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.views import generic
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.core import serializers
@@ -35,7 +35,8 @@ class SiteDelete(generic.DeleteView):
 # To allow for JSON response for OTChartView
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
-        return JsonResponse(self.get_data(context), safe=False, **response_kwargs)
+        #return JsonResponse(self.get_data(context), safe=False, **response_kwargs)
+        return HttpResponse(self.get_data(context), content_type='application/json', **response_kwargs)
 
     def get_data(self, context):
         return context
@@ -62,7 +63,8 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         daily_summary_obj_list = []
         for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
             day_stats = Site.objects.filter(
-                Q(active_start_date__lte=day) & (Q(active_end_date__gte=day) | Q(active_end_date=None))).values(
+                Q(course_count__gt=0) & Q(active_start_date__lte=day) &
+                (Q(active_end_date__gte=day) | Q(active_end_date=None))).values(
                 'active_start_date').aggregate(
                 sites=Count('active_start_date'), courses=Sum('course_count')
             )
@@ -73,6 +75,7 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
                 notes="Auto-generated day summary"
             )
             daily_summary_obj_list.append(daily_summary_obj)
+
         return daily_summary_obj_list
 
     def post(self, request, *args, **kwargs):
@@ -86,13 +89,8 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
             # Generate new data
             new_ot_data = self.generate_summary_data(start_datetime)
 
-        # TODO: Remove
-        #for obj in old_ot_data:
-        #    print(obj)
-        #for obj in new_ot_data:
-        #    print(obj)
-
         serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
+        #serialized_data = old_ot_data+new_ot_data
         return self.render_to_json_response(serialized_data)
 
     def render_to_response(self, context):

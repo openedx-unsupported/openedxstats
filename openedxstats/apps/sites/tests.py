@@ -392,9 +392,8 @@ class OTChartTestCase(TestCase):
         response = self.client.post('/sites/ot_chart/', context_type='application/json',
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode(), json.dumps("[]"))
+        self.assertEqual(response.content.decode(), json.dumps([]))
 
-    # FIXME
     def test_json_data_returned_after_ajax_call(self):
         snapshot = SiteSummarySnapshot(
             timestamp=datetime(2016, 7, 1, 0, 0, 0),
@@ -407,12 +406,6 @@ class OTChartTestCase(TestCase):
         response = self.client.post('/sites/ot_chart/', context_type='application/json',
                                     HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code, 200)
-        expected_json = serialize('json', [snapshot, ])
+        expected_json = json.loads(serialize('json', [snapshot]))
         response_json = json.loads(response.content.decode())
-
-        print(expected_json)
-        print(response_json)
-        self.assertEqual(expected_json, [item[0] for item in response_json])
-
-
-
+        self.assertEqual(expected_json[0], response_json[0])

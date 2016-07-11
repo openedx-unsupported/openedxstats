@@ -56,14 +56,15 @@ def check_for_required_cols(header_row):
     required_cols = list(REQUIRED_COLS)
     checked_cols = []
     for col in header_row:
-        if col in required_cols:
-            required_cols.remove(col)
-        if col in checked_cols:
-            raise CommandError("Duplicate column detected: %s" % col)
-        if (col == 'last_checked' and 'active_start_date' in checked_cols)\
-                or (col == 'active_start_date' and 'last_checked' in checked_cols):
+        col_name = str.lower(col).strip()
+        if col_name in required_cols:
+            required_cols.remove(col_name)
+        if col_name in checked_cols:
+            raise CommandError("Duplicate column detected: %s" % col_name)
+        if (col_name == 'last_checked' and 'active_start_date' in checked_cols)\
+                or (col_name == 'active_start_date' and 'last_checked' in checked_cols):
             raise CommandError("Can't have both a 'last_checked' and 'active_start_date' column!")
-        checked_cols.append(col)
+        checked_cols.append(col_name)
 
     if len(required_cols) > 0:
         raise CommandError("Missing required cols in csv file: %s" % required_cols)
