@@ -75,7 +75,6 @@
 
             // Declare vars
             var jsonToSend = {'csrfmiddlewaretoken': csrftoken};
-            var snapshotList;
             var otTimestamps = [];
             var otSites = [];
             var otCourses = [];
@@ -89,12 +88,11 @@
                 dataType: 'json',
                 type: 'POST',
                 success: function (data) {
-                    snapshotList = data;
-                    for (var x in snapshotList) {
-                        if (snapshotList[x].hasOwnProperty('fields')) {
-                            for (var attr in snapshotList[x].fields) {
-                                if (snapshotList[x].fields.hasOwnProperty(attr)) {
-                                    var value = snapshotList[x].fields[attr];
+                    for (var x in data) {
+                        if (data[x].hasOwnProperty('fields')) {
+                            for (var attr in data[x].fields) {
+                                if (data[x].fields.hasOwnProperty(attr)) {
+                                    var value = data[x].fields[attr];
                                     // create data set for chart
                                     switch (attr) {
                                         case 'timestamp':
@@ -110,7 +108,7 @@
                                             otNotes.push(value);
                                             break;
                                         default:
-                                            console.error("This was not a field: " + attr + ": " + snapshotList[x].fields[attr]);
+                                            console.error("This was not a field: " + attr + ": " + data[x].fields[attr]);
                                     }
                                 }
                             }

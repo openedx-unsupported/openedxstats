@@ -52,20 +52,22 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         allow for correct aggregation when querying the database with these dates.
         """
         for n in range(int((end_date - start_date).days)):
-            yield start_date + timedelta(n+1, seconds=-1)
+            yield start_date + timedelta(days=n+1, seconds=-1)
 
     def generate_summary_data(self, start_datetime):
         """
         Generate site total and course totals by day since ending of site summary snapshots were recorded
         """
         daily_summary_obj_list = []
+        # Generate a summary of total sites and courses active for each day in a range of dates
         for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
+            # Query to get all site versions that are active within the specified date period
             day_stats = Site.objects.filter(
                 Q(course_count__gt=0) & Q(active_start_date__lte=day) &
-                (Q(active_end_date__gte=day) | Q(active_end_date=None))).values(
-                'active_start_date').aggregate(
-                sites=Count('active_start_date'), courses=Sum('course_count')
-            )
+                (Q(active_end_date__gte=day) | Q(active_end_date=None))
+            ).values('active_start_date').aggregate(sites=Count('active_start_date'), courses=Sum('course_count'))
+
+            # Generate summary object for day
             daily_summary_obj = SiteSummarySnapshot(
                 timestamp=day,
                 num_sites=day_stats['sites'],
@@ -104,7 +106,7 @@ def add_site(request):
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
             new_site = form.save(commit=False)
-            new_form_created_time = new_site.active_start_date #form.cleaned_data.pop('active_start_date')
+            new_form_created_time = new_site.active_start_date
 
             if Site.objects.filter(url=new_site.url).count() > 0:
                 next_most_recent_version_of_site = None

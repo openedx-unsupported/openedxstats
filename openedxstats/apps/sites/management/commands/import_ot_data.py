@@ -40,7 +40,7 @@ def check_for_required_cols(header_row):
     required_cols = list(REQUIRED_COLS)
     checked_cols = []
     for col in header_row:
-        col_name = str.lower(col).strip()
+        col_name = col.lower().strip()
         if col_name in required_cols:
             required_cols.remove(col_name)
         if col_name in checked_cols:
@@ -63,7 +63,7 @@ def db_check():
             print("Rows already detected in SiteSummarySnapshot DB table, importing new data could/"
                   " result in errors or duplicates.")
             user_input = str(input("Continue with import? Enter 'yes' or 'no': "))
-            if str.lower(user_input).strip() != "yes":
+            if user_input.lower().strip() != "yes":
                 print("Exiting...")
                 sys.exit()
         except ValueError:
@@ -97,7 +97,7 @@ def import_data(csvfile):
         new_snapshot = SiteSummarySnapshot()
 
         for icol,col in enumerate(row):
-            col_name = str.lower(header_row[icol]).strip()
+            col_name = header_row[icol].lower().strip()
             if col_name in IGNORED_COLS:
                 continue
             if col_name == 'when':
