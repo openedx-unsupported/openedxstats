@@ -6,21 +6,19 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.models import User
-from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone
+from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
 import re
 
 
 class ListView(generic.ListView):
     model = Site
-
     template_name = 'sites/sites_list.html'
     context_object_name = 'sites_list'
 
 
 class SiteDetailView(generic.DetailView):
     model = Site
-
     template_name = 'sites/site_detail.html'
     context_object_name = 'site'
 
@@ -29,6 +27,12 @@ class SiteDelete(generic.DeleteView):
     model = Site
     template_name = 'sites/delete_site.html'
     success_url = reverse_lazy('sites:sites_list')
+
+
+class OTChartView(generic.ListView):
+    model = SiteSummarySnapshot
+    template_name = 'sites/ot_chart.html'
+    context_object_name = 'site_summary_list'
 
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
