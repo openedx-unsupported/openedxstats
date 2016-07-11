@@ -95,8 +95,6 @@ Functionality
 - Data sorting
 - Keyword searching
 - Historical data tracking and searching
-
-*Coming soon*
 - Live updated graphs incorporating historical data
 
 
