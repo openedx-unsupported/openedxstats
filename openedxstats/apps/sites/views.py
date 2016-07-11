@@ -5,7 +5,8 @@ from django.views import generic
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.core import serializers
+from django.http import JsonResponse
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
 import re
@@ -29,10 +30,30 @@ class SiteDelete(generic.DeleteView):
     success_url = reverse_lazy('sites:sites_list')
 
 
-class OTChartView(generic.ListView):
+# To allow for JSON response for OTChartView
+class JSONResponseMixin(object):
+    def render_to_json_response(self, context, **response_kwargs):
+        return JsonResponse(self.get_data(context), safe=False, **response_kwargs)
+
+    def get_data(self, context):
+        return context
+
+
+class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponseMixin, generic.list.BaseListView):
     model = SiteSummarySnapshot
     template_name = 'sites/ot_chart.html'
-    context_object_name = 'site_summary_list'
+    context_object_name = 'snapshot_list'
+
+    def post(self, request, *args, **kwargs):
+        queryset = SiteSummarySnapshot.objects.all()
+        serialized_data = serializers.serialize('json', queryset)
+        return self.render_to_json_response(serialized_data)
+
+    def render_to_response(self, context):
+        if self.request.is_ajax():
+            return self.render_to_json_response(context)
+        else:
+            return super(OTChartView, self).render_to_response(context)
 
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
