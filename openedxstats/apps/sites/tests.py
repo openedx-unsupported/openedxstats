@@ -6,9 +6,12 @@ from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
+import json
 from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
+from django.core.serializers import serialize
+from openedxstats.apps.sites.views import OTChartView
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -121,9 +124,7 @@ class SubmitSiteFormTestCase(TestCase):
     """
 
     def setUp(self):
-        user = User.objects.create_user('testuser', 'testuser@edx.com', 'password')
-        if user is None:
-            self.fail("Could not create testuser in setUp()")
+        User.objects.create_user('testuser', 'testuser@edx.com', 'password')
         self.client.login(username='testuser', password='password')
 
     def test_form_validation_for_blank_url(self):
@@ -374,4 +375,46 @@ class ModelsTestCase(TestCase):
         self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
         self.assertEqual(str(sitegeozone1), "https://www.κόσμε.co---Greece")
         self.assertEqual(str(geozone2), "\u00e9")
+
+
+class OTChartTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('testuser', 'testuser@edx.com', 'password')
+        self.client.login(username='testuser', password='password')
+
+    def test_nothing_imported_from_ajax_call(self):
+        # Ajax request
+        response = self.client.post('/sites/ot_chart/', context_type='application/json',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), json.dumps([]))
+
+    def test_json_data_returned_after_ajax_call(self):
+        snapshot_list = []
+        snapshot = SiteSummarySnapshot(
+            timestamp=datetime(2016, 7, 1, 0, 0, 0),
+            num_sites=100,
+            num_courses=1000,
+            notes="test"
+        )
+        snapshot_list.append(snapshot)
+        snapshot.save()
+        for date in OTChartView.daterange(OTChartView(), snapshot.timestamp, datetime.now() + timedelta(days=1)):
+            empty_snapshot = SiteSummarySnapshot(
+                timestamp=date,
+                num_sites=0,
+                num_courses=None,
+                notes="Auto-generated day summary"
+            )
+            snapshot_list.append(empty_snapshot)
+
+        # Ajax request
+        response = self.client.post('/sites/ot_chart/', context_type='application/json',
+                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(response.status_code, 200)
+        expected_json = json.loads(serialize('json', [snapshot]))
+        response_json = json.loads(response.content.decode())
+
+        for i, item in enumerate(expected_json):
+            self.assertEqual(expected_json[i], response_json[i])
 

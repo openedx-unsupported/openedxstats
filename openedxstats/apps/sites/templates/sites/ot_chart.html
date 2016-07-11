@@ -5,6 +5,7 @@
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.time.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.axislabels.js' %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.js' %}"></script>
     <script>
         $(document).ready(function () {
             var url = window.location;
@@ -74,7 +75,6 @@
 
             // Declare vars
             var jsonToSend = {'csrfmiddlewaretoken': csrftoken};
-            var snapshotList;
             var otTimestamps = [];
             var otSites = [];
             var otCourses = [];
@@ -88,13 +88,11 @@
                 dataType: 'json',
                 type: 'POST',
                 success: function (data) {
-                    snapshotList = JSON.parse(data);
-                    for (var x in snapshotList) {
-                        if (snapshotList[x].hasOwnProperty('fields')) {
-                            for (var attr in snapshotList[x].fields) {
-                                if (snapshotList[x].fields.hasOwnProperty(attr)) {
-                                    //console.log(snapshotList[x].fields[attr]);
-                                    var value = snapshotList[x].fields[attr];
+                    for (var x in data) {
+                        if (data[x].hasOwnProperty('fields')) {
+                            for (var attr in data[x].fields) {
+                                if (data[x].fields.hasOwnProperty(attr)) {
+                                    var value = data[x].fields[attr];
                                     // create data set for chart
                                     switch (attr) {
                                         case 'timestamp':
@@ -110,7 +108,7 @@
                                             otNotes.push(value);
                                             break;
                                         default:
-                                            console.error("This was not a field: " + attr + ": " + snapshotList[x].fields[attr]);
+                                            console.error("This was not a field: " + attr + ": " + data[x].fields[attr]);
                                     }
                                 }
                             }
@@ -132,12 +130,22 @@
                         sites.push([otTimestamps[x], otSites[x]]);
                         courses.push([otTimestamps[x], otCourses[x]]);
                     }
-                    console.log(sites);
-
                     $.plot("#otChart", [
                         {data: sites, label: "Sites", color: "#0000ff"},
                         {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
                     ], {
+                        series: {
+                            lines: {
+                                show: true
+                            },
+                            points: {
+                                show: true
+                            }
+                        },
+                        grid: {
+                            hoverable: true,
+                            clickable: true
+                        },
                         xaxes: [{mode: "time"}],
                         yaxes: [
                             {
@@ -165,6 +173,26 @@
                             }
                         ],
                         legend: {position: "nw"}
+                    });
+                    // Enable tooltip on point hover
+                    $("<div id='tooltip'></div>").css({
+                        position: "absolute",
+                        display: "none",
+                        border: "1px solid #fdd",
+                        padding: "2px",
+                        "background-color": "#fee",
+                        opacity: 0.80
+                    }).appendTo("body");
+                    $("#otChart").bind("plothover", function (event, pos, item) {
+                        if (item) {
+                            var x = item.datapoint[0],
+                                    y = item.datapoint[1];
+                            $("#tooltip").html(moment(x).format("MM-DD-YYYY") + ": " + y + " " + item.series.label)
+                                    .css({top: item.pageY + 5, left: item.pageX + 5})
+                                    .fadeIn(200);
+                        } else {
+                            $("#tooltip").hide();
+                        }
                     });
                 });
             }

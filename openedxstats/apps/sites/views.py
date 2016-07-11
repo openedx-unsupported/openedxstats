@@ -2,14 +2,15 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.views import generic
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.core import serializers
-from django.http import JsonResponse
+from django.db.models import Count, Sum, Q
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot
-from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm, UserForm
+from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 import re
+from datetime import datetime, timedelta
 
 
 class ListView(generic.ListView):
@@ -33,7 +34,7 @@ class SiteDelete(generic.DeleteView):
 # To allow for JSON response for OTChartView
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
-        return JsonResponse(self.get_data(context), safe=False, **response_kwargs)
+        return HttpResponse(self.get_data(context), content_type='application/json', **response_kwargs)
 
     def get_data(self, context):
         return context
@@ -44,16 +45,55 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
     template_name = 'sites/ot_chart.html'
     context_object_name = 'snapshot_list'
 
+    def daterange(self, start_date, end_date):
+        """
+        This function is used to generate a date range, with one day increments. Notice the +1 adjustment on day, and -1
+        adjustment on seconds. This is used to ensure each day is actually a datetime of the last second of that day, to
+        allow for correct aggregation when querying the database with these dates.
+        """
+        for n in range(int((end_date - start_date).days)):
+            yield start_date + timedelta(days=n+1, seconds=-1)
+
+    def generate_summary_data(self, start_datetime):
+        """
+        Generate site total and course totals by day since ending of site summary snapshots were recorded
+        """
+        daily_summary_obj_list = []
+        # Generate a summary of total sites and courses active for each day in a range of dates
+        for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
+            # Query to get all site versions that are active within the specified date period
+            day_stats = Site.objects.filter(
+                Q(course_count__gt=0) & Q(active_start_date__lte=day) &
+                (Q(active_end_date__gte=day) | Q(active_end_date=None))
+            ).values('active_start_date').aggregate(sites=Count('active_start_date'), courses=Sum('course_count'))
+
+            # Generate summary object for day
+            daily_summary_obj = SiteSummarySnapshot(
+                timestamp=day,
+                num_sites=day_stats['sites'],
+                num_courses=day_stats['courses'],
+                notes="Auto-generated day summary"
+            )
+            daily_summary_obj_list.append(daily_summary_obj)
+
+        return daily_summary_obj_list
+
     def post(self, request, *args, **kwargs):
-        queryset = SiteSummarySnapshot.objects.all()
-        serialized_data = serializers.serialize('json', queryset)
+        old_ot_data = []
+        new_ot_data = []
+        if SiteSummarySnapshot.objects.count() > 0 or Site.objects.count() > 0:
+            # Get old data (pre-historical tracking implementation)
+            old_ot_data = list(SiteSummarySnapshot.objects.all())
+            # Gets oldest site summary snapshot from db, after this point we will generate statistics from site versions
+            start_datetime = SiteSummarySnapshot.objects.all().order_by('-timestamp').first().timestamp + timedelta(days=1)
+            # Generate new data
+            new_ot_data = self.generate_summary_data(start_datetime)
+
+        serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
         return self.render_to_json_response(serialized_data)
 
     def render_to_response(self, context):
-        if self.request.is_ajax():
-            return self.render_to_json_response(context)
-        else:
-            return super(OTChartView, self).render_to_response(context)
+        return super(OTChartView, self).render_to_response(context)
 
 
 # TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
@@ -66,7 +106,7 @@ def add_site(request):
         form = SiteForm(request.POST, instance=s)
         if form.is_valid():
             new_site = form.save(commit=False)
-            new_form_created_time = new_site.active_start_date #form.cleaned_data.pop('active_start_date')
+            new_form_created_time = new_site.active_start_date
 
             if Site.objects.filter(url=new_site.url).count() > 0:
                 next_most_recent_version_of_site = None
