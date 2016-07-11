@@ -6,12 +6,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.core import serializers
-from django.http import JsonResponse
 from django.db.models import Count, Sum, Q
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 import re
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 
 
 class ListView(generic.ListView):
@@ -35,7 +34,6 @@ class SiteDelete(generic.DeleteView):
 # To allow for JSON response for OTChartView
 class JSONResponseMixin(object):
     def render_to_json_response(self, context, **response_kwargs):
-        #return JsonResponse(self.get_data(context), safe=False, **response_kwargs)
         return HttpResponse(self.get_data(context), content_type='application/json', **response_kwargs)
 
     def get_data(self, context):
@@ -90,13 +88,9 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
             new_ot_data = self.generate_summary_data(start_datetime)
 
         serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
-        #serialized_data = old_ot_data+new_ot_data
         return self.render_to_json_response(serialized_data)
 
     def render_to_response(self, context):
-        #if self.request.is_ajax():
-        #    return self.render_to_json_response(context)
-        #else:
         return super(OTChartView, self).render_to_response(context)
 
 

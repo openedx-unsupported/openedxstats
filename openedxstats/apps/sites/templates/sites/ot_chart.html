@@ -89,7 +89,6 @@
                 dataType: 'json',
                 type: 'POST',
                 success: function (data) {
-                    //snapshotList = JSON.parse(data);
                     snapshotList = data;
                     for (var x in snapshotList) {
                         if (snapshotList[x].hasOwnProperty('fields')) {

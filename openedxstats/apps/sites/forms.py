@@ -9,17 +9,8 @@ default_url_errors = {
 }
 
 class SiteForm(forms.ModelForm):
-    #site_type = forms.CharField(max_length=255, help_text="Type of site, enter 'General' if unsure.")
-    #name = forms.CharField(max_length=255)
     url = forms.URLField(max_length=1000, required=True, error_messages=default_url_errors)
     course_count = forms.IntegerField(min_value=0, required=False)
-    #last_checked = forms.DateField()
-    #org_type = forms.CharField(max_length=255, help_text="E.g. Industrial, Academic, etc.")
-    #language = forms.ModelMultipleChoiceField(Language.objects.all())   # Does the same thing as the one below
-    #geography = forms.SelectMultiple()
-    #github_fork = forms.URLField()
-    #notes = forms.CharField(widget=forms.TextInput)
-    #course_type = forms.ChoiceField(choices=COURSE_TYPE_CHOICES)
     registered_user_count = forms.IntegerField(min_value=0, required=False)
     active_learner_count = forms.IntegerField(min_value=0, required=False)
 
