@@ -119,10 +119,6 @@
                                 }
                             }
                         }
-                        if (otTimestamps.length <= 0) {
-                            fetchSummaryData();
-                            return;
-                        }
                         initializeChart();
                     },
                     failure: function (data) {
@@ -205,6 +201,7 @@
                     }
                 });
             }
+
             // Execute
             fetchSummaryData();
         }
