@@ -85,122 +85,128 @@
             var otNotes = [];
 
             // Grab data for chart
-            $.ajax({
-                url: location.href,
-                data: jsonToSend,
-                async: false,
-                contentType: 'application/json',
-                dataType: 'json',
-                type: 'POST',
-                success: function (data) {
-                    for (var x in data) {
-                        if (data[x].hasOwnProperty('fields')) {
-                            for (var attr in data[x].fields) {
-                                if (data[x].fields.hasOwnProperty(attr)) {
-                                    var value = data[x].fields[attr];
-                                    // create data set for chart
-                                    switch (attr) {
-                                        case 'timestamp':
-                                            otTimestamps.push(Math.round(new Date(value).getTime()));
-                                            break;
-                                        case 'num_sites':
-                                            otSites.push(value);
-                                            break;
-                                        case 'num_courses':
-                                            otCourses.push(value);
-                                            break;
-                                        case 'notes':
-                                            otNotes.push(value);
-                                            break;
-                                        default:
-                                            console.error("This was not a field: " + attr + ": " + data[x].fields[attr]);
+            function fetchSummaryData() {
+                $.ajax({
+                    url: location.href,
+                    data: jsonToSend,
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (data) {
+                        for (var x in data) {
+                            if (data[x].hasOwnProperty('fields')) {
+                                for (var attr in data[x].fields) {
+                                    if (data[x].fields.hasOwnProperty(attr)) {
+                                        var value = data[x].fields[attr];
+                                        // create data set for chart
+                                        switch (attr) {
+                                            case 'timestamp':
+                                                otTimestamps.push(Math.round(new Date(value).getTime()));
+                                                break;
+                                            case 'num_sites':
+                                                otSites.push(value);
+                                                break;
+                                            case 'num_courses':
+                                                otCourses.push(value);
+                                                break;
+                                            case 'notes':
+                                                otNotes.push(value);
+                                                break;
+                                            default:
+                                                console.error("This was not a field: " + attr + ": " + data[x].fields[attr]);
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    initializeChart();
-                },
-                failure: function (data) {
-                    console.error("Error fetching data for chart!");
-                }
-            });
-
-            function initializeChart() {
-                // Create chart
-                $(function () {
-                    var sites = [];
-                    var courses = [];
-                    for (x in otSites) {
-                        sites.push([otTimestamps[x], otSites[x]]);
-                        courses.push([otTimestamps[x], otCourses[x]]);
-                    }
-                    $.plot("#otChart", [
-                        {data: sites, label: "Sites", color: "#0000ff"},
-                        {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
-                    ], {
-                        series: {
-                            lines: {
-                                show: true
-                            },
-                            points: {
-                                show: true
-                            }
-                        },
-                        grid: {
-                            hoverable: true,
-                            clickable: true
-                        },
-                        xaxes: [{mode: "time"}],
-                        yaxes: [
-                            {
-                                min: 0,
-                                position: 'left',
-                                axisLabel: "Sites",
-                                axisLabelUseCanvas: true,
-                                axisLabelPadding: 15,
-                                axisLabelFontSizePixels: 20,
-                                font: {
-                                    color: "#0000ff"
-                                }
-                            },
-                            {
-                                min: 0,
-                                alignTicksWithAxis: true,
-                                position: 'right',
-                                axisLabel: "Courses",
-                                axisLabelUseCanvas: true,
-                                axisLabelPadding: 15,
-                                axisLabelFontSizePixels: 20,
-                                font: {
-                                    color: "#ff0000"
-                                }
-                            }
-                        ],
-                        legend: {position: "nw"}
-                    });
-                    // Enable tooltip on point hover
-                    $("<div id='tooltip'></div>").css({
-                        position: "absolute",
-                        display: "none",
-                        border: "1px solid #fdd",
-                        padding: "2px",
-                        "background-color": "#fee",
-                        opacity: 0.80
-                    }).appendTo("body");
-                    $("#otChart").bind("plothover", function (event, pos, item) {
-                        if (item) {
-                            var x = item.datapoint[0],
-                                    y = item.datapoint[1];
-                            $("#tooltip").html(moment(x).format("MM-DD-YYYY") + ": " + y + " " + item.series.label)
-                                    .css({top: item.pageY + 5, left: item.pageX + 5})
-                                    .fadeIn(200);
-                        } else {
-                            $("#tooltip").hide();
+                        if (otTimestamps.length <= 0) {
+                            fetchSummaryData();
+                            return;
                         }
-                    });
+                        initializeChart();
+                    },
+                    failure: function (data) {
+                        console.error("Error fetching data for chart!");
+                    }
                 });
             }
+
+            // Initialize chart
+            function initializeChart() {
+                // Create chart
+                var sites = [];
+                var courses = [];
+                for (x in otSites) {
+                    sites.push([otTimestamps[x], otSites[x]]);
+                    courses.push([otTimestamps[x], otCourses[x]]);
+                }
+                $.plot("#otChart", [
+                    {data: sites, label: "Sites", color: "#0000ff"},
+                    {data: courses, label: "Courses", yaxis: 2, color: "#ff0000"}
+                ], {
+                    series: {
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: true
+                        }
+                    },
+                    grid: {
+                        hoverable: true,
+                        clickable: true
+                    },
+                    xaxes: [{mode: "time"}],
+                    yaxes: [
+                        {
+                            min: 0,
+                            position: 'left',
+                            axisLabel: "Sites",
+                            axisLabelUseCanvas: true,
+                            axisLabelPadding: 15,
+                            axisLabelFontSizePixels: 20,
+                            font: {
+                                color: "#0000ff"
+                            }
+                        },
+                        {
+                            min: 0,
+                            alignTicksWithAxis: true,
+                            position: 'right',
+                            axisLabel: "Courses",
+                            axisLabelUseCanvas: true,
+                            axisLabelPadding: 15,
+                            axisLabelFontSizePixels: 20,
+                            font: {
+                                color: "#ff0000"
+                            }
+                        }
+                    ],
+                    legend: {position: "nw"}
+                });
+                // Enable tooltip on point hover
+                $("<div id='tooltip'></div>").css({
+                    position: "absolute",
+                    display: "none",
+                    border: "1px solid #fdd",
+                    padding: "2px",
+                    "background-color": "#fee",
+                    opacity: 0.80
+                }).appendTo("body");
+                $("#otChart").bind("plothover", function (event, pos, item) {
+                    if (item) {
+                        var x = item.datapoint[0],
+                                y = item.datapoint[1];
+                        $("#tooltip").html(moment(x).format("MM-DD-YYYY") + ": " + y + " " + item.series.label)
+                                .css({top: item.pageY + 5, left: item.pageX + 5})
+                                .fadeIn(200);
+                    } else {
+                        $("#tooltip").hide();
+                    }
+                });
+            }
+            // Execute
+            fetchSummaryData();
         }
     </script>
 {% endblock %}
