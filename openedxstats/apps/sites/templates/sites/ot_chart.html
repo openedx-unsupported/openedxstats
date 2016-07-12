@@ -88,6 +88,7 @@
             $.ajax({
                 url: location.href,
                 data: jsonToSend,
+                async: false,
                 contentType: 'application/json',
                 dataType: 'json',
                 type: 'POST',
