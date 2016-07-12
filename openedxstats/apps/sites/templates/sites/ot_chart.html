@@ -86,13 +86,10 @@
 
             // Grab data for chart
             function fetchSummaryData() {
-                $.ajax({
-                    url: location.href,
-                    data: jsonToSend,
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    type: 'POST',
-                    success: function (data) {
+                var jqxhr = $.post(
+                    location.href,
+                    jsonToSend,
+                    function (data) {
                         for (var x in data) {
                             if (data[x].hasOwnProperty('fields')) {
                                 for (var attr in data[x].fields) {
@@ -120,11 +117,8 @@
                             }
                         }
                         initializeChart();
-                    },
-                    failure: function (data) {
-                        console.error("Error fetching data for chart!");
                     }
-                });
+                );
             }
 
             // Initialize chart

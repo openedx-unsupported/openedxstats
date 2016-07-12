@@ -21,10 +21,10 @@ sys.path.insert(0, root('apps'))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'CHANGE THIS!!!'
+SECRET_KEY = 'nedhatestriaging'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 IN_TESTING = sys.argv[1:2] == ['test']
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.herokuapp.com']
