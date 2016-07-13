@@ -96,7 +96,9 @@ Functionality
 - Keyword searching
 - Historical data tracking and searching
 - Live updated graphs incorporating historical data
-
+*Planned features:*
+- Quick "edit" functionality on most recent site versions allows for quick changes when creating a new version of the
+  same site (**note:** edit button is non-functional at this time!)
 
 License
 -------
