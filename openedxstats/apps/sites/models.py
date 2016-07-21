@@ -55,7 +55,7 @@ class Site(models.Model):
     active_learner_count = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return self.name + ' --- ' + self.url
+        return self.name + '---' + str(self.pk) + ' --- ' + self.url
 
     # Used for displaying values in admin view
     def get_languages(self):

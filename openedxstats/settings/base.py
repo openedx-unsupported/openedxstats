@@ -24,7 +24,7 @@ sys.path.insert(0, root('apps'))
 SECRET_KEY = 'nedhatestriaging'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 IN_TESTING = sys.argv[1:2] == ['test']
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.herokuapp.com']

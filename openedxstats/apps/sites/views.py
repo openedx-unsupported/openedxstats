@@ -96,46 +96,71 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         return super(OTChartView, self).render_to_response(context)
 
 
-# TODO: Implement updating sites, not just adding. Refer to http://www.ianrolfe.com/page/django-many-to-many-tables-and-forms/ for help
-def add_site(request):
+# TODO: Tests to write:
+# - Test updating normally with auto set time
+# - Test updating to a time that is before start date of original version (FAIL)
+# - Test trying to update a non-current version (and test navigating to the update page) (FAIL - FAIL)
+def add_site(request, pk=None):
     # This is where I will add an if statement to check if we are passing in an existing id or making a new object
     # For now, we will just make a new object
-    s = Site()
+    if pk:
+        s = Site.objects.get(pk=pk)
+        # Do not allow edits of old versions
+        if s.active_end_date is not None:
+            response = HttpResponse()
+            response.status_code = 403
+            return response
+    else:
+        s = Site()
 
     if request.method == 'POST':
         form = SiteForm(request.POST, instance=s)
+
         if form.is_valid():
             new_site = form.save(commit=False)
             new_form_created_time = new_site.active_start_date
 
-            if Site.objects.filter(url=new_site.url).count() > 0:
-                next_most_recent_version_of_site = None
-                for site in Site.objects.filter(url=new_site.url).order_by('active_start_date'):
-                    if site.active_start_date > new_form_created_time:
-                        next_most_recent_version_of_site = site
-                        break
+            if pk: # If updating
+                # We must grab the same object from the DB again, as s is linked to the form and using it here will
+                # cause duplicate key errors
+                old_version = Site.objects.get(pk=pk)
+                old_version.active_end_date = new_form_created_time
+                new_site.pk = None
+                old_version.save()
+            else:
+                # Check if there are other versions of site
+                if Site.objects.filter(url=new_site.url).count() > 0:
+                    next_most_recent_version_of_site = None
+                    # Check if any existing sites were created with a more recent start date
+                    for site in Site.objects.filter(url=new_site.url).order_by('active_start_date'):
+                        if site.active_start_date > new_form_created_time:
+                            next_most_recent_version_of_site = site
+                            break
 
-                if next_most_recent_version_of_site is not None:
-                    # The version being submitted is older than current version
-                    new_site.active_end_date = next_most_recent_version_of_site.active_start_date
-                else:
-                    # The version being submitted is newer than current version
-                    next_most_recent_version_of_site = Site.objects.filter(url=new_site.url).order_by(
-                        '-active_start_date').first()
-                    next_most_recent_version_of_site.active_end_date = new_form_created_time
-                    next_most_recent_version_of_site.save()
+                    if next_most_recent_version_of_site is not None:
+                        # The version being submitted is older than current version
+                        new_site.active_end_date = next_most_recent_version_of_site.active_start_date
+                    else:
+                        # The version being submitted is newer than current version
+                        next_most_recent_version_of_site = Site.objects.filter(url=new_site.url).order_by(
+                            '-active_start_date').first()
+                        next_most_recent_version_of_site.active_end_date = new_form_created_time
+                        next_most_recent_version_of_site.save()
 
             languages = form.cleaned_data.pop('language')
             geozones = form.cleaned_data.pop('geography')
-            new_site.save()
+            new_site.save(force_insert=True)
 
-            # site.language.clear()    # delete existing languages (for if/when I implement update)
+            if pk: # Delete existing languages and geographies if updating to prevent duplicates
+                new_site.language.clear()
+                new_site.geography.clear()
+
             for l in languages:
-                site_language = SiteLanguage.objects.create(language=l, site=s)
+                site_language = SiteLanguage.objects.create(language=l, site=new_site)
                 site_language.save()
 
             for g in geozones:
-                site_geozone = SiteGeoZone.objects.create(geo_zone=g, site=s)
+                site_geozone = SiteGeoZone.objects.create(geo_zone=g, site=new_site)
                 site_geozone.save()
 
             messages.success(request, 'Success! A new site has been added!')
@@ -147,9 +172,17 @@ def add_site(request):
             messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
 
     else:
-        form = SiteForm()
+        if pk:
+            form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
+        else:
+            form = SiteForm()
 
-    return render(request, 'add_site.html', {'form':form})
+    if pk:
+        return render(request, 'add_site.html',
+                      {'form': form, 'post_url': reverse('sites:update_site', args=[pk]), 'page_title': 'Update Site'})
+    else:
+        return render(request, 'add_site.html',
+                      {'form': form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):
