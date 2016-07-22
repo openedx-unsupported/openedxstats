@@ -206,6 +206,7 @@ FAQ
 ---
 
 **Q:** What if the url of one of the sites changes and that needs to be reflected in a new version?
+
 **A:** Unfortunately, there is no support for url changes between versions at the moment.
 
 **Q:**  How do I get credentials to log in?
