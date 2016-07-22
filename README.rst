@@ -57,7 +57,7 @@ virtualenv_, and virtualenvwrapper_ already installed::
 
 Make sure to have postgresql installed **prior** to installing the
 requirements, or it will fail!  If you don't have postgresql installed, we
-recommend using homebrew::
+recommend using homebrew_::
 
     brew install postgresql
 
@@ -72,7 +72,7 @@ Run
 
 To run the program:
 
-1.  Start postgres server (user=postgres, db=openedxstats)
+**1.  Start postgres server (user=postgres, db=openedxstats)** 
     If you do not know how to start a postgres server, make sure you have postgres
     and psql installed on your system and run::
 
@@ -86,14 +86,14 @@ To run the program:
 
 Now you may exit the PSQL prompt.
 
-2.  Start django server
+**2.  Start django server** 
     You may start the django server using the following command::
 
         python manage.py runserver
 
     Make sure you are in the project directory before you run this or it will fail.
 
-3.  [Optional] Import bulk data
+**3.  [Optional] Import bulk data**
     If you wish, you may import data into the database using the included import_sites
     management command. Please look at the comments included in the command source code
     to make sure that you correctly format the csv file, or it will likely fail! Example
@@ -120,21 +120,22 @@ Functionality
 How to Use
 ----------
 
-1.  Authentication
+**1.  Authentication**
     When you first navigate to the website - either hosted on your local machine, or at `openedxstats.herokuapp.com`_
     - you will be prompted with a login page. You will have to be provided with a username and password in order to
     access this site, and the rest of this documentation will assume you have been. Once logged in you will be
     redirected to the Sites List page, where you can view all Open edX Sites currently known about. At any time, you
     may logout by pressing the logout button at the upper right corner of the page.
 
-2.  The Sites List
+**2.  The Sites List**
     This is where all Open edX Site versions will be listed, and is the homepage for the dashboard.
-    a.  Navigating the DataTable
+    
+    **a.  Navigating the DataTable**
         The Sites List page uses the JS DataTables plugin, allowing for easy sorting and viewing of large amounts of
         data. The table is presorted upon page load to show current versions of sites first, ordered by most recently
         created. You may change the sorting at any time by clicking on the desired column in the table. Current versions
         are clearly marked with a green check.
-    b.  Site Action Buttons
+    **b.  Site Action Buttons**
         There are two to three action buttons to the right of every record in the DataTable, which are meant to
         expedite managing the Sites List. The Detail button will bring you to a page that will show all of the
         attributes of that site, rather than just the ones displayed in the DataTable. The Edit button will bring you to
@@ -142,40 +143,40 @@ How to Use
         edits. Be aware that updating a site does not actually update that version, but rather makes a new current
         version with the data you entered. Finally, the Delete button will allow you to delete that site version,
         after a confirmation prompt.
-    c.  Keyword Searching
+    **c.  Keyword Searching**
         You may search the DataTable for any keyword or letter combination in real time by using the bar marked "Search"
         to the upper right of the DataTable.
-    d.  Historic Searching
+    **d.  Historic Searching**
         The search bar to the upper left of the DataTable allows for historical searching. By entering a date/datetime
         into this bar, you will be given a list of all sites that were current *at that time*. This allows you to view
         "snapshots" of what the Sites List contained at different points in time.
 
-3.  Adding a Site Version
+**3.  Adding a Site Version**
     In order to add a new site version, click the "Add Site" on the upper navbar. This will bring you to a form
     that will let you specify the details of this new site version. At a bare minimum, you must enter in a url for
     the version. Be aware that you cannot create a site version with a url *and* active start date that matches that
     of an existing version!
 
-4.  Updating a Site
+**4.  Updating a Site**
     You may only update the *current* version of a site. This prevents you from working off older, obsolete data.
     To update a site, simply click on the Edit button in the action buttons bar to the right of a site version in the
     sites list, or on a site version's detail page. This will bring up the same form used for adding a site version,
     but prepopulated with the information from the version you are editing, allowing for quick, headache-free changes.
 
-5.  Deleting a Site Version
+**5.  Deleting a Site Version**
     There shouldn't be many circumstances in which you need to delete a site version, unless you entered information
     incorrectly while creating it. Deleting old versions will limit your ability to use historical tracking. To delete
     a version, click on the Delete button in the action buttons bar, or on a site version's detail page.
 
-6.  Adding a Language
+**6.  Adding a Language**
     Click on the "Add Language" navbar tab. Fill out the one field form to create a language. It will now be an option
     in the Language selector when adding a site version.
 
-7.  Adding a GeoZone
+**7.  Adding a GeoZone**
     Click on the "Add GeoZone" navbar tab. Fill out the one field form to create a geozone. It will now be an option
     in the GeoZone selector when adding a site version.
 
-8.  Viewing the Over-Time Data Chart
+**8.  Viewing the Over-Time Data Chart**
     The Over-Time (OT) Data Chart is a real-time visualization of the aggregate courses and sites (not versions) since
     the Sites List was first started. Every data point is a snapshot of the courses and site versions current at
     that time. A new data point is created at the end of each day.
@@ -204,15 +205,16 @@ we recommend checking out the docs located here_.
 FAQ
 ---
 
-Q:  What if the url of one of the sites changes and that needs to be reflected in a new version?
-A:  Unfortunately, there is no support for url changes between versions at the moment.
+**Q:** What if the url of one of the sites changes and that needs to be reflected in a new version?
+**A:** Unfortunately, there is no support for url changes between versions at the moment.
 
-Q:  How do I get credentials to log in?
-A:  Speak to a member of the Open edX team to be given access to the site.
+**Q:**  How do I get credentials to log in?
 
-Q:  Can I delete a Language/GeoZone?
-A:  No, you cannot delete a Language/GeoZone at this time, as it is unlikely for languages and geographies to
-    suddenly cease existing.
+**A:**  Speak to a member of the Open edX team to be given access to the site.
+
+**Q:**  Can I delete a Language/GeoZone?
+
+**A:**  No, you cannot delete a Language/GeoZone at this time, as it is unlikely for languages and geographies to suddenly cease existing.
 
 License
 -------
@@ -220,8 +222,9 @@ License
 Please see the file named LICENSE.rst
 
 
-
-.. _Heroku, _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
+.. _homebrew: http://brew.sh/
+.. _Heroku:
+.. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
 .. _Open edX platform: https://open.edx.org/
 .. _pip: https://pip.pypa.io/en/stable/
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/
