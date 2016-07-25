@@ -74,6 +74,10 @@
                         <td><a href="{{ site.url }}"> {{ site.url }}</a></td>
                     </tr>
                     <tr>
+                        <th>Private Instance?</th>
+                        <td>{{ site.is_private_instance }}</td>
+                    </tr>
+                    <tr>
                         <th>Course Count</th>
                         <td>{{ site.course_count|default_if_none:"" }}</td>
                     </tr>

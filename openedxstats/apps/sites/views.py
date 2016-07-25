@@ -63,8 +63,10 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         # Generate a summary of total sites and courses active for each day in a range of dates
         for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
             # Query to get all site versions that are active within the specified date period
+            # We only count public sites with > 0 courses, and count all private sites
             day_stats = Site.objects.filter(
-                Q(course_count__gt=0) & Q(active_start_date__lte=day) &
+                (Q(course_count__gt=0) | Q(is_private_instance=True)) &
+                Q(active_start_date__lte=day) &
                 (Q(active_end_date__gte=day) | Q(active_end_date=None))
             ).values('active_start_date').aggregate(sites=Count('active_start_date'), courses=Sum('course_count'))
 
