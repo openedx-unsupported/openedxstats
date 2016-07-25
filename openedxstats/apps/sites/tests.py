@@ -418,3 +418,120 @@ class OTChartTestCase(TestCase):
         for i, item in enumerate(expected_json):
             self.assertEqual(expected_json[i], response_json[i])
 
+
+# TODO: Tests to write:
+# - Test updating normally with auto set time
+# - Test updating to a time that is before start date of original version (FAIL)
+# - Test trying to update a non-current version (and test navigating to the update page) (FAIL - FAIL)
+class UpdateSiteTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('testuser', 'testuser@edx.com', 'password')
+        self.client.login(username='testuser', password='password')
+
+    def test_updating_with_no_changes(self):
+        new_site = Site(name='TEST', url='https://test.com', active_start_date=datetime(2015, 10, 10, 15, 55),
+                        course_type='SPOC', site_type='General')
+        new_site.save()
+        form_data = {
+            'name': 'TEST',
+            'site_type': 'General',
+            'url': 'https://test.com',
+            'active_start_date': datetime.now(),
+            'course_type': 'SPOC'
+        }
+        form = SiteForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.assertEqual(Site.objects.count(), 1)
+        self.client.post('/sites/update_site/'+str(new_site.pk)+'/', form_data)
+
+        updated_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').first()
+        old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
+        self.assertEqual(Site.objects.count(), 2)
+        self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
+        self.assertEqual(updated_site.course_type, old_site.course_type)
+        self.assertGreater(updated_site.active_start_date, old_site.active_start_date)
+        self.assertEqual(updated_site.active_start_date, old_site.active_end_date)
+        self.assertIsNone(updated_site.active_end_date)
+
+    def test_updating_with_valid_changes(self):
+        new_site = Site(name='TEST', url='https://test.com', active_start_date=datetime(2015, 10, 10, 15, 55),
+                        course_type='SPOC', site_type='General')
+        new_site.save()
+        form_data = {
+            'name': 'TEST2',
+            'site_type': 'General',
+            'url': 'https://test.com',
+            'active_start_date': datetime.now(),
+            'course_type': 'MOOC',
+            'active_learner_count': 50,
+            'notes': 'Some basic changes'
+        }
+        form = SiteForm(data=form_data)
+        self.assertTrue(form.is_valid())
+
+        self.assertEqual(Site.objects.count(), 1)
+        self.client.post('/sites/update_site/'+str(new_site.pk)+'/', form_data)
+
+        updated_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').first()
+        old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
+        self.assertEqual(Site.objects.count(), 2)
+        self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
+        self.assertEqual(updated_site.course_type, 'MOOC')
+        self.assertEqual(updated_site.notes, 'Some basic changes')
+        self.assertEqual(old_site.notes, '')
+        self.assertGreater(updated_site.active_start_date, old_site.active_start_date)
+        self.assertEqual(updated_site.active_start_date, old_site.active_end_date)
+        self.assertIsNone(updated_site.active_end_date)
+
+    def test_updating_to_same_active_start_date(self):
+        new_site = Site(name='TEST', url='https://test.com', active_start_date='2015-10-10',
+                        course_type='SPOC', site_type='General')
+        new_site.save()
+        form_data = {
+            'name': 'TEST',
+            'site_type': 'General',
+            'url': 'https://test.com',
+            'active_start_date': '2015-10-10',
+            'course_type': 'SPOC'
+        }
+        form = SiteForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['__all__'], ["Site with this Url and Active start date already exists."])
+        # Will give an error message
+        response = self.client.post('/sites/update_site/'+str(new_site.pk)+'/', form_data, follow=True)
+        self.assertEqual(Site.objects.count(), 1)
+        storage = response.context['messages']
+        self.assertEqual(len(storage), 1)
+        self.assertIn("Site with this Url and Active start date already exists.", list(storage)[0].message)
+
+    def test_updating_non_current_version(self):
+        outdated_site = Site(name='TEST', url='https://test.com', active_start_date='2015-10-10',
+                             active_end_date='2015-11-11', course_type='SPOC', site_type='General')
+        outdated_site.save()
+        form_data = {
+            'name': 'TEST',
+            'site_type': 'General',
+            'url': 'https://test.com',
+            'active_start_date': '2015-10-10',
+            'course_type': 'SPOC'
+        }
+        # Will give an error message
+        response = self.client.post('/sites/update_site/' + str(outdated_site.pk) + '/', form_data)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(Site.objects.count(), 1)
+        self.assertEqual(Site.objects.get(url='https://test.com'), outdated_site)
+
+    def test_navigating_to_update_page_for_non_current_version(self):
+        outdated_site = Site(name='TEST', url='https://test.com', active_start_date='2015-10-10',
+                             active_end_date='2015-11-11', course_type='SPOC', site_type='General')
+        outdated_site.save()
+        response = self.client.get('/sites/update_site/'+str(outdated_site.pk)+'/')
+        self.assertEqual(Site.objects.count(), 1)
+        self.assertEqual(response.status_code, 403)
+
+    def test_navigating_to_update_page_for_nonexistent_version(self):
+        response = self.client.get('/sites/update_site/999999999/')
+        self.assertEqual(Site.objects.count(), 0)
+        self.assertEqual(response.status_code, 404)
+
