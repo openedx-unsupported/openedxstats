@@ -80,6 +80,7 @@ You will need to have a database to store the app data, create one by running th
 You may now exit the psql prompt. Note that this final step (creating a database) only needs to be
 done once, but you must have the postgres server running any time you wish to run the app.
 
+
 Run
 ---
 
