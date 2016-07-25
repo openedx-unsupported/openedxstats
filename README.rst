@@ -112,6 +112,7 @@ Functionality
 - Live updated graphs incorporating historical data
 - Quick "edit" functionality on most recent site versions allows for quick changes when creating a new version of the same site
 *Potential Upcoming Features*
+
 - Modal delete window
 - Deleting all versions of a site at once and/or multi delete in list view
 - Quick start installation and setup script
@@ -223,7 +224,7 @@ License
 Please see the file named LICENSE.rst
 
 
-.. _wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
+.. _postgresql wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
 .. _Heroku:
 .. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
