@@ -2,20 +2,12 @@
 {% load bootstrap3 %}
 {% load staticfiles %}
 {% block bootstrap3_extra_head %}
-    <script>
-        $(document).ready(function () {
-            var url = window.location;
-            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
-        });
-    </script>
-    <link rel="shortcut icon" href="{% static 'sites/favicon.ico' %}">
+    <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
     {{ form.media }}
 {% endblock %}
 
-{% debug %}
-{% block title %}
-    {{ page_title }}
-{% endblock %}
+
+{% block title %} Update Site {% endblock %}
 {% block content %}
     <!-- Navbar -->
     {% include "navbar.html" %}
@@ -24,19 +16,14 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Insert form here -->
-                <form action="{{ post_url }}" method="post" class="form">
+                <form action="{% url 'sites:update_site' pk=site.id %}" method="post" class="form">
                     {% csrf_token %}
                     {% bootstrap_form form %}
-                    <input type="submit" class="btn btn-primary" value="Submit"/>
+                    <input type="submit" class="btn btn-primary" value="Update"/>
                     <a href="{% url "sites:sites_list" %}">
                         <button type="button" class="btn btn-default" value="Cancel">Cancel</button>
                     </a>
                 </form>
-            </div>
-            <div class="col-md-6">
-                <p>
-                    <!--Something will be here soon maybe.-->
-                </p>
             </div>
         </div>
         <br/>
