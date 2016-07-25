@@ -59,41 +59,40 @@ Make sure to have postgresql installed **prior** to installing the
 requirements, or it will fail!  If you don't have postgresql installed, we
 recommend using homebrew_::
 
+    brew update
     brew install postgresql
 
-Once pulled, navigate to the root directory of the project. All requirements
-can be installed through the use of pip::
+If you have errors while trying to install postgresql, refer to the more detailed installation
+instructions located at the `postgresql wiki`_. Now, navigate to the root directory of the project.
+All remaining requirements can be installed through the use of pip::
 
     pip install -r requirements.txt
 
+In order to run the app, you will need to have a running postgres server. Start a local server using::
+
+    pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
+
+You will need to have a database to store the app data, create one by running the following commands::
+
+    psql -U postgres
+    create database openedxstats
+
+You may now exit the psql prompt. Note that this final step (creating a database) only needs to be
+done once, but you must have the postgres server running any time you wish to run the app.
 
 Run
 ---
 
 To run the program:
 
-**1.  Start postgres server (user=postgres, db=openedxstats)** 
-    If you do not know how to start a postgres server, make sure you have postgres
-    and psql installed on your system and run::
-
-        pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
-
-    You will need to have a database to store the app data, create one by running
-    the following commands::
-
-        psql -U postgres
-        create database openedxstats
-
-Now you may exit the PSQL prompt.
-
-**2.  Start django server** 
+**1.  Start django server**
     You may start the django server using the following command::
 
         python manage.py runserver
 
     Make sure you are in the project directory before you run this or it will fail.
 
-**3.  [Optional] Import bulk data**
+**2.  [Optional] Import bulk data**
     If you wish, you may import data into the database using the included import_sites
     management command. Please look at the comments included in the command source code
     to make sure that you correctly format the csv file, or it will likely fail! Example
@@ -223,6 +222,7 @@ License
 Please see the file named LICENSE.rst
 
 
+.. _wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
 .. _Heroku:
 .. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
