@@ -8,7 +8,8 @@ from django.db.models.fields import NOT_PROVIDED
 REQUIRED_COLS = ["url"]
 # Fields that we allow to be imported from the csv
 HEADER_NAMES = ["site_type", "name", "url", "course_count", "last_checked", "org_type", "github_fork", "notes",
-                "course_type", "registered_user_count", "active_learner_count", "active_start_date", "active_end_date"]
+                "course_type", "registered_user_count", "active_learner_count", "active_start_date", "active_end_date",
+                "is_private_instance"]
 # Fields that represent m2m relationships (and may have more than one value)
 M2M_HEADER_NAMES = ["geography", "language"]
 

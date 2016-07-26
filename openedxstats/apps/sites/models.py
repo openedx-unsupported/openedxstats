@@ -42,6 +42,7 @@ class Site(models.Model):
     site_type = models.CharField(max_length=255, default='General')
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255)
+    is_private_instance = models.BooleanField(default=False)
     course_count = models.IntegerField(blank=True, null=True)
     active_start_date = models.DateTimeField(default=datetime.now)
     active_end_date = models.DateTimeField(null=True)
