@@ -49,40 +49,70 @@ Requirements and Setup
 ----------------------
 
 After the repo has been pulled onto your local machine, we recommend designating a new
-virtualenv for the project. This documentation assumes you are on a Linux or Mac machine, with pip_,
-virtualenv_, and virtualenvwrapper_ already installed::
+virtualenv for the project. This documentation assumes you are on a Linux or Mac machine, with the
+following already installed (we recommend installing in this order if you don't):
+- `Python 3.5+`_ (this project is not compatible with Python 2!)
+- PostgreSQL_
+- pip_
+- virtualenv_
+- virtualenvwrapper_
+- If you are on Linux/Ubuntu you will also need ``libpq-dev`` and ``python3-dev``::
 
-    mkvirtualenv openedxstats
-    workon openedxstats
+    sudo apt-get update
+    sudo apt-get install libpq-dev
+    sudo apt-get install python3-dev
 
-Make sure to have postgresql installed **prior** to installing the
-requirements, or it will fail!  If you don't have postgresql installed, we
-recommend using homebrew_::
+**Note:** Installing postgresql is often a pain for first timers. If you're on a Mac, the easiest
+way to install is using homebrew_::
 
     brew update
     brew install postgresql
 
-If you have errors while trying to install postgresql, refer to the more detailed installation
-instructions located at the `postgresql wiki`_. Now, navigate to the root directory of the project.
+If you're on Linux, things are little bit more challenging, and we recommend looking
+at this guide_, or more detailed instructions provided on the `postgresql wiki`_.
+With these prerequisites satisfied, begin by setting up a new virtualenv::
+
+    mkvirtualenv -p python3 openedxstats
+    workon openedxstats
+
+Now, navigate to the root directory of the project. We assume you have installed all necessary
+requirements up to this point, otherwise the following command will fail.
 All remaining requirements can be installed through the use of pip::
 
     pip install -r requirements.txt
 
-In order to run the app, you will need to have a running postgres server. Start a local server using::
+In order to run the app, you will need to have a running postgres server. You will need to locate
+where postgres was installed on your machine. For instance, if it was installed to /usr/local/var/postgres,
+you may start a local server in the background using::
 
     pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
 
+If at any point you get an error message of ``peer authentication failed for user USER``, make
+sure that your pg_hba.conf file is configured like `seen here`_, and restart the server.
 You will need to have a database to store the app data, create one by running the following commands::
 
     psql -U postgres
     create database openedxstats
 
-You may now exit the psql prompt. Note that this final step (creating a database) only needs to be
+You may now exit the psql prompt. Note that this step (creating a database) only needs to be
 done once, but you must have the postgres server running any time you wish to run the app.
+Finally, if you do not already have one, create a Django superuser or user. You will need these
+credentials to log in to the website. You may create a User from the Django python shell, or easily
+create a superuser through the command::
+
+    python manage.py createsuperuser
 
 
 Run
 ---
+
+**IMPORTANT:**
+If this is your first time running the server, make sure to run the following commands to prepare
+the database and any static assets for use *prior* to running the server::
+
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py collectstatic
 
 To run the program:
 
@@ -96,10 +126,12 @@ To run the program:
 **2.  [Optional] Import bulk data**
     If you wish, you may import data into the database using the included import_sites
     management command. Please look at the comments included in the command source code
-    to make sure that you correctly format the csv file, or it will likely fail! Example
-    command usage::
+    to make sure that you correctly format the csv file, or it will likely fail! There is
+    correctly formatted data available for import located in the /test_data directory in the sites
+    app. Example command usage to import the edx_sites_csv_7-11-16 file while in the
+    project root directory::
 
-        python manage.py import_sites /path/to/data.csv
+        python manage.py import_sites openedxstats/apps/sites/test_data/edx_sites_csv_7-11-16.csv
 
 
 Functionality
@@ -115,7 +147,6 @@ Functionality
 
 - Modal delete window
 - Deleting all versions of a site at once and/or multi delete in list view
-- Quick start installation and setup script
 
 
 How to Use
@@ -194,7 +225,7 @@ To test a single app, use::
 
     python manage.py test [app_name]
 
-If you want to run code coverage, you can install coverage.py (`pip install coverage`)
+If you want to run code coverage, you can install coverage.py (``pip install coverage``)
 and use the following command::
 
     coverage run manage.py test [app_name]
@@ -224,6 +255,10 @@ License
 Please see the file named LICENSE.rst
 
 
+.. _guide: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
+.. _seen here: http://stackoverflow.com/a/18664239
+.. _PostgreSQL: https://www.postgresql.org/
+.. _Python 3.5+: https://www.python.org/downloads/
 .. _postgresql wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
 .. _Heroku:
