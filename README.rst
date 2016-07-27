@@ -51,6 +51,7 @@ Requirements and Setup
 After the repo has been pulled onto your local machine, we recommend designating a new
 virtualenv for the project. This documentation assumes you are on a Linux or Mac machine, with the
 following already installed (we recommend installing in this order if you don't):
+
 - `Python 3.5+`_ (this project is not compatible with Python 2!)
 - PostgreSQL_
 - pip_
@@ -75,6 +76,7 @@ With these prerequisites satisfied, begin by setting up a new virtualenv::
     mkvirtualenv -p python3 openedxstats
     workon openedxstats
 
+| 
 Now, navigate to the root directory of the project. We assume you have installed all necessary
 requirements up to this point, otherwise the following command will fail.
 All remaining requirements can be installed through the use of pip::
@@ -88,7 +90,7 @@ you may start a local server in the background using::
     pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
 
 If at any point you get an error message of ``peer authentication failed for user USER``, make
-sure that your pg_hba.conf file is configured like `seen here`_, and restart the server.
+sure that your ``pg_hba.conf`` file is configured like `seen here`_, and restart the server.
 You will need to have a database to store the app data, create one by running the following commands::
 
     psql -U postgres
