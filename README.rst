@@ -165,7 +165,7 @@ How to Use
     This is where all Open edX Site versions will be listed, and is the homepage for the dashboard.
     
     **a.  Navigating the DataTable**
-        The Sites List page uses the JS DataTables plugin, allowing for easy sorting and viewing of large amounts of
+        The Sites List page uses the JQuery `DataTables plugin`_, allowing for easy sorting and viewing of large amounts of
         data. The table is presorted upon page load to show current versions of sites first, ordered by most recently
         created. You may change the sorting at any time by clicking on the desired column in the table. Current versions
         are clearly marked with a green check.
@@ -257,6 +257,7 @@ License
 Please see the file named LICENSE.rst
 
 
+.. _DataTables plugin: https://datatables.net/
 .. _guide: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
 .. _seen here: http://stackoverflow.com/a/18664239
 .. _PostgreSQL: https://www.postgresql.org/
