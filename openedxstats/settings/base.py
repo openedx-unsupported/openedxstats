@@ -1,7 +1,6 @@
 import os
 import sys
 import dj_database_url
-from django.core.exceptions import ImproperlyConfigured
 
 ADMINS = (
     ('Zachary Robbins', 'zrobbins@edx.org'),
@@ -21,7 +20,7 @@ sys.path.insert(0, root('apps'))
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'nedhatestriaging'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
