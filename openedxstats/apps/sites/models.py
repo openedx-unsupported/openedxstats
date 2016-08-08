@@ -105,3 +105,26 @@ class SiteSummarySnapshot(models.Model):
 
     def __str__(self):
         return str(self.timestamp) + '---' + str(self.num_sites) + '---' + str(self.num_courses)
+
+
+# Models for referrer logs
+
+class AccessLogAggregate(models.Model):
+    """
+    A model representing an aggregate access log entry of S3 Open edX logo referrals.
+    """
+    domain = models.CharField(max_length=255, null=True, blank=True, default=None)
+    access_date = models.DateField(null=True, blank=True, default=None)
+    filename = models.CharField(max_length=255, null=True, blank=True, default=None)
+    access_count = models.IntegerField(null=True, blank=True, default=None)
+    create_dt = models.DateTimeField(default=datetime.now)
+
+    class Meta:
+        unique_together = ("domain", "access_date", "filename")
+
+
+class FilenameLog(models.Model):
+    """
+    A model representing a file name.
+    """
+    filename = models.CharField(max_length=255, unique=True)
