@@ -5,7 +5,7 @@
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.time.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.axislabels.js' %}"></script>
-    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.js' %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.min.js' %}"></script>
     <script>
         $(document).ready(function () {
             var url = window.location;
@@ -69,6 +69,7 @@
                 return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
             }
 
+            // Set ajax requests to use csrf token
             $.ajaxSetup({
                 beforeSend: function (xhr, settings) {
                     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -174,6 +175,7 @@
                     ],
                     legend: {position: "nw"}
                 });
+
                 // Enable tooltip on point hover
                 $("<div id='tooltip'></div>").css({
                     position: "absolute",
@@ -185,8 +187,7 @@
                 }).appendTo("body");
                 $("#otChart").bind("plothover", function (event, pos, item) {
                     if (item) {
-                        var x = item.datapoint[0],
-                                y = item.datapoint[1];
+                        var x = item.datapoint[0], y = item.datapoint[1];
                         $("#tooltip").html(moment(x).format("MM-DD-YYYY") + ": " + y + " " + item.series.label)
                                 .css({top: item.pageY + 5, left: item.pageX + 5})
                                 .fadeIn(200);
