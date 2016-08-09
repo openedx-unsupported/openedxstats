@@ -115,7 +115,7 @@ class ImportOTDataTestCase(TestCase):
 
         with open(source, 'r+'):
             call_command('import_ot_data', source)
-            self.assertEqual(SiteSummarySnapshot.objects.count(), 93)
+            self.assertEqual(SiteSummarySnapshot.objects.count(), 3)
 
 
 class SubmitSiteFormTestCase(TestCase):
