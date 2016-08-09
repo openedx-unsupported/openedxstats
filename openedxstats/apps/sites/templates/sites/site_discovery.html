@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %} Site Discovery List {% endblock %}
+{% block bootstrap3_extra_head %}
+    <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
+    <style type="text/css">
+        .extra-padding-10 {
+            padding-top: 5px;
+            padding-bottom: 15px;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.min.js' %}"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
+
+    <!-- This script must be included in order to use POST requests! -->
+    <script src="{% static 'sites/prepareAjax.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Grab CSRF token
+            var csrftoken = getCSRFToken();
+
+            // Grab data for chart
+            function fetchDiscoveryData(start_date, end_date) {
+                jsonToSend = {'csrfmiddlewaretoken': csrftoken, 'start_date': start_date, 'end_date': end_date};
+                var jqxhr = $.post(
+                    location.href,
+                    jsonToSend,
+                    function (data) {
+                        // Update table as soon as data is retrieved from server
+                        updateDataTable(data);
+                    }
+                );
+            }
+
+            var sitesTable;
+            // If first time creating table, inititalize. Otherwise, refresh table with new data.
+            function updateDataTable(data) {
+                if (sitesTable) {  // Load datatable with new data and refresh
+                    sitesTable.clear();
+                    sitesTable.rows.add(data);
+                    sitesTable.draw();
+                }
+                else {  // Create datatable
+                    sitesTable = $('#discovered_sites').DataTable({
+                        "data": data,
+                        "columns": [
+                            {
+                                "data": "domain",
+                                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                                    $(nTd).html("<a href='http://" + oData.domain + "'>" + oData.domain + "</a>");
+                                }
+                            },
+                            {"data": "count"}
+                        ],
+                        "processing": true,
+                        "lengthMenu": [[25, 50, 100, 500, -1], [25, 50, 100, 500, "All"]],
+                        "order": [[1, "desc"]]
+                    });
+                }
+            }
+
+            // Initially load page with all data available
+            fetchDiscoveryData(null, null);
+
+            // Date choose event: when range is chosen using daterange picker, parse range and pass into
+            // fetchDiscoveryData to send a POST request to server for new info
+            $('#dateRange').on('apply.daterangepicker', function () {
+                var dates = $("#dateRange span").html().split(" - ");
+                var startDate = moment(dates[0], "MMMM D, YYYY").format("YYYY-MM-DD");
+                var endDate = moment(dates[1], "MMMM D, YYYY").format("YYYY-MM-DD");
+                fetchDiscoveryData(startDate, endDate);
+            });
+
+            // Date range picker UI
+            $(function () {
+                var start = moment().subtract(29, 'days');
+                var end = moment();
+                function cb(start, end) {
+                    $('#dateRange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                }
+                $('#dateRange').daterangepicker({
+                    startDate: start,
+                    endDate: end,
+                    opens: 'right',
+                    ranges: {   // Add more preset ranges here if desired
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                        'All Time': [moment().subtract(10, 'years'), moment()]
+                    }
+                }, cb);
+                cb(start, end);
+            });
+
+
+            // Nav active class selection
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <!-- Navbar -->
+    {% include "navbar.html" %}
+    <!-- Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <p>
+                    Listed below are all the sites discovered by the Fetch Referrer Log script that are not listed in
+                    the Open edX Sites List (and haven't been marked as ignored or in-development). This list will
+                    refresh each day at 4:00 UTC with the most recent log data. Use the date range picker below to choose a range
+                    of time to display data for. 'Access Count' refers to the number of times a logo has been fetched
+                    from S3 by that domain (i.e. indicates website traffic).
+                </p>
+            </div>
+        </div>
+        <div class="row extra-padding-10">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <div id="dateRange" class="pull-right"
+                         style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                        <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+                        <span></span> <b class="caret"></b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <table id="discovered_sites" class="table table-bordered table-responsive table-sm">
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>Access Count</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Domain</th>
+                    <th>Access Count</th>
+                </tr>
+            </tfoot>
+
+        </table>
+    </div>
+{% endblock %}

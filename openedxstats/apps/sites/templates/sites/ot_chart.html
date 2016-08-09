@@ -5,7 +5,9 @@
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.time.js' %}"></script>
     <script type="text/javascript" language="javascript" src="{% static 'sites/jquery.flot.axislabels.js' %}"></script>
-    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.js' %}"></script>
+    <script type="text/javascript" language="javascript" src="{% static 'sites/moment.min.js' %}"></script>
+    <!-- This script must be included in order to use POST requests! -->
+    <script src="{% static 'sites/prepareAjax.js' %}"></script>
     <script>
         $(document).ready(function () {
             var url = window.location;
@@ -45,37 +47,8 @@
 {% block bootstrap3_extra_script %}
     <script>
         window.onload = function () {
-            // Grab csrf token to allow for ajax requests
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            var csrftoken = getCookie('csrftoken');
-
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-
-            $.ajaxSetup({
-                beforeSend: function (xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
+            // Grab CSRF token
+            var csrftoken = getCSRFToken();
 
             // Declare vars
             var jsonToSend = {'csrfmiddlewaretoken': csrftoken};
@@ -139,7 +112,7 @@
                             show: true
                         },
                         points: {
-                            show: true
+                            show: false
                         }
                     },
                     grid: {
@@ -174,6 +147,7 @@
                     ],
                     legend: {position: "nw"}
                 });
+
                 // Enable tooltip on point hover
                 $("<div id='tooltip'></div>").css({
                     position: "absolute",
@@ -185,8 +159,7 @@
                 }).appendTo("body");
                 $("#otChart").bind("plothover", function (event, pos, item) {
                     if (item) {
-                        var x = item.datapoint[0],
-                                y = item.datapoint[1];
+                        var x = item.datapoint[0], y = item.datapoint[1];
                         $("#tooltip").html(moment(x).format("MM-DD-YYYY") + ": " + y + " " + item.series.label)
                                 .css({top: item.pageY + 5, left: item.pageX + 5})
                                 .fadeIn(200);
