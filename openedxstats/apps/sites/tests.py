@@ -22,13 +22,13 @@ class ImportScriptTestCase(TestCase):
     """
 
     def test_import_date_from_correctly_formatted_file(self):
-        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        source = os.path.join(BASE, "test_data/test_sites.csv")
         expected_output = ("Report:\n"
-                           "Number of sites imported: 268\n"
-                           "Number of languages imported: 34\n"
-                           "Number of geozones imported: 58\n"
-                           "Number of site_languages created: 271\n"
-                           "Number of site_geozones created: 198\n")
+                           "Number of sites imported: 5\n"
+                           "Number of languages imported: 3\n"
+                           "Number of geozones imported: 2\n"
+                           "Number of site_languages created: 3\n"
+                           "Number of site_geozones created: 4\n")
         out = StringIO()
         with open(source, 'r+'):
             call_command('import_sites', source, stdout=out)
@@ -66,8 +66,8 @@ class ImportScriptTestCase(TestCase):
                 call_command('import_sites', source)
 
     def test_duplicate_data(self):
-        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
-        additional_source = os.path.join(BASE, "test_data/edx_sites_csv_one_addition.csv")
+        source = os.path.join(BASE, "test_data/test_sites.csv")
+        additional_source = os.path.join(BASE, "test_data/test_sites_one_addition.csv")
 
         with open(source, 'r+'):
             call_command('import_sites', source)
@@ -91,7 +91,7 @@ class ImportScriptTestCase(TestCase):
                 call_command('import_sites', source)
 
     def test_import_newer_version(self):
-        source = os.path.join(BASE, "test_data/edx_sites_csv.csv")
+        source = os.path.join(BASE, "test_data/test_sites.csv")
         additional_source = os.path.join(BASE, "test_data/one_updated_site.csv")
 
         with open(source, 'r+'):
@@ -99,10 +99,10 @@ class ImportScriptTestCase(TestCase):
 
         with open(additional_source, 'r+'):
             call_command('import_sites', additional_source)
-            updated_site = Site.objects.filter(url='https://lagunita.stanford.edu').latest('active_start_date')
-            self.assertEqual(updated_site.active_start_date, datetime(2016, 3, 26, 0, 0))
-            self.assertEqual(Site.objects.filter(url='https://lagunita.stanford.edu').count(), 2)
-            self.assertEqual(Site.objects.count(), 269)
+            updated_site = Site.objects.filter(url='https://test3.com').latest('active_start_date')
+            self.assertEqual(updated_site.active_start_date, datetime(2016, 4, 15, 0, 0))
+            self.assertEqual(Site.objects.filter(url='https://test3.com').count(), 2)
+            self.assertEqual(Site.objects.count(), 6)
 
 
 class ImportOTDataTestCase(TestCase):
@@ -115,7 +115,7 @@ class ImportOTDataTestCase(TestCase):
 
         with open(source, 'r+'):
             call_command('import_ot_data', source)
-            self.assertEqual(SiteSummarySnapshot.objects.count(), 93)
+            self.assertEqual(SiteSummarySnapshot.objects.count(), 3)
 
 
 class SubmitSiteFormTestCase(TestCase):

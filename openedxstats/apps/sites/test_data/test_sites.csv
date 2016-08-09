@@ -1,0 +1,6 @@
+site_type,name,url,course_count,active_start_date,org_type,github_fork,notes,course_type,language,geography
+General,Test,https://test.com,20,03/03/16,academic,test-repo,test notes,SPOC,English,US
+General,Test2,https://test2.com,10,03/03/16,industry,,,,,
+General,Test3,https://test3.com,25,03/15/16,,test-repo2,,Unknown,Chinese,China
+General,Test4,https://test4.com,200,05/11/16,academic,test-repo3,notes,MOOC,,US
+General,Test5,https://test5.com,19,04/27/16,,,test notes again,,Dutch,US
