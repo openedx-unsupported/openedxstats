@@ -15,7 +15,6 @@ from django.core.serializers import serialize
 from openedxstats.apps.sites.views import OTChartView
 import boto
 from boto.s3.bucket import Bucket, Key
-from moto import mock_s3
 from openedxstats.apps.sites.management.commands import fetch_referrer_logs
 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -340,8 +339,6 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
 
-    # TODO: Consider adding an update tab to "Add a site" so that you can populate form with existing data to easily update
-
 
 class ModelsTestCase(TestCase):
     def test_site_get_languages_method(self):
@@ -424,10 +421,6 @@ class OTChartTestCase(TestCase):
             self.assertEqual(expected_json[i], response_json[i])
 
 
-# TODO: Tests to write:
-# - Test updating normally with auto set time
-# - Test updating to a time that is before start date of original version (FAIL)
-# - Test trying to update a non-current version (and test navigating to the update page) (FAIL - FAIL)
 class UpdateSiteTestCase(TestCase):
     def setUp(self):
         User.objects.create_user('testuser', 'testuser@edx.com', 'password')
@@ -542,6 +535,9 @@ class UpdateSiteTestCase(TestCase):
 
 # need these to run moto test case: werkzeug, itsdangerous, MarkupSafe, Jinja2, flask, httpretty, xmltodict, moto
 class ReferrerLogTestCase(TestCase):
+    """
+    Tests for fetch_referrer_logs management script.
+    """
     def setUp(self):
         self.conn = boto.connect_s3()
 
