@@ -53,7 +53,7 @@ virtualenv for the project. This documentation assumes you are on a Linux or Mac
 following already installed (we recommend installing in this order if you don't):
 
 - `Python 3.5+`_ (this project is not compatible with Python 2!)
-- PostgreSQL_
+- PostgreSQL_ (OPTIONAL IF YOU ONLY PLAN ON RUNNING TESTS! See 'Testing' section below)
 - pip_
 - virtualenv_
 - virtualenvwrapper_
@@ -105,6 +105,11 @@ create a superuser through the command::
     python manage.py createsuperuser
 
 
+**Development:**
+If you plan on developing or making changes to the code, make sure to turn DEBUG mode to False in the base.py
+Django settings, or you will not be able to see errors!
+
+
 Run
 ---
 
@@ -136,6 +141,31 @@ To run the program:
         python manage.py import_sites openedxstats/apps/sites/test_data/edx_sites_csv_7-11-16.csv
 
 
+Heroku Deployment
+-----------------
+
+*This section assumes you have permission to deploy to Heroku.*
+
+Deploying the app is made quick and easy with Heroku. Once you are given access to the edX Open Source Heroku team,
+install the Heroku CLI, it's the easiest way to deploy and what we will give instructions for. Generally, it's good
+practice to make sure the code you push has been reviewed and merged in the GitHub repo before deploying, so as to
+minimize errors and bugs. Assuming you have the most up-to-date code on your machine and are on your local master branch,
+use the following command to deploy::
+
+    git push heroku master
+
+**Important:** This command will push whatever local branch you are on to Heroku's master, even if you aren't on your
+local master!
+
+If you encounter database errors after pushing changes to models, try running the following commands::
+
+    heroku run python manage.py makemigrations
+    heroku run python manage.py migrate
+
+There is a huge amount of functionality and associated use-cases that Heroku has built in, and we highly recommend
+you visit their `comprehensive docs`_ to help answer any questions you have.
+
+
 Functionality
 -------------
 
@@ -145,11 +175,7 @@ Functionality
 - Historical data tracking and searching
 - Live updated graphs incorporating historical data
 - Quick "edit" functionality on most recent site versions allows for quick changes when creating a new version of the same site
-*Potential Upcoming Features*
-
-- Modal delete window
-- Deleting all versions of a site at once and/or multi delete in list view
-
+- Automatic site discovery
 
 How to Use
 ----------
@@ -215,11 +241,25 @@ How to Use
     the Sites List was first started. Every data point is a snapshot of the courses and site versions current at
     that time. A new data point is created at the end of each day.
 
+**9.  The Site Discovery List**
+    Click on the "Discovery" tab on the navbar to view the Site Discovery List. This list is updated daily with the
+    results of the fetch_referrer_logs.py script that is run with Heroku Scheduler. The list contains all domains that
+    have downloaded the "Powered by Open edX" logo. The higher the download count next to a domain, the more traffic
+    a site is probably getting. A domain will only be listed in the Site Discovery List if it is not in the Sites List
+    already (this feature needs ironing out as it wrongly distinguishes sub-domains of the same domain as different sites).
+    Use this page to find new sites that are using the edX Platform!
+
 
 Testing
 -------
 
-To test the entire django program use::
+In order to save time, if you don't plan on developing with the code and only wish to run the tests, you can avoid
+installing postgres. To use a SQLITE datbase to run tests::
+
+    python manage.py test --settings=openedxstats.settings.testing
+
+The following commands use the default database, which is postgres, although you can change the settings like shown
+above to use SQLITE instead. To test the entire django program use::
 
     python manage.py test
 
@@ -243,13 +283,18 @@ FAQ
 
 **A:** Unfortunately, there is no support for url changes between versions at the moment.
 
-**Q:**  How do I get credentials to log in?
+**Q:** How do I get credentials to log in?
 
-**A:**  Speak to a member of the Open edX team to be given access to the site.
+**A:** Speak to a member of the Open edX team to be given access to the site.
 
-**Q:**  Can I delete a Language/GeoZone?
+**Q:** Can I delete a Language/GeoZone?
 
-**A:**  No, you cannot delete a Language/GeoZone at this time, as it is unlikely for languages and geographies to suddenly cease existing.
+**A:** No, you cannot delete a Language/GeoZone at this time, as it is unlikely for languages and geographies to suddenly cease existing.
+
+**Q:** When does the site discovery script run?
+
+**A:** The script that fetches new referrer logs runs each day at 12am EST, and generally takes 10-30 minutes to complete.
+
 
 License
 -------
@@ -257,6 +302,7 @@ License
 Please see the file named LICENSE.rst
 
 
+.. _comprehensive docs: https://devcenter.heroku.com
 .. _DataTables plugin: https://datatables.net/
 .. _guide: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
 .. _seen here: http://stackoverflow.com/a/18664239
