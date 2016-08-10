@@ -106,8 +106,9 @@ create a superuser through the command::
 
 
 **Development:**
-If you plan on developing or making changes to the code, make sure to turn DEBUG mode to False in the base.py
-Django settings, or you will not be able to see errors!
+If you plan on developing or making changes to the code, make sure to turn DEBUG mode to True in the base.py
+Django settings, or you will not be able to see errors! Remember to turn it back to False once you are done 
+making changes for production testing.
 
 
 Run
