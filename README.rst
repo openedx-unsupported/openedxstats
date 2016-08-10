@@ -135,10 +135,10 @@ To run the program:
     management command. Please look at the comments included in the command source code
     to make sure that you correctly format the csv file, or it will likely fail! There is
     correctly formatted data available for import located in the /test_data directory in the sites
-    app. Example command usage to import the edx_sites_csv_7-11-16 file while in the
+    app. Example command usage to import the test_sites file while in the
     project root directory::
 
-        python manage.py import_sites openedxstats/apps/sites/test_data/edx_sites_csv_7-11-16.csv
+        python manage.py import_sites openedxstats/apps/sites/test_data/test_sites.csv
 
 
 Heroku Deployment
@@ -147,10 +147,10 @@ Heroku Deployment
 *This section assumes you have permission to deploy to Heroku.*
 
 Deploying the app is made quick and easy with Heroku. Once you are given access to the edX Open Source Heroku team,
-install the Heroku CLI, it's the easiest way to deploy and what we will give instructions for. Generally, it's good
-practice to make sure the code you push has been reviewed and merged in the GitHub repo before deploying, so as to
-minimize errors and bugs. Assuming you have the most up-to-date code on your machine and are on your local master branch,
-use the following command to deploy::
+install the Heroku CLI, it's the easiest way to deploy and what the following instructions are tailored for. Generally,
+it's good practice to make sure the code you push has been reviewed and merged in the GitHub repo before deploying,
+so as to minimize errors and bugs. Assuming you have the most up-to-date code on your machine and are on your local
+master branch, use the following command to deploy::
 
     git push heroku master
 
@@ -254,7 +254,7 @@ Testing
 -------
 
 In order to save time, if you don't plan on developing with the code and only wish to run the tests, you can avoid
-installing postgres. To use a SQLITE datbase to run tests::
+installing postgres. To use a SQLITE database to run tests::
 
     python manage.py test --settings=openedxstats.settings.testing
 
