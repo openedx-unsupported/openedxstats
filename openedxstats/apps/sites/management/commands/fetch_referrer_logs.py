@@ -15,6 +15,8 @@ All data is saved in the Django DB.
 
 This script should be run on a scheduled basis.
 
+YOU NEED VALID AWS CREDENTIALS FOR THIS SCRIPT TO WORK!!!
+
 Suggested queries (mySQL):
 
 select domain, min(date) from access_log_aggregate where domain not like '%.amazonaws.com' and domain not rlike '([[:digit:]]+\\.){3}[[:digit:]]+:?' and domain not rlike ':[[:digit:]]+' and domain not like '%.edx.org' group by domain order by min(date);

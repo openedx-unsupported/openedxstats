@@ -341,6 +341,10 @@ class SubmitSiteFormTestCase(TestCase):
 
 
 class ModelsTestCase(TestCase):
+    """
+    Tests for models.
+    """
+
     def test_site_get_languages_method(self):
         new_site = Site()
         new_site.save()
@@ -380,6 +384,10 @@ class ModelsTestCase(TestCase):
 
 
 class OTChartTestCase(TestCase):
+    """
+    Tests for the OT Chart.
+    """
+
     def setUp(self):
         User.objects.create_user('testuser', 'testuser@edx.com', 'password')
         self.client.login(username='testuser', password='password')
@@ -422,6 +430,10 @@ class OTChartTestCase(TestCase):
 
 
 class UpdateSiteTestCase(TestCase):
+    """
+    Tests for updating a site.
+    """
+
     def setUp(self):
         User.objects.create_user('testuser', 'testuser@edx.com', 'password')
         self.client.login(username='testuser', password='password')
@@ -533,11 +545,14 @@ class UpdateSiteTestCase(TestCase):
         self.assertEqual(Site.objects.count(), 0)
         self.assertEqual(response.status_code, 404)
 
-# need these to run moto test case: werkzeug, itsdangerous, MarkupSafe, Jinja2, flask, httpretty, xmltodict, moto
+
 class ReferrerLogTestCase(TestCase):
     """
     Tests for fetch_referrer_logs management script.
+    THESE TESTS WILL NOT RUN UNLESS YOU HAVE BEEN GIVEN VALID AWS CREDENTIALS FOR EDX!!!
+    If you don't want to run these tests because you do not have the key, you should comment out this class.
     """
+
     def setUp(self):
         self.conn = boto.connect_s3()
 
