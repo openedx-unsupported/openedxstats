@@ -15,6 +15,8 @@ All data is saved in the Django DB.
 
 This script should be run on a scheduled basis.
 
+YOU NEED VALID AWS CREDENTIALS FOR THIS SCRIPT TO WORK!!!
+
 Suggested queries (mySQL):
 
 select domain, min(date) from access_log_aggregate where domain not like '%.amazonaws.com' and domain not rlike '([[:digit:]]+\\.){3}[[:digit:]]+:?' and domain not rlike ':[[:digit:]]+' and domain not like '%.edx.org' group by domain order by min(date);
@@ -123,23 +125,20 @@ def process_log_file(gz_file, log_name):
         log_to_save.save()
 
 
-# TODO: Get most recent date already in table, and start next search there
-
-def run_command():
+def get_accessible_keys(bucket, prefix="edx-static-cloudfront"):
     accessible_keys = []
-    num_files_processed = 0
-    conn = boto.connect_s3()
-    bucket = conn.get_bucket("edx-s3-logs", validate=False)
-
-    print("Gathering accessible keys...")
-    for key in bucket.list(prefix="edx-static-cloudfront"):
+    for key in bucket.list(prefix=prefix):
         if key.storage_class != "GLACIER":
             accessible_keys.append(key)
 
     if DEBUG:
         print("Accessible keys len: %s" % len(accessible_keys))
 
-    print("Processing keys...")
+    return accessible_keys
+
+
+def process_keys(accessible_keys):
+    num_files_processed = 0
     for key in accessible_keys:
         # Create an in-memory bytes IO buffer
         with io.BytesIO() as b:
@@ -155,4 +154,19 @@ def run_command():
             add_to_filename_log(gz_name)
             process_log_file(file_content, gz_name)
             num_files_processed += 1
+    return num_files_processed
+
+
+# TODO: Get most recent date already in table, and start next search there - will save time searching
+
+def run_command():
+    conn = boto.connect_s3()
+    bucket = conn.get_bucket("edx-s3-logs", validate=False)
+
+    print("Gathering accessible keys...")
+    accessible_keys = get_accessible_keys(bucket)
+
+    print("Processing keys...")
+    num_files_processed = process_keys(accessible_keys)
+
     print("Finished! New files processed: %s" % num_files_processed)

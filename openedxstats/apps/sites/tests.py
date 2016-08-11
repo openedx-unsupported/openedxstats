@@ -6,12 +6,16 @@ from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 import json
-from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot
+from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot, \
+    FilenameLog, AccessLogAggregate
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 from django.core.serializers import serialize
 from openedxstats.apps.sites.views import OTChartView
+import boto
+from boto.s3.bucket import Bucket, Key
+from openedxstats.apps.sites.management.commands import fetch_referrer_logs
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -335,10 +339,12 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
 
-    # TODO: Consider adding an update tab to "Add a site" so that you can populate form with existing data to easily update
-
 
 class ModelsTestCase(TestCase):
+    """
+    Tests for models.
+    """
+
     def test_site_get_languages_method(self):
         new_site = Site()
         new_site.save()
@@ -378,6 +384,10 @@ class ModelsTestCase(TestCase):
 
 
 class OTChartTestCase(TestCase):
+    """
+    Tests for the OT Chart.
+    """
+
     def setUp(self):
         User.objects.create_user('testuser', 'testuser@edx.com', 'password')
         self.client.login(username='testuser', password='password')
@@ -419,11 +429,11 @@ class OTChartTestCase(TestCase):
             self.assertEqual(expected_json[i], response_json[i])
 
 
-# TODO: Tests to write:
-# - Test updating normally with auto set time
-# - Test updating to a time that is before start date of original version (FAIL)
-# - Test trying to update a non-current version (and test navigating to the update page) (FAIL - FAIL)
 class UpdateSiteTestCase(TestCase):
+    """
+    Tests for updating a site.
+    """
+
     def setUp(self):
         User.objects.create_user('testuser', 'testuser@edx.com', 'password')
         self.client.login(username='testuser', password='password')
@@ -535,3 +545,73 @@ class UpdateSiteTestCase(TestCase):
         self.assertEqual(Site.objects.count(), 0)
         self.assertEqual(response.status_code, 404)
 
+
+class ReferrerLogTestCase(TestCase):
+    """
+    Tests for fetch_referrer_logs management script.
+    THESE TESTS WILL NOT RUN UNLESS YOU HAVE BEEN GIVEN VALID AWS CREDENTIALS FOR EDX!!!
+    If you don't want to run these tests because you do not have the key, you should comment out this class.
+    """
+
+    def setUp(self):
+        self.conn = boto.connect_s3()
+
+    def test_can_connect_to_s3(self):
+        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        self.assertIsInstance(bucket, Bucket)
+
+    def test_can_download_keys(self):
+        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        # Get only today's keys to reduce search time
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(
+            bucket,
+            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
+        )
+        self.assertIsNotNone(accessible_keys)
+        self.assertIsInstance(accessible_keys[0], Key)
+
+    def test_can_unzip_one_file(self):
+        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        # Get only today's keys to reduce search time
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(
+            bucket,
+            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
+        )
+
+        num_files_processed = fetch_referrer_logs.process_keys([accessible_keys[0],])
+        self.assertEqual(num_files_processed, 1)
+        self.assertEqual(FilenameLog.objects.all().count(), 1)
+        self.assertIsNotNone(AccessLogAggregate.objects.all())
+
+    # Reduce number of files processed to reduce test time
+    def test_todays_logs(self):
+        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        # Get only today's keys to reduce search time
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(
+            bucket,
+            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
+        )
+
+        # Process only first 10 files to save time
+        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:10])
+        self.assertEqual(num_files_processed, 10)
+        self.assertEqual(FilenameLog.objects.all().count(), 10)
+        self.assertIsNotNone(AccessLogAggregate.objects.all())
+
+    def test_no_duplicate_files_are_processed(self):
+        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        # Get only today's keys to reduce search time
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(
+            bucket,
+            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
+        )
+
+        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:3])
+        self.assertEqual(num_files_processed, 3)
+        self.assertEqual(FilenameLog.objects.all().count(), 3)
+        self.assertIsNotNone(AccessLogAggregate.objects.all())
+
+        # Now input those 3 files again with an extra, only the extra should be processed
+        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:4])
+        self.assertEqual(num_files_processed, 1)
+        self.assertEqual(FilenameLog.objects.all().count(), 4)
