@@ -1,12 +1,47 @@
 from django.db import models
 from datetime import datetime
 
+# FIXME: Make these Choices dynamically generated and/or replaced with autocomplete functionality
+
 COURSE_TYPE_CHOICES = (
     ('MOOC', 'MOOC'),
     ('SPOC', 'SPOC'),
     ('Both', 'Both'),
     ('Unknown', 'Unknown'),
 )
+
+SITE_TYPE_CHOICES = [
+    ('General', 'General'),
+    ('Private instances (that we can access)', 'Private instances (that we can access'),
+    ('Private instances (that we cannot access)', 'Private instances (that we cannot access)'),
+    ('Fresh Technology', 'Fresh Technology'),
+    ('Xuetang', 'Xuetang'),
+    ('edX Solutions', 'edX Solutions'),
+    ('MOOCit.fr', 'MOOCit.fr'),
+    ('AppSembler', 'AppSembler'),
+    ('EduNext', 'EduNext'),
+    ('IBL Studios', 'IBL Studios'),
+    ('Appsembler', 'Appsembler'),
+    ('EdCast', 'EdCast')
+]
+
+ORG_TYPE_CHOICES = [
+    ('industry', 'industry'),
+    ('science', 'science'),
+    ('teaching', 'teaching'),
+    ('academic', 'academic'),
+    ('business', 'business'),
+    ('healthcare', 'healthcare'),
+    ('executive', 'executive'),
+    ('health', 'health'),
+    ('gradeschool', 'gradeschool'),
+    ('medicine', 'medicine'),
+    ('government', 'government'),
+    ('professional', 'professional'),
+    ('religion', 'religion'),
+    ('ngo', 'ngo'),
+    ('other', 'other'),
+]
 
 # Models
 
@@ -39,14 +74,14 @@ class Site(models.Model):
     # Many of the sites do not have all of these fields, which is why many can be left blank
 
     # id <-- Automatic surrogate serial primary key created by django
-    site_type = models.CharField(max_length=255, default='General')
+    site_type = models.CharField(max_length=255, choices=SITE_TYPE_CHOICES, default='General')
     name = models.CharField(max_length=255, blank=True)
     url = models.CharField(max_length=255)
     is_private_instance = models.BooleanField(default=False)
     course_count = models.IntegerField(blank=True, null=True)
     active_start_date = models.DateTimeField(default=datetime.now)
     active_end_date = models.DateTimeField(null=True)
-    org_type = models.CharField(max_length=255, blank=True)
+    org_type = models.CharField(max_length=255, choices=ORG_TYPE_CHOICES, blank=True)
     language = models.ManyToManyField(Language, through='SiteLanguage', blank=True)
     geography = models.ManyToManyField(GeoZone, through='SiteGeoZone', blank=True)
     github_fork = models.CharField(max_length=255, blank=True)
