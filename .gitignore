@@ -74,3 +74,4 @@ openedxstats/assets-src/vendor/
 
 .env
 *.swp
+.data
