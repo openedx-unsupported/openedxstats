@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.postgres.forms import SimpleArrayField
 from openedxstats.apps.sites.models import Site, Language, GeoZone
 from datetimewidget.widgets import DateTimeWidget
 
@@ -13,6 +14,7 @@ class SiteForm(forms.ModelForm):
     course_count = forms.IntegerField(min_value=0, required=False)
     registered_user_count = forms.IntegerField(min_value=0, required=False)
     active_learner_count = forms.IntegerField(min_value=0, required=False)
+    aliases = SimpleArrayField(forms.CharField(), delimiter='\n', widget=forms.Textarea)
 
     class Meta:
         model = Site
