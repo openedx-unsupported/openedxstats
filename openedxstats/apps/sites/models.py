@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from datetime import datetime
 
 COURSE_TYPE_CHOICES = (
@@ -54,6 +55,7 @@ class Site(models.Model):
     course_type = models.CharField(max_length=10, choices=COURSE_TYPE_CHOICES, default='Unknown')
     registered_user_count = models.IntegerField(blank=True, null=True)
     active_learner_count = models.IntegerField(blank=True, null=True)
+    aliases = ArrayField(models.CharField(max_length=255), default=list, blank=True)
 
     def __str__(self):
         return self.name + ' --- ' + self.url

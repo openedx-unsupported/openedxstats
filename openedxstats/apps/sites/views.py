@@ -62,9 +62,9 @@ class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
         # This is hundreds of thousands of records, and will grow considerably unless the database is regularly cleaned
         # If loading the discovery page begins to lag considerably, a default query other than all data available
         # (e.g. logs from the last day only) should be considered to shorten initial load time
-        site_domains_on_record = Site.objects.all().values_list('url', flat=True).order_by('id')
-        # Grab site domain names from each log url
-        site_domains_on_record = set(get_netloc(url=domain) for domain in site_domains_on_record)
+        sites = Site.objects.all()
+        known_domains = set(get_netloc(site.url) for site in sites)
+        known_domains.update(get_netloc(url) for site in sites for url in site.aliases)
 
         # Filter out all logs with domains that are: aws owned, edx owned, blank, an ip address, and/or have a custom port
         # Then aggregate based on domain and access date
@@ -88,7 +88,7 @@ class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
         # Add to final query set if domain isn't already on record
         new_domains = []
         for log in aggregate_logs_by_day:
-            if get_netloc(log['domain']) not in site_domains_on_record:
+            if get_netloc(log['domain']) not in known_domains:
                 new_domains.append(log)
 
         return new_domains
