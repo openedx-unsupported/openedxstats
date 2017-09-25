@@ -40,17 +40,18 @@ class JSONResponseMixin(object):
         return HttpResponse(context, content_type='application/json', **response_kwargs)
 
 
+def get_netloc(url):
+    """
+    Return domain of url if parseable
+    """
+    if '//' in url:
+        return parse.urlparse(url).netloc
+    else:
+        return url
+
+
 class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
     template_name = 'sites/site_discovery.html'
-
-    def get_netloc(self, url):
-        """
-        Return domain of url if parseable
-        """
-        if '//' in url:
-            return parse.urlparse(url).netloc
-        else:
-            return url
 
     def discover_domains(self, start_date, end_date):
         """
@@ -63,7 +64,7 @@ class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
         # (e.g. logs from the last day only) should be considered to shorten initial load time
         site_domains_on_record = Site.objects.all().values_list('url', flat=True).order_by('id')
         # Grab site domain names from each log url
-        site_domains_on_record = list(map(lambda x: self.get_netloc(url=x), site_domains_on_record))
+        site_domains_on_record = set(get_netloc(url=domain) for domain in site_domains_on_record)
 
         # Filter out all logs with domains that are: aws owned, edx owned, blank, an ip address, and/or have a custom port
         # Then aggregate based on domain and access date
@@ -87,7 +88,7 @@ class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
         # Add to final query set if domain isn't already on record
         new_domains = []
         for log in aggregate_logs_by_day:
-            if self.get_netloc(log['domain']) not in site_domains_on_record:
+            if get_netloc(log['domain']) not in site_domains_on_record:
                 new_domains.append(log)
 
         return new_domains
