@@ -45,9 +45,10 @@ def get_netloc(url):
     Return domain of url if parseable
     """
     if '//' in url:
-        return parse.urlparse(url).netloc
+        netloc = parse.urlparse(url).netloc
     else:
-        return url
+        netloc = url
+    return netloc.rstrip(".")
 
 
 class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
