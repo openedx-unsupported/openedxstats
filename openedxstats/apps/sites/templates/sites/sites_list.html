@@ -29,11 +29,18 @@
             });
             // Date filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                return Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
+                var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
+                if (latestOnly) {
+                    return isNaN(Date.parse(data[5]));
+                }
+                else {
+                    return Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
                         && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
                             || isNaN(Date.parse(data[5])));
+                }
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
+            $('#latestOnly').on('click', sitesTable.draw);
             $('#dateInput').keyup(function (e) {
                 if (e.keyCode == 13) {
                     sitesTable.draw()
@@ -73,6 +80,8 @@
                             Search Date
                         </button>
                     </span>
+                    <br/>
+                    <input id="latestOnly" type="checkbox" value="Latest Only" checked="checked"> Latest Only
                 </div>
             </div>
         </div>
