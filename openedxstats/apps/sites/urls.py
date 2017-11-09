@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^sites/delete_site/(?P<pk>[0-9]+)/$', views.SiteDelete.as_view(), name='delete_site'),
     url(r'^sites/ot_chart/$', views.OTChartView.as_view(), name='ot_chart'),
     url(r'^sites/site_discovery/$', views.SiteDiscoveryListView.as_view(), name='site_discovery'),
+    url(r'^sites/csv/$', views.sites_csv_view, name='sites_csv'),
 ]

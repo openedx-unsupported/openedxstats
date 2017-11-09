@@ -1,5 +1,11 @@
 from __future__ import unicode_literals
 
+import csv
+from datetime import datetime, timedelta
+import json
+import re
+from urllib import parse
+
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponseRedirect, HttpResponse
@@ -8,12 +14,9 @@ from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum, Q
+
 from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot, AccessLogAggregate
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
-import re
-from datetime import datetime, timedelta
-from urllib import parse
-import json
 
 
 class ListView(generic.ListView):
@@ -307,3 +310,20 @@ def render_site_form(request, form, pk):
     else:
         return render(request, 'add_site.html',
                       {'form': form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
+
+def sites_csv_view(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sites.csv"'
+
+    sites = Site.objects.filter(active_end_date=None)
+
+    attrs = ['name', 'url', 'course_count']
+    methods = ['languages', 'geographies']
+    writer = csv.DictWriter(response, fieldnames=attrs + methods)
+    writer.writeheader()
+    for site in sites:
+        row = {a: getattr(site, a) for a in attrs}
+        row.update({m: getattr(site, 'get_'+m)() for m in methods})
+        writer.writerow(row)
+
+    return response
