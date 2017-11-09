@@ -319,11 +319,13 @@ def sites_csv_view(request):
 
     attrs = ['name', 'url', 'course_count']
     methods = ['languages', 'geographies']
-    writer = csv.DictWriter(response, fieldnames=attrs + methods)
+    other = ['updated']
+    writer = csv.DictWriter(response, fieldnames=attrs + methods + other)
     writer.writeheader()
     for site in sites:
         row = {a: getattr(site, a) for a in attrs}
         row.update({m: getattr(site, 'get_'+m)() for m in methods})
+        row.update({'updated': site.active_start_date})
         writer.writerow(row)
 
     return response
