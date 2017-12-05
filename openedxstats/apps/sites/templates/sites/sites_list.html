@@ -27,20 +27,33 @@
                 "lengthMenu": [[25, 50, 100, 500, -1], [25, 50, 100, 500, "All"]],
                 "order": [[5, "asc"], [4, "desc"]]
             });
-            // Date filtering
+            // Filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                var goodDate, goodCourses;
+
                 var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
                 if (latestOnly) {
-                    return isNaN(Date.parse(data[5]));
+                    goodDate = isNaN(Date.parse(data[5]));
                 }
                 else {
-                    return Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
+                    goodDate = Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
                         && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
                             || isNaN(Date.parse(data[5])));
                 }
+
+                var hideZeros = $("#hideZeros").prop("checked");
+                if (hideZeros) {
+                    goodCourses = data[3] !== "0";
+                }
+                else {
+                    goodCourses = true;
+                }
+
+                return goodDate && goodCourses;
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
             $('#latestOnly').on('click', sitesTable.draw);
+            $('#hideZeros').on('click', sitesTable.draw);
             $('#dateInput').keyup(function (e) {
                 if (e.keyCode == 13) {
                     sitesTable.draw()
@@ -84,6 +97,9 @@
             </div>
             <div class="col-md-2">
                 <input id="latestOnly" type="checkbox" value="Latest Only" checked="checked"> Latest Only
+            </div>
+            <div class="col-md-2">
+                <input id="hideZeros" type="checkbox" value="Hide Zeros" checked="checked"> Hide Zeros
             </div>
         </div>
         <table id="sites" class="table table-bordered table-responsive table-sm">
