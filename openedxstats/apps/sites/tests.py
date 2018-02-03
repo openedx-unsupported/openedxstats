@@ -25,7 +25,7 @@ class ImportScriptTestCase(TestCase):
     Tests for import_sites management command.
     """
 
-    def test_import_date_from_correctly_formatted_file(self):
+    def test_import_data_from_correctly_formatted_file(self):
         source = os.path.join(BASE, "test_data/test_sites.csv")
         expected_output = ("Report:\n"
                            "Number of sites imported: 5\n"
@@ -34,13 +34,12 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_languages created: 3\n"
                            "Number of site_geozones created: 4\n")
         out = StringIO()
-        with open(source, 'r+'):
-            call_command('import_sites', source, stdout=out)
-            self.assertIn(expected_output, out.getvalue())
+        call_command('import_sites', source, stdout=out)
+        self.assertIn(expected_output, out.getvalue())
 
     def test_import_wrongly_formatted_data_from_file(self):
         source = os.path.join(BASE, "test_data/wrongly_formatted_data.csv")
-        with open(source, 'r+') as csvfile:
+        with open(source) as csvfile:
             with self.assertRaises(FieldDoesNotExist):
                 import_data(csvfile)
 
@@ -53,60 +52,47 @@ class ImportScriptTestCase(TestCase):
                            "Number of site_languages created: 0\n"
                            "Number of site_geozones created: 0\n")
         out = StringIO()
-        with open(source, 'r+'):
-            call_command('import_sites', source, stdout=out)
-            self.assertIn(expected_output, out.getvalue())
+        call_command('import_sites', source, stdout=out)
+        self.assertIn(expected_output, out.getvalue())
 
     def test_import_from_blank_csv_file(self):
         source = os.path.join(BASE, "test_data/blank.csv")
-        with open(source, 'r+'):
-            with self.assertRaises(CommandError):
-                call_command('import_sites', source)
+        with self.assertRaises(CommandError):
+            call_command('import_sites', source)
 
     def test_import_from_wrong_file_type(self):
         source = os.path.join(BASE, "test_data/text_file.txt")
-        with open(source, 'r+'):
-            with self.assertRaises(CommandError):
-                call_command('import_sites', source)
+        with self.assertRaises(CommandError):
+            call_command('import_sites', source)
 
     def test_duplicate_data(self):
         source = os.path.join(BASE, "test_data/test_sites.csv")
         additional_source = os.path.join(BASE, "test_data/test_sites_one_addition.csv")
 
-        with open(source, 'r+'):
-            call_command('import_sites', source)
-
-        with open(additional_source, 'r+'):
-            with self.assertRaises(CommandError):
-                call_command('import_sites', additional_source)
+        call_command('import_sites', source)
+        with self.assertRaises(CommandError):
+            call_command('import_sites', additional_source)
 
     def test_import_duplicate_cols(self):
         source = os.path.join(BASE, "test_data/duplicate_cols.csv")
-
-        with open(source, 'r+'):
-            with self.assertRaises(CommandError):
-                call_command('import_sites', source)
+        with self.assertRaises(CommandError):
+            call_command('import_sites', source)
 
     def test_import_duplicate_date_cols(self):
         source = os.path.join(BASE, "test_data/duplicate_date_cols.csv")
-
-        with open(source, 'r+'):
-            with self.assertRaises(CommandError):
-                call_command('import_sites', source)
+        with self.assertRaises(CommandError):
+            call_command('import_sites', source)
 
     def test_import_newer_version(self):
         source = os.path.join(BASE, "test_data/test_sites.csv")
         additional_source = os.path.join(BASE, "test_data/one_updated_site.csv")
+        call_command('import_sites', source)
 
-        with open(source, 'r+'):
-            call_command('import_sites', source)
-
-        with open(additional_source, 'r+'):
-            call_command('import_sites', additional_source)
-            updated_site = Site.objects.filter(url='https://test3.com').latest('active_start_date')
-            self.assertEqual(updated_site.active_start_date, datetime(2016, 4, 15, 0, 0))
-            self.assertEqual(Site.objects.filter(url='https://test3.com').count(), 2)
-            self.assertEqual(Site.objects.count(), 6)
+        call_command('import_sites', additional_source)
+        updated_site = Site.objects.filter(url='https://test3.com').latest('active_start_date')
+        self.assertEqual(updated_site.active_start_date, datetime(2016, 4, 15, 0, 0))
+        self.assertEqual(Site.objects.filter(url='https://test3.com').count(), 2)
+        self.assertEqual(Site.objects.count(), 6)
 
 
 class ImportOTDataTestCase(TestCase):
@@ -117,9 +103,8 @@ class ImportOTDataTestCase(TestCase):
     def test_import_from_correctly_formatted_file(self):
         source = os.path.join(BASE, "test_data/over_time_data.csv")
 
-        with open(source, 'r+'):
-            call_command('import_ot_data', source)
-            self.assertEqual(SiteSummarySnapshot.objects.count(), 3)
+        call_command('import_ot_data', source)
+        self.assertEqual(SiteSummarySnapshot.objects.count(), 3)
 
 
 class SubmitSiteFormTestCase(TestCase):
