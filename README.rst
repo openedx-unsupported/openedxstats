@@ -274,13 +274,7 @@ How to Use
 Testing
 -------
 
-In order to save time, if you don't plan on developing with the code and only wish to run the tests, you can avoid
-installing postgres. To use a SQLITE database to run tests::
-
-    python manage.py test --settings=openedxstats.settings.testing
-
-The following commands use the default database, which is postgres, although you can change the settings like shown
-above to use SQLITE instead. To test the entire django program use::
+To test the entire Django program use::
 
     python manage.py test
 
