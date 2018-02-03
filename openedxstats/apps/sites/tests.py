@@ -1,21 +1,26 @@
-import os.path
-from django.test import TestCase
-from openedxstats.apps.sites.management.commands.import_sites import import_data
-from django.core.management.base import CommandError
-from django.core.exceptions import FieldDoesNotExist
-from django.core.management import call_command
-from django.utils.six import StringIO
-from django.contrib.auth.models import User
 from datetime import datetime, date, timedelta
 import json
-from openedxstats.apps.sites.models import Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot, \
-    FilenameLog, AccessLogAggregate
-from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
-from django.core.serializers import serialize
-from openedxstats.apps.sites.views import OTChartView
+import os.path
+
 import boto
 from boto.s3.bucket import Bucket, Key
+from django.contrib.auth.models import User
+from django.core.exceptions import FieldDoesNotExist
+from django.core.management import call_command
+from django.core.management.base import CommandError
+from django.core.serializers import serialize
+from django.test import TestCase
+from django.utils.six import StringIO
+
+from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 from openedxstats.apps.sites.management.commands import fetch_referrer_logs
+from openedxstats.apps.sites.management.commands.import_sites import import_data
+from openedxstats.apps.sites.models import (
+    Site, GeoZone, Language, SiteGeoZone, SiteLanguage, SiteSummarySnapshot,
+    FilenameLog, AccessLogAggregate
+)
+from openedxstats.apps.sites.views import OTChartView
+
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
