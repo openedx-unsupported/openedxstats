@@ -15,7 +15,10 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum, Q
 
-from openedxstats.apps.sites.models import Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot, AccessLogAggregate
+from openedxstats.apps.sites.models import (
+    Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot,
+    AccessLogAggregate, OverCount,
+)
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
 
@@ -128,17 +131,25 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
         for day in self.daterange(start_datetime, datetime.now() + timedelta(days=1)):
             # Query to get all site versions that are active within the specified date period
             # We only count public sites with > 0 courses, and count all private sites
-            day_stats = Site.objects.filter(
-                (Q(course_count__gt=0) | Q(is_private_instance=True)) &
+            date_select = (
                 Q(active_start_date__lte=day) &
                 (Q(active_end_date__gte=day) | Q(active_end_date=None))
-            ).values('active_start_date').aggregate(sites=Count('active_start_date'), courses=Sum('course_count'))
+            )
+            day_stats = Site.objects.filter(
+                (Q(course_count__gt=0) | Q(is_private_instance=True)) &
+                date_select
+            ).aggregate(sites=Count('*'), courses=Sum('course_count'))
+
+            try:
+                over_count = OverCount.objects.get(date_select).course_count
+            except OverCount.DoesNotExist:
+                over_count = 0
 
             # Generate summary object for day
             daily_summary_obj = SiteSummarySnapshot(
                 timestamp=day,
                 num_sites=day_stats['sites'],
-                num_courses=day_stats['courses'],
+                num_courses=day_stats['courses'] - over_count,
                 notes="Auto-generated day summary"
             )
             daily_summary_obj_list.append(daily_summary_obj)

@@ -31,6 +31,16 @@ class Language(models.Model):
         return self.name
 
 
+class OverCount(models.Model):
+    """
+    Record how many duplicate courses were over-counted, world-wide.
+    """
+
+    course_count = models.IntegerField(blank=True, null=True)
+    active_start_date = models.DateTimeField(default=datetime.now, unique=True)
+    active_end_date = models.DateTimeField(null=True)
+
+
 class Site(models.Model):
     """
     A model describing an open edX website.
