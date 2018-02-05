@@ -1,6 +1,7 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from datetime import datetime
 
 COURSE_TYPE_CHOICES = (
     ('MOOC', 'MOOC'),
@@ -36,9 +37,28 @@ class OverCount(models.Model):
     Record how many duplicate courses were over-counted, world-wide.
     """
 
-    course_count = models.IntegerField(blank=True, null=True)
+    course_count = models.IntegerField()
     active_start_date = models.DateTimeField(default=datetime.now, unique=True)
     active_end_date = models.DateTimeField(null=True)
+
+    @classmethod
+    def set_latest(cls, over_count):
+        """A simple way to set the current count to `over_count`."""
+
+        # Find the latest one, set its end_date to now
+        now = datetime.now()
+        try:
+            latest = cls.objects.get(active_end_date=None)
+        except cls.DoesNotExist:
+            # I guess this is the first...?
+            pass
+        else:
+            latest.active_end_date = now
+            latest.save()
+
+        new = cls.objects.create(active_start_date=now, course_count=over_count)
+        new.save()
+
 
 
 class Site(models.Model):
