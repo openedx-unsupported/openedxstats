@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum, Q
+from django.views.decorators.csrf import csrf_exempt
 
 from openedxstats.apps.sites.models import (
     Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot,
@@ -340,3 +341,47 @@ def sites_csv_view(request):
         writer.writerow(row)
 
     return response
+
+
+@csrf_exempt
+def bulk_update(request):
+    updates = json.loads(request.body)
+
+    now = datetime.now()
+    updated = 0
+    skipped = []
+
+    for siteurl, (old, new) in updates['sites'].items():
+        site_match = Q(url__endswith=siteurl) | Q(url__endswith=siteurl+"/")
+        sites = Site.objects.filter(site_match, active_end_date=None)
+        if not sites:
+            continue
+        site = sites[0]
+
+        if site.course_count != old:
+            skipped.append((siteurl, "counts don't match: {cc} != {old}".format(cc=site.course_count, old=old)))
+            continue
+
+        # The old Site ends now.
+        site.active_end_date = now
+        site.save()
+
+        # Make a copy of the site with new info.
+        site.pk = None
+        site.active_start_date = now
+        site.active_end_date = None
+        site.course_count = new
+        site.save()
+
+        updated += 1
+
+    resp = {'updated': updated, 'skipped': skipped}
+
+    over_count = updates.get("overcount")
+    if over_count is not None:
+        OverCount.set_latest(over_count)
+        resp['updated_over_count'] = True
+    else:
+        resp['updated_over_count'] = False
+
+    return HttpResponse(json.dumps(resp), content_type='application/json')
