@@ -346,7 +346,7 @@ def sites_csv_view(request):
 
 @csrf_exempt
 def bulk_update(request):
-    updates = json.loads(request.body)
+    updates = json.loads(request.body.decode('utf8'))
 
     now = datetime.now()
     updated = 0
