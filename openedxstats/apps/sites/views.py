@@ -41,10 +41,11 @@ class SiteDelete(generic.DeleteView):
     success_url = reverse_lazy('sites:sites_list')
 
 
-# To allow for JSON response for OTChartView and SiteDiscoveryListView
-class JSONResponseMixin(object):
-    def render_to_json_response(self, context, **response_kwargs):
-        return HttpResponse(context, content_type='application/json', **response_kwargs)
+def json_response(text=None, data=None, **response_kwargs):
+    """Create a JSON response"""
+    if text is None:
+        text = json.dumps(data)
+    return HttpResponse(text, content_type='application/json', **response_kwargs)
 
 
 def get_netloc(url):
@@ -58,7 +59,7 @@ def get_netloc(url):
     return netloc.rstrip(".")
 
 
-class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
+class SiteDiscoveryListView(generic.TemplateView):
     template_name = 'sites/site_discovery.html'
 
     def discover_domains(self, start_date, end_date):
@@ -103,13 +104,13 @@ class SiteDiscoveryListView(generic.TemplateView, JSONResponseMixin):
 
     def post(self, request, *args, **kwargs):
         new_domains = self.discover_domains(request.POST['start_date'], request.POST['end_date'])
-        return self.render_to_json_response(json.dumps(new_domains))
+        return json_response(data=new_domains)
 
     def render_to_response(self, context):
         return super(SiteDiscoveryListView, self).render_to_response(context)
 
 
-class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponseMixin, generic.list.BaseListView):
+class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list.BaseListView):
     model = SiteSummarySnapshot
     template_name = 'sites/ot_chart.html'
     context_object_name = 'snapshot_list'
@@ -169,7 +170,7 @@ class OTChartView(JSONResponseMixin, generic.list.MultipleObjectTemplateResponse
             new_ot_data = self.generate_summary_data(start_datetime)
 
         serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
-        return self.render_to_json_response(serialized_data)
+        return json_response(text=serialized_data)
 
     def render_to_response(self, context):
         return super(OTChartView, self).render_to_response(context)
@@ -384,4 +385,4 @@ def bulk_update(request):
     else:
         resp['updated_over_count'] = False
 
-    return HttpResponse(json.dumps(resp), content_type='application/json')
+    return json_response(data=resp)
