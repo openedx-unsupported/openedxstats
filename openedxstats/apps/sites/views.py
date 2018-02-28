@@ -139,6 +139,7 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
             )
             day_stats = Site.objects.filter(
                 (Q(course_count__gt=0) | Q(is_private_instance=True)) &
+                Q(is_gone=False) &
                 date_select
             ).aggregate(sites=Count('*'), courses=Sum('course_count'))
 
@@ -328,9 +329,15 @@ def sites_csv_view(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sites.csv"'
 
+    complete = bool(request.GET.get('complete', ''))
+
     sites = Site.objects.filter(active_end_date=None)
+    if not complete:
+        sites = [site for site in sites if not site.is_gone]
 
     attrs = ['name', 'url', 'course_count']
+    if complete:
+        attrs.extend(['is_private_instance', 'is_gone'])
     methods = ['languages', 'geographies']
     other = ['updated']
     writer = csv.DictWriter(response, fieldnames=attrs + methods + other)
@@ -338,7 +345,7 @@ def sites_csv_view(request):
     for site in sites:
         row = {a: getattr(site, a) for a in attrs}
         row.update({m: getattr(site, 'get_'+m)() for m in methods})
-        row.update({'updated': site.active_start_date})
+        row.update({'updated': site.active_start_date.replace(microsecond=0)})
         writer.writerow(row)
 
     return response
@@ -350,18 +357,13 @@ def bulk_update(request):
 
     now = datetime.now()
     updated = 0
-    skipped = []
 
-    for siteurl, (old, new) in updates['sites'].items():
+    for siteurl, update in updates['sites'].items():
         site_match = Q(url__endswith=siteurl) | Q(url__endswith=siteurl+"/")
         sites = Site.objects.filter(site_match, active_end_date=None)
         if not sites:
             continue
         site = sites[0]
-
-        if site.course_count != old:
-            skipped.append((siteurl, "counts don't match: {cc} != {old}".format(cc=site.course_count, old=old)))
-            continue
 
         # The old Site ends now.
         site.active_end_date = now
@@ -371,12 +373,13 @@ def bulk_update(request):
         site.pk = None
         site.active_start_date = now
         site.active_end_date = None
-        site.course_count = new
+        site.course_count = update['course_count']
+        site.is_gone = update['is_gone']
         site.save()
 
         updated += 1
 
-    resp = {'updated': updated, 'skipped': skipped}
+    resp = {'updated': updated}
 
     over_count = updates.get("overcount")
     if over_count is not None:
