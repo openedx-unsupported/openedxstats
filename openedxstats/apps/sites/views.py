@@ -369,6 +369,9 @@ def bulk_update(request):
         site.active_end_date = now
         site.save()
 
+        languages = list(site.language.all())
+        geo_zones = list(site.geography.all())
+
         # Make a copy of the site with new info.
         site.pk = None
         site.active_start_date = now
@@ -376,6 +379,11 @@ def bulk_update(request):
         site.course_count = update['course_count']
         site.is_gone = update['is_gone']
         site.save()
+
+        for lang in languages:
+            SiteLanguage.objects.create(language=lang, site=site).save()
+        for geo_zone in geo_zones:
+            SiteGeoZone.objects.create(geo_zone=geo_zone, site=site).save()
 
         updated += 1
 
