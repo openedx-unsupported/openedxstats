@@ -356,12 +356,14 @@ def bulk_update(request):
     updates = json.loads(request.body.decode('utf8'))
 
     now = datetime.now()
-    updated = 0
+    updated = []
+    not_found = []
 
     for siteurl, update in updates['sites'].items():
         site_match = Q(url__endswith=siteurl) | Q(url__endswith=siteurl+"/")
         sites = Site.objects.filter(site_match, active_end_date=None)
         if not sites:
+            not_found.append(siteurl)
             continue
         site = sites[0]
 
@@ -385,9 +387,9 @@ def bulk_update(request):
         for geo_zone in geo_zones:
             SiteGeoZone.objects.create(geo_zone=geo_zone, site=site).save()
 
-        updated += 1
+        updated.append(siteurl)
 
-    resp = {'updated': updated}
+    resp = {'updated': updated, 'not_found': not_found}
 
     over_count = updates.get("overcount")
     if over_count is not None:
