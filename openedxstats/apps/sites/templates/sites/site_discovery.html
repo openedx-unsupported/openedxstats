@@ -63,21 +63,19 @@
                 }
             }
 
-            // Initially load page with all data available
-            fetchDiscoveryData(null, null);
-
             // Date choose event: when range is chosen using daterange picker, parse range and pass into
             // fetchDiscoveryData to send a POST request to server for new info
-            $('#dateRange').on('apply.daterangepicker', function () {
+            function requestData() {
                 var dates = $("#dateRange span").html().split(" - ");
                 var startDate = moment(dates[0], "MMMM D, YYYY").format("YYYY-MM-DD");
                 var endDate = moment(dates[1], "MMMM D, YYYY").format("YYYY-MM-DD");
                 fetchDiscoveryData(startDate, endDate);
-            });
+            }
+            $('#dateRange').on('apply.daterangepicker', requestData);
 
             // Date range picker UI
             $(function () {
-                var start = moment().subtract(29, 'days');
+                var start = moment().subtract(6, 'days');
                 var end = moment();
                 function cb(start, end) {
                     $('#dateRange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
@@ -97,6 +95,7 @@
                     }
                 }, cb);
                 cb(start, end);
+                requestData();
             });
 
 

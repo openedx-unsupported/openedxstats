@@ -72,7 +72,8 @@ class SiteDiscoveryListView(generic.TemplateView):
         # If loading the discovery page begins to lag considerably, a default query other than all data available
         # (e.g. logs from the last day only) should be considered to shorten initial load time
         sites = Site.objects.all()
-        known_domains = set(get_netloc(site.url) for site in sites)
+        known_domains = set()
+        known_domains.update(get_netloc(site.url) for site in sites)
         known_domains.update(get_netloc(url) for site in sites for url in site.aliases)
 
         # Filter out all logs with domains that are: aws owned, edx owned, blank, an ip address, and/or have a custom port
@@ -95,9 +96,12 @@ class SiteDiscoveryListView(generic.TemplateView):
         aggregate_logs_by_day = aggregate_logs_by_day.values('domain').annotate(count=Sum('access_count'))
 
         # Add to final query set if domain isn't already on record
+        chaff = ['www', 'studio', 'staging']
         new_domains = []
         for log in aggregate_logs_by_day:
-            if get_netloc(log['domain']) not in known_domains:
+            netloc = get_netloc(log['domain'])
+            netloc = ".".join(part for part in netloc.split(".") if part not in chaff)
+            if netloc not in known_domains:
                 new_domains.append(log)
 
         return new_domains
