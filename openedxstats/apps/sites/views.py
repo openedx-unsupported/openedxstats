@@ -100,8 +100,8 @@ class SiteDiscoveryListView(generic.TemplateView):
         new_domains = []
         for log in aggregate_logs_by_day:
             netloc = get_netloc(log['domain'])
-            netloc = ".".join(part for part in netloc.split(".") if part not in chaff)
-            if netloc not in known_domains:
+            short_netloc = ".".join(part for part in netloc.split(".") if part not in chaff)
+            if netloc not in known_domains and short_netloc not in known_domains:
                 new_domains.append(log)
 
         return new_domains
