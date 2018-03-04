@@ -96,7 +96,7 @@ class SiteDiscoveryListView(generic.TemplateView):
         aggregate_logs_by_day = aggregate_logs_by_day.values('domain').annotate(count=Sum('access_count'))
 
         # Add to final query set if domain isn't already on record
-        chaff = ['www', 'studio', 'staging', 'preview']
+        chaff = ['www', 'studio', 'staging', 'preview', 'stage', 'cms']
         new_domains = []
         for log in aggregate_logs_by_day:
             netloc = get_netloc(log['domain'])
