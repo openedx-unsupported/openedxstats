@@ -1,9 +1,13 @@
-from django.core.management.base import BaseCommand
-from openedxstats.apps.sites.models import AccessLogAggregate, FilenameLog
-import boto
-import io
+import collections
+import datetime
 import gzip
+import io
 from urllib import parse
+
+import boto
+from django.core.management.base import BaseCommand
+
+from openedxstats.apps.sites.models import AccessLogAggregate, FilenameLog
 
 """
 fetch_referrer_logs.py (based off load_logo_referrers_summary.py)
@@ -93,27 +97,22 @@ def add_to_filename_log(log_name):
     file_to_add.save() #FIXME: Change to commit=false until entire program runs through?
 
 
-def process_log_file(gz_file, log_name):
+def process_log_file(file_content, log_name):
     if DEBUG:
         print("Processing %s ..." % log_name)
-    line_counter = {}
+    line_counter = collections.defaultdict(int)
     aggregate_logs = []
 
-    for line in gz_file.splitlines():
+    for line in file_content.splitlines():
         if line.startswith('#'):
             continue
 
         logline = LogLine(line)
         if logline.uri.startswith("/openedx-logos"):
-            line_key = "|".join((logline.host, logline.date, log_name))
-            if line_key in line_counter:
-                line_counter[line_key] += 1
-            else:
-                line_counter[line_key] = 1
+            line_key = (logline.host, logline.date, log_name)
+            line_counter[line_key] += 1
 
-    for aggregate_line_key in line_counter:
-        (host, date, log_name) = aggregate_line_key.split("|")
-        line_count = line_counter[aggregate_line_key]
+    for (host, date, log_name), line_count in line_counter.items():
         new_aggregate_log = AccessLogAggregate(
             domain=host,
             access_date=date,
@@ -125,34 +124,34 @@ def process_log_file(gz_file, log_name):
         log_to_save.save()
 
 
-def get_accessible_keys(bucket, prefix="edx-static-cloudfront"):
-    accessible_keys = []
+def get_accessible_keys(bucket, prefix="openedx-assets-cloudfront/"):
     for key in bucket.list(prefix=prefix):
         if key.storage_class != "GLACIER":
-            accessible_keys.append(key)
+            yield key
 
-    if DEBUG:
-        print("Accessible keys len: %s" % len(accessible_keys))
 
-    return accessible_keys
-
+def get_key_content(key):
+    # Create an in-memory bytes IO buffer
+    with io.BytesIO() as b:
+        key.get_file(b)
+        b.seek(0)
+        if key.name.endswith(".gz"):
+            b = gzip.GzipFile(None, 'rb', fileobj=b)
+        return b.read().decode('utf8')
 
 def process_keys(accessible_keys):
     num_files_processed = 0
     for key in accessible_keys:
-        # Create an in-memory bytes IO buffer
-        with io.BytesIO() as b:
-            key.get_file(b)
-            b.seek(0)
-            gzf = gzip.GzipFile(None, 'rb', fileobj=b)
-            file_content = gzf.read().decode('utf-8')
+        if DEBUG:
+            print("Processing %r" % (key,))
         # Process in-memory file
-        gz_name = key.name
-        if not is_in_filename_log(gz_name):
+        key_name = key.name
+        if not is_in_filename_log(key_name):
+            file_content = get_key_content(key)
             if DEBUG:
-                print("%s not found, adding!" % gz_name)
-            add_to_filename_log(gz_name)
-            process_log_file(file_content, gz_name)
+                print("%s not found, adding!" % key_name)
+            process_log_file(file_content, key_name)
+            add_to_filename_log(key_name)
             num_files_processed += 1
     return num_files_processed
 
