@@ -2,7 +2,6 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.http import HttpResponse
 from django.contrib.auth import views as auth_views
-from rest_framework import routers, serializers, viewsets
 
 from openedxstats.views import HomePageView
 

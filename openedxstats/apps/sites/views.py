@@ -8,19 +8,24 @@ from urllib import parse
 
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Sum, Q
 from django.views.decorators.csrf import csrf_exempt
-
 from openedxstats.apps.sites.models import (
     Site, SiteLanguage, SiteGeoZone, Language, GeoZone, SiteSummarySnapshot,
     AccessLogAggregate, OverCount,
 )
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
+
+# Converts site data into JSON format for Ajax request
+def SiteView_JSON(request):
+    sites = Site.objects.all()
+    sites_json = serializers.serialize("json", sites)
+    return JsonResponse({'sites': sites_json})
 
 
 class ListView(generic.ListView):
