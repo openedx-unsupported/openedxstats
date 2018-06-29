@@ -38,6 +38,10 @@
                 return `<td style="width: 1%; vertical-align: middle;"><table><tr>${detail_site + (!activeEndDate ? update_site : '') + delete_site}</tr></table></td>`
             } 
             
+            //  renderUrlString
+            //  Converts site URL into HTML link tag
+            renderUrlString = url => `<a href="${url}">${url}</a>`
+
             //    Datatables configuration
             //    Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
             var sitesTable = $('#sites').DataTable({
@@ -50,19 +54,20 @@
                             const site = data[siteID];
                             // Rendering of elements for columns 'Current Version?' & 'Actions'
                             site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
-                            site.fields['renderActionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
+                            site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
+                            site.fields['urlString'] = renderUrlString(site.fields.url);
                         })
                         return data;
                     }},
                 "columns": [                                    // Data for each row item from JSON
                      { "data": "fields.site_type" },
                      { "data": "fields.name" },
-                     { "data": "fields.url" },
+                     { "data": "fields.urlString" },
                      { "data": "fields.course_count" },
                      { "data": "fields.active_start_date" },
                      { "data": "fields.active_end_date" },
                      { "data": "fields.isCurrentVersion" },
-                     { "data": "fields.renderActionButtons" }
+                     { "data": "fields.actionButtons" }
                 ]
             });
     
