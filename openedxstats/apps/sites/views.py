@@ -24,8 +24,12 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
     sites = Site.objects.all()
+    geo = SiteGeoZone.objects.all()
+    geo_json = serializers.serialize("json", geo)
+    language = SiteLanguage.objects.filter()
+    language_json = serializers.serialize("json", language)
     sites_json = serializers.serialize("json", sites)
-    return JsonResponse({'sites': sites_json})
+    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json})
 
 
 class ListView(generic.ListView):
