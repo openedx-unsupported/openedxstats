@@ -36,11 +36,7 @@
         <script type="text/javascript">
     
             var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-<<<<<<< HEAD
                     maxZoom: 5,
-=======
-                    maxZoom: 18,
->>>>>>> 93b6c3232cce543253a62a04e118cb85a8788bba
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }),
                 latlng = new L.LatLng(0, 0);
@@ -64,11 +60,6 @@
                     const { total_course_count, continent } = countries.features[0].features[i].properties
                     for (let j = 0; j < total_course_count; j++) {
                         var m = new L.marker({lat, lng})
-
-<<<<<<< HEAD
-                        // Refactor this later
-=======
->>>>>>> 93b6c3232cce543253a62a04e118cb85a8788bba
                         if (continent === 'Asia') {
                             asiaCluster.addLayer(m);
                         }
