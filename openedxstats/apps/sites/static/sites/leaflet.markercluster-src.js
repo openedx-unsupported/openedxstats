@@ -21,7 +21,7 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		iconCreateFunction: null,
 		clusterPane: L.Marker.prototype.options.pane,
 
-		spiderfyOnMaxZoom: true,
+		spiderfyOnMaxZoom: false,
 		showCoverageOnHover: true,
 		zoomToBoundsOnClick: true,
 		singleMarkerMode: false,

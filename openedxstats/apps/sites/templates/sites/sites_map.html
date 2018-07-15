@@ -61,6 +61,7 @@
                     for (let j = 0; j < total_course_count; j++) {
                         var m = new L.marker({lat, lng})
 
+                        // Refactor this later
                         if (continent === 'Asia') {
                             asiaCluster.addLayer(m);
                         }
