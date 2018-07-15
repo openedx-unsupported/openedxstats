@@ -20,12 +20,7 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		maxClusterRadius: 80, //A cluster will cover at most this many pixels from its center
 		iconCreateFunction: null,
 		clusterPane: L.Marker.prototype.options.pane,
-
-<<<<<<< HEAD
 		spiderfyOnMaxZoom: false,
-=======
-		spiderfyOnMaxZoom: true,
->>>>>>> 93b6c3232cce543253a62a04e118cb85a8788bba
 		showCoverageOnHover: true,
 		zoomToBoundsOnClick: true,
 		singleMarkerMode: false,
