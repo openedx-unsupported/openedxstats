@@ -27,6 +27,7 @@
                 }
 
         </style>
+        <h1 id='country-name'></h1>
         <div id="map">
 
         </div>
@@ -46,34 +47,13 @@
             var markers = new L.MarkerClusterGroup();
             var markersList = [];
 
-            var northAmericaCluster = new L.MarkerClusterGroup();
-            var southAmericaCluster = new L.MarkerClusterGroup();
-            var asiaCluster = new L.MarkerClusterGroup({
-                test: {
-                    testKey: this
-                }
-            });
+            //var northAmericaCluster = new L.MarkerClusterGroup();
+            //var southAmericaCluster = new L.MarkerClusterGroup();
+            //var asiaCluster = new L.MarkerClusterGroup();
+            //var africaCluster = new L.MarkerClusterGroup();
+            //var europeCluster = new L.MarkerClusterGroup();
+            //var oceaniaCluster = new L.MarkerClusterGroup();
 
-            asiaCluster.properties = {};
-            asiaCluster.properties.someprop = "test"
-            var africaCluster = new L.MarkerClusterGroup();
-            var europeCluster = new L.MarkerClusterGroup();
-            var oceaniaCluster = new L.MarkerClusterGroup();
-/*
-            var vietnamCluster = new L.MarkerClusterGroup();
-            vietnamCluster.properties = {};
-            vietnamCluster.properties.country = 'Vietnam'
-
-            var vietMarker = new L.marker({lat:14.0584, lng: 108.2772}).addTo(vietnamCluster)
-            vietMarker.properties = {};
-            vietMarker.properties.country = 'Vietnam marker'
-            var vietMarker2 = new L.marker({lat:14.0584, lng: 108.2772}).addTo(vietnamCluster)
-
-            //vietnamCluster.addLayer(vietMarker)
-
-            //map.addLayer(vietnamCluster);
-            asiaCluster.addLayer(vietnamCluster)
-*/
             function populate() {
                 for (var i = 0; i < countries.features[0].features.length; i++) {
                     const [lng, lat] = countries.features[0].features[i].geometry.centroid
@@ -85,6 +65,12 @@
                     console.log('Marker', m);
                     m.on('clusterclick', function() {
                         console.log('Clicked on a country', this.name)
+                        const countryHeader = document.getElementById('country-name');
+                        while (countryHeader.firstChild) {
+                            countryHeader.removeChild(countryHeader.firstChild);
+                        }
+                        const countryText = document.createTextNode(this.name);
+                        countryHeader.appendChild(countryText)
                     })
                     for (let j = 0; j < total_course_count; j++) {
                         var marker = new L.marker({lat, lng}).addTo(m);
@@ -116,21 +102,6 @@
 
 
             populate();
-
-            vietnamCluster.on('click', function() {
-                console.log('Clicked on Vietnam!')
-            })
-
-            asiaCluster.on('clusterclick', function() {
-                console.log('Clicked on Asia!', this)
-            })
-
-            asiaCluster.eachLayer(function(layer) {
-                layer.on('click', function() {
-
-                    console.log('Clicked on something in Asia', layer)
-                })
-            })
 
             map.addLayer(markers);
             map.addLayer(asiaCluster);
