@@ -50,6 +50,7 @@ class MapView(generic.ListView):
     template_name = 'sites/sites_map.html'
     context_object_name = 'sites_map'
 
+
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
     if text is None:

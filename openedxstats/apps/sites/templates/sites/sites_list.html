@@ -16,14 +16,14 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.css"/>
     <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
     <script>
-        $(document).ready(function () {        
+        $(document).ready(function () {
             // Nav active class selection
             var url = window.location;
             $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
             // Tooltips
             $('[data-toggle="tooltip"]').tooltip();
             // Table sorting
-            
+
             //    isCurrentVersion
             //    Determine rendering of green check box based on whether site is of the current version based on the sites active end date for each row
             isCurrentVersion = activeEndDate => activeEndDate ? '<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: green; font-size: 30px;"></span>' : ''
@@ -36,8 +36,8 @@
                 const update_site = `<td class="action-button-cell"><a href="/sites/update_site/${siteId}"><button type="button" class="btn btn-primary" aria-label="Edit" data-toggle="tooltip" data-placement="bottom" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a></td>`
                 const delete_site = `<td class="action-button-cell"><a href="/sites/delete_site/${siteId}"><button type="button" class="btn btn-danger" aria-label="Delete" data-toggle="tooltip" data-placement="bottom" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></a></td>`
                 return `<td style="width: 1%; vertical-align: middle;"><table><tr>${detail_site + (!activeEndDate ? update_site : '') + delete_site}</tr></table></td>`
-            } 
-            
+            }
+
             //  renderUrlString
             //  Converts site URL into HTML link tag
             renderUrlString = url => `<a href="${url}">${url}</a>`
@@ -45,7 +45,7 @@
             //    Datatables configuration
             //    Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
             var sitesTable = $('#sites').DataTable({
-                "processing": true,                
+                "processing": true,
                 "ajax":{
                     "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
                     "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
@@ -70,7 +70,7 @@
                      { "data": "fields.actionButtons" }
                 ]
             });
-    
+
             // Filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
                 var goodDate, goodCourses;
