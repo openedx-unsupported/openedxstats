@@ -23,7 +23,7 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		spiderfyOnMaxZoom: false,
 		showCoverageOnHover: true,
 		zoomToBoundsOnClick: true,
-		singleMarkerMode: false,
+		singleMarkerMode: true,
 
 		disableClusteringAtZoom: null,
 
@@ -832,10 +832,18 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		var map = this._map,
 		    spiderfyOnMaxZoom = this.options.spiderfyOnMaxZoom,
 		    showCoverageOnHover = this.options.showCoverageOnHover,
-		    zoomToBoundsOnClick = this.options.zoomToBoundsOnClick;
+			zoomToBoundsOnClick = this.options.zoomToBoundsOnClick;
+			
+		if (spiderfyOnMaxZoom) {
+			console.log('On max zoom', this)
+		}
+		if (zoomToBoundsOnClick) {
+			console.log('zoomToBoundsOnClick')
+		}
 
 		//Zoom on cluster click or spiderfy if we are at the lowest level
 		if (spiderfyOnMaxZoom || zoomToBoundsOnClick) {
+			console.log('hello')
 			this.on('clusterclick', this._zoomOrSpiderfy, this);
 		}
 
