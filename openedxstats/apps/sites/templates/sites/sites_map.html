@@ -85,7 +85,7 @@
                         "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
                         "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
                             const data = JSON.parse(json.sites);
-                            console.log('Data', data);
+
                             const siteGeolocation = {};
                             const geoData = JSON.parse(json.geo);
                             geoData.forEach(function(geoLoc) {
@@ -144,22 +144,19 @@
 
             var map = new L.Map('map', {center: latlng, zoom: 2, layers: [tiles]});
 
-            var markers = new L.MarkerClusterGroup();
-            var markersList = [];
-
             function populate() {
                 for (var i = 0; i < countries.features[0].features.length; i++) {
 
+                    const countryData = countries.features[0].features[i];
 
+                    const [lng, lat] = countryData.geometry.centroid
 
-                    const [lng, lat] = countries.features[0].features[i].geometry.centroid
-
-                    var m = new L.MarkerClusterGroup();
+                    var countryCluster = new L.MarkerClusterGroup();
                     const { total_course_count, continent, name } = countries.features[0].features[i].properties
                     //console.log(countries.features[0].features[i].properties)
-                    m.name = name
+                    countryCluster.name = name
                     //console.log('Marker', m);
-                    m.on('clusterclick', function() {
+                    countryCluster.on('clusterclick', function() {
 
                         const countryName = this.name;
                         const countryHeader = document.getElementById('country-name');
@@ -179,11 +176,11 @@
 
                     })
                     for (let j = 0; j < total_course_count; j++) {
-                        var marker = new L.marker({lat, lng}).addTo(m);
+                        var marker = new L.marker({lat, lng}).addTo(countryCluster);
 
                     }
 
-                    m.addTo(map);
+                    countryCluster.addTo(map);
                 }
                 return false;
             }
