@@ -133,9 +133,6 @@
                 });
             });
 
-
-
-
             var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 5,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -148,16 +145,15 @@
                 for (var i = 0; i < countries.features[0].features.length; i++) {
 
                     const countryData = countries.features[0].features[i];
-
                     const [lng, lat] = countryData.geometry.centroid
 
                     var countryCluster = new L.MarkerClusterGroup();
                     const { total_course_count, continent, name } = countries.features[0].features[i].properties
-                    //console.log(countries.features[0].features[i].properties)
-                    countryCluster.name = name
-                    //console.log('Marker', m);
-                    countryCluster.on('clusterclick', function() {
 
+                    countryCluster.name = name
+
+                    countryCluster.on('clusterclick', function() {
+                        // Resets and updatescountry name header
                         const countryName = this.name;
                         const countryHeader = document.getElementById('country-name');
                         while (countryHeader.firstChild) {
@@ -166,44 +162,24 @@
                         const countryText = document.createTextNode(this.name);
                         countryHeader.appendChild(countryText)
 
-
+                        // Updates table to display sites of current country
                         const table = $('#sites').DataTable();
-
                         table
                             .column(4)
                             .search(countryName)
                             .draw();
 
                     })
+
+                    // Populates country by number of markers one by one
+                    // Revisit this to see if cluster number can be manually set instead of populating linearly
                     for (let j = 0; j < total_course_count; j++) {
                         var marker = new L.marker({lat, lng}).addTo(countryCluster);
-
                     }
 
                     countryCluster.addTo(map);
                 }
-                return false;
             }
-            function populateRandomVector() {
-                for (var i = 0, latlngs = [], len = 20; i < len; i++) {
-                    latlngs.push(getRandomLatLng(map));
-                }
-                var path = new L.Polyline(latlngs);
-                map.addLayer(path);
-            }
-            function getRandomLatLng(map) {
-                var bounds = map.getBounds(),
-                    southWest = bounds.getSouthWest(),
-                    northEast = bounds.getNorthEast(),
-                    lngSpan = northEast.lng - southWest.lng,
-                    latSpan = northEast.lat - southWest.lat;
-
-                return new L.LatLng(
-                        southWest.lat + latSpan * Math.random(),
-                        southWest.lng + lngSpan * Math.random());
-            }
-
-
             populate();
 
         </script>
