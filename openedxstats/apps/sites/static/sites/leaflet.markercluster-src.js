@@ -832,18 +832,10 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		var map = this._map,
 		    spiderfyOnMaxZoom = this.options.spiderfyOnMaxZoom,
 		    showCoverageOnHover = this.options.showCoverageOnHover,
-			zoomToBoundsOnClick = this.options.zoomToBoundsOnClick;
-			
-		if (spiderfyOnMaxZoom) {
-			console.log('On max zoom', this)
-		}
-		if (zoomToBoundsOnClick) {
-			console.log('zoomToBoundsOnClick')
-		}
+            zoomToBoundsOnClick = this.options.zoomToBoundsOnClick;
 
 		//Zoom on cluster click or spiderfy if we are at the lowest level
 		if (spiderfyOnMaxZoom || zoomToBoundsOnClick) {
-			console.log('hello')
 			this.on('clusterclick', this._zoomOrSpiderfy, this);
 		}
 
@@ -1792,26 +1784,26 @@ var MarkerCluster = L.MarkerCluster = L.Marker.extend({
 
 /*
 * Extends L.Marker to include two extra methods: clusterHide and clusterShow.
-* 
+*
 * They work as setOpacity(0) and setOpacity(1) respectively, but
 * they will remember the marker's opacity when hiding and showing it again.
-* 
+*
 */
 
 
 L.Marker.include({
-	
+
 	clusterHide: function () {
 		this.options.opacityWhenUnclustered = this.options.opacity || 1;
 		return this.setOpacity(0);
 	},
-	
+
 	clusterShow: function () {
 		var ret = this.setOpacity(this.options.opacity || this.options.opacityWhenUnclustered);
 		delete this.options.opacityWhenUnclustered;
 		return ret;
 	}
-	
+
 });
 
 L.DistanceGrid = function (cellSize) {
@@ -2067,7 +2059,7 @@ Retrieved from: http://en.literateprograms.org/Quickhull_(Javascript)?oldid=1843
 					minLng = pt.lng;
 				}
 			}
-			
+
 			if (minLat !== maxLat) {
 				minPt = minLatPt;
 				maxPt = maxLatPt;
@@ -2337,7 +2329,7 @@ L.MarkerCluster.include({
 			if (m.clusterHide) {
 				m.clusterHide();
 			}
-			
+
 			// Vectors just get immediately added
 			fg.addLayer(m);
 
@@ -2357,7 +2349,7 @@ L.MarkerCluster.include({
 			//Move marker to new position
 			m._preSpiderfyLatlng = m._latlng;
 			m.setLatLng(newPos);
-			
+
 			if (m.clusterShow) {
 				m.clusterShow();
 			}

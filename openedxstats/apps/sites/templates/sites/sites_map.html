@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% block title %} Open edX Sites Map {% endblock %}
+{% block title %} {% endblock %}
 {% block bootstrap3_extra_head %}
 
 <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
@@ -22,15 +22,21 @@
 
         <style>
                 #map {
-                    width: 50%;
+                    width: 48%;
                     height: 500px;
                     border: 1px solid #ccc;
                     float: left;
                 }
                 .table-container {
                     margin-left: 20px;
-                    width: 100px;
+                    width: 49%;
                     float: left;
+                }
+
+                .dataTables_wrapper .dataTables_filter {
+                    float: right;
+                    text-align: right;
+                    visibility: hidden;
                 }
 
 
@@ -79,21 +85,40 @@
                         "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
                         "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
                             const data = JSON.parse(json.sites);
-                            console.log(data);
+                            console.log('Data', data);
+                            const siteGeolocation = {};
+                            const geoData = JSON.parse(json.geo);
+                            geoData.forEach(function(geoLoc) {
+                                siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
+                            })
+
+                            const siteLanguage = {}
+                            const languageData = JSON.parse(json.language);
+                            languageData.forEach(function(lang) {
+                                siteLanguage[lang.fields.site] = lang.fields.language;
+                            })
+
                             Object.keys(data).forEach(function(siteID) {
                                 const site = data[siteID];
                                 // Rendering of elements for columns 'Current Version?' & 'Actions'
                                 site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                                 site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
                                 site.fields['urlString'] = renderUrlString(site.fields.url);
-                            })
+                                const sitePK = data[siteID].pk
+                                site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
+                                site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
+                            });
                             return data;
                         }},
                     "columns": [                                    // Data for each row item from JSON
                          { "data": "fields.site_type" },
                          { "data": "fields.name" },
                          { "data": "fields.urlString" },
-                         { "data": "fields.course_count" }
+                         { "data": "fields.course_count" },
+                         { "data": "fields.geolocation", "visible": false },
+                         { "data": "fields.notes", "visible": false },
+                         { "data": "fields.language", "visible": false },
+                         { "data": "fields.aliases", "visible": false }
                     ]
                 });
 
@@ -108,30 +133,7 @@
                 });
             });
 
-            // Filtering
-            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                var goodDate, goodCourses;
 
-                var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
-                if (latestOnly) {
-                    goodDate = isNaN(Date.parse(data[5]));
-                }
-                else {
-                    goodDate = Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
-                        && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
-                            || isNaN(Date.parse(data[5])));
-                }
-
-                var hideZeros = $("#hideZeros").prop("checked");
-                if (hideZeros) {
-                    goodCourses = data[3] !== "0";
-                }
-                else {
-                    goodCourses = true;
-                }
-                console.log('Filter data', data);
-                return data
-            });
 
 
             var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -147,21 +149,34 @@
 
             function populate() {
                 for (var i = 0; i < countries.features[0].features.length; i++) {
+
+
+
                     const [lng, lat] = countries.features[0].features[i].geometry.centroid
 
                     var m = new L.MarkerClusterGroup();
                     const { total_course_count, continent, name } = countries.features[0].features[i].properties
-                    console.log(countries.features[0].features[i].properties)
+                    //console.log(countries.features[0].features[i].properties)
                     m.name = name
-                    console.log('Marker', m);
+                    //console.log('Marker', m);
                     m.on('clusterclick', function() {
-                        console.log('Clicked on a country', this.name)
+
+                        const countryName = this.name;
                         const countryHeader = document.getElementById('country-name');
                         while (countryHeader.firstChild) {
                             countryHeader.removeChild(countryHeader.firstChild);
                         }
                         const countryText = document.createTextNode(this.name);
                         countryHeader.appendChild(countryText)
+
+
+                        const table = $('#sites').DataTable();
+
+                        table
+                            .column(4)
+                            .search(countryName)
+                            .draw();
+
                     })
                     for (let j = 0; j < total_course_count; j++) {
                         var marker = new L.marker({lat, lng}).addTo(m);
@@ -205,6 +220,10 @@
                     <th>Name</th>
                     <th>Url</th>
                     <th>Course Count</th>
+                    <th>Geolocation</th>
+                <th>Notes</th>
+                <th>Language</th>
+                <th>Aliases</th>
                 </tr>
                 </thead>
                 <tfoot>
@@ -213,6 +232,10 @@
                     <th>Name</th>
                     <th>Url</th>
                     <th>Course Count</th>
+                    <th>Geolocation</th>
+                <th>Notes</th>
+                <th>Language</th>
+                <th>Aliases</th>
                 </tr>
                 </tfoot>
             </table>

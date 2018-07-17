@@ -57183,5 +57183,3 @@ const countries = {
         }
     ]
 }
-
-console.log('hello world')
