@@ -50,6 +50,8 @@
 
         <script type="text/javascript">
 
+            let fetchCountries;
+
             $(document).ready(function () {
                 // Nav active class selection
                 var url = window.location;
@@ -85,7 +87,7 @@
                         "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
                         "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
                             const data = JSON.parse(json.sites);
-
+                            fetchCountries = data;
                             const siteGeolocation = {};
                             const geoData = JSON.parse(json.geo);
                             geoData.forEach(function(geoLoc) {
@@ -121,16 +123,6 @@
                          { "data": "fields.aliases", "visible": false }
                     ]
                 });
-
-
-                $('#dateSearchButton').on('click', sitesTable.draw);
-                $('#latestOnly').on('click', sitesTable.draw);
-                $('#hideZeros').on('click', sitesTable.draw);
-                $('#dateInput').keyup(function (e) {
-                    if (e.keyCode == 13) {
-                        sitesTable.draw()
-                    }
-                });
             });
 
             var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -145,6 +137,8 @@
                 for (var i = 0; i < countries.features[0].features.length; i++) {
 
                     const countryData = countries.features[0].features[i];
+                    //console.log('countryData', countries)
+                    console.log('fetchCountries', fetchCountries)
                     const [lng, lat] = countryData.geometry.centroid
 
                     var countryCluster = new L.MarkerClusterGroup();
@@ -182,6 +176,11 @@
             }
             populate();
 
+            console.log('fetchCountries', fetchCountries)
+
+            setTimeout(function() {
+                console.log('fetchCountries', fetchCountries)
+            }, 1000)
         </script>
 
 
