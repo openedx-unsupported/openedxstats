@@ -57183,3 +57183,19 @@ const countries = {
         }
     ]
 }
+
+const coordinateTable = {};
+
+countries.features[0].features.forEach(function(country) {
+    let [lat, lng] = country.geometry.centroid;
+    lat = lat.toFixed(5);
+    lng = lng.toFixed(5);
+    console.log(lat);
+    console.log(country.geometry.centroid);
+    let coordStr = `${lng},${lat}`
+    coordinateTable[coordStr] = country;
+})
+
+Object.keys(coordinateTable).forEach(function(coord) {
+    console.log(coord);
+})

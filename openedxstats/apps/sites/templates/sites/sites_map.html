@@ -122,7 +122,7 @@
                          { "data": "fields.name" },
                          { "data": "fields.urlString" },
                          { "data": "fields.course_count" },
-                         { "data": "fields.geolocation", "visible": false },
+                         { "data": "fields.geolocation", "visible": true },
                          { "data": "fields.notes", "visible": false },
                          { "data": "fields.language", "visible": false },
                          { "data": "fields.aliases", "visible": false }
@@ -147,6 +147,109 @@
 
 
 
+            northAmericaCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+            southAmericaCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+            asiaCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+            africaCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+            europeCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+            oceaniaCluster.on('clusterclick', function(country) {
+                let {lat, lng} = country.latlng;
+                lat = lat.toFixed(5);
+                lng = lng.toFixed(5);
+                const coordString = `${lat},${lng}`;
+                const countryName = coordinateTable[coordString].properties.name;
+                console.log('coordString', coordString)
+                //console.log('country.latlng', country.latlng)
+                console.log('coordinate table', coordinateTable[coordString])
+                //console.log(Object.keys(coordinateTable[coordString].properties))
+                console.log(`Clicked on ${countryName}!`)
+                const table = $('#sites').DataTable();
+                table
+                        .column(4)
+                        .search(countryName)
+                        .draw();
+            })
+
             function populate() {
                 for (var i = 0; i < countries.features[0].features.length; i++) {
 
@@ -159,7 +262,7 @@
                     const { total_course_count, continent, name } = countries.features[0].features[i].properties
 
                     countryCluster.name = name
-                    countryCluster.zIndex = 1111;
+
                     countryCluster.on('clusterclick', function() {
 
                         console.log('Clicked on a country!')
@@ -190,35 +293,27 @@
                     }
 
                     if (continent === 'Asia') {
-
-                        console.log('Asia found')
                         asiaCluster.addLayer(countryCluster);
                     }
                     else if (continent === 'Africa') {
-                        console.log('Africa found')
                         africaCluster.addLayer(countryCluster);
                     }
                     else if (continent === 'South America') {
-                        console.log('South America found')
                         southAmericaCluster.addLayer(countryCluster);
                     }
                     else if (continent === 'North America') {
-                        console.log('North America found')
                         northAmericaCluster.addLayer(countryCluster);
                     }
                     else if (continent === 'Europe') {
-                        console.log('Europe found')
                         europeCluster.addLayer(countryCluster);
                     }
                     else if (continent === 'Oceania') {
-                        console.log('Oceania found')
                         oceaniaCluster.addLayer(countryCluster);
                     }
                     else {
-                        console.log('Missing continents', continent)
+                        //console.log('Missing continents', continent)
                     }
                     countryCluster.bringToBack();
-
                     // Enable this line and remove above conditionals to restore country search on click functionality
                     //countryCluster.addTo(map);
                 }
@@ -226,7 +321,7 @@
             populate();
 
             console.log('fetchCountries', fetchCountries)
-
+            console.log(coordinateTable);
             setTimeout(function() {
                 console.log('fetchCountries', fetchCountries)
             }, 1000)
