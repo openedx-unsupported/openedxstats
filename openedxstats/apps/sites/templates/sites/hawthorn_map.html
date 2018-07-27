@@ -8,7 +8,18 @@
             $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
         });
     </script>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
+    <link rel="stylesheet" href="../../static/sites/MarkerCluster.css" />
+	<link rel="stylesheet" href="../../static/sites/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+
     <link rel="shortcut icon" href="{%  static 'sites/favicon.ico' %}">
+
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
     {{ form.media }}
 {% endblock %}
 
@@ -18,6 +29,8 @@
     {% include "navbar.html" %}
     <!-- Content -->
     <div class="container-fluid">
+
+    <div id="map"></div>
         <p>Google Sheets API Quickstart</p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
@@ -25,6 +38,7 @@
     <button id="signout_button" style="display: none;">Sign Out</button>
 
     <pre id="content"></pre>
+    <script src="../../static/sites/leaflet.markercluster-src.js"></script>
 
     <script type="text/javascript">
       // Client ID and API key from the Developer Console
@@ -109,6 +123,7 @@
         var textContent = document.createTextNode(message + '\n');
         pre.appendChild(textContent);
       }
+      const entries = [];
 
       /**
        * Print the names and majors of students in a sample spreadsheet:
@@ -122,8 +137,7 @@
           console.log('resonse', response);
           var range = response.result;
           if (range.values.length > 0) {
-            const entries = [];
-            for (i = 0; i < range.values.length; i++) {
+            for (i = 1; i < range.values.length; i++) {
               var row = range.values[i];
               // Print columns A and E, which correspond to indices 0 and 4.
               appendPre(row);
@@ -136,16 +150,92 @@
         }, function(response) {
           appendPre('Error: ' + response.result.error.message);
         }).then(function(data) {
-            console.log('Data', data);
+
+            populate();
         });
       }
 
+
+      var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 5,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }),
+    latlng = new L.LatLng(0, 0);
+
+var map = new L.Map('map', {center: latlng, zoom: 2, layers: [tiles]});
+
+var markers = new L.MarkerClusterGroup();
+var markersList = [];
+
+
+
+var northAmericaCluster = new L.MarkerClusterGroup().addTo(map);
+var southAmericaCluster = new L.MarkerClusterGroup().addTo(map);
+var asiaCluster = new L.MarkerClusterGroup().addTo(map);
+var africaCluster = new L.MarkerClusterGroup().addTo(map);
+var europeCluster = new L.MarkerClusterGroup().addTo(map);
+var oceaniaCluster = new L.MarkerClusterGroup().addTo(map);
+
+
+function populate() {
+// Iterates through list of all entries examine each person one by one
+// Extract the country data of each person
+// Use country data and check against keyCountries to find continent
+// Extract continent
+// Extract coordinates
+// console.log('entries', entries.userData)
+for (var i = 0; i < entries.length; i++) {
+const data = entries[i];
+
+const country = data[2];
+const countryData = keyCountries[country];
+if (keyCountries.hasOwnProperty(country)) {
+    console.log('countryData', countryData)
+    const [lng, lat] = countryData.geometry.centroid;
+    const continent = countryData.properties.continent;
+    const countryCluster = new L.MarkerClusterGroup();
+    const marker = new L.marker({lat, lng}).addTo(countryCluster);
+
+    if (continent === 'Asia') {
+        asiaCluster.addLayer(countryCluster);
+    }
+    else if (continent === 'Africa') {
+        africaCluster.addLayer(countryCluster);
+    }
+    else if (continent === 'South America') {
+        southAmericaCluster.addLayer(countryCluster);
+    }
+    else if (continent === 'North America') {
+        northAmericaCluster.addLayer(countryCluster);
+    }
+    else if (continent === 'Europe') {
+        europeCluster.addLayer(countryCluster);
+    }
+    else if (continent === 'Oceania') {
+        oceaniaCluster.addLayer(countryCluster);
+    }
+    else {
+        console.log('Missing continents', continent)
+    }
+}
+
+
+}
+}
+
+markers.on('clusterclick', function (a) {
+alert('cluster ' + a.layer.getAllChildMarkers().length);
+});
+markers.on('click', function (a) {
+alert('marker ' + a.layer);
+});
+
+map.addLayer(markers);
     </script>
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};handleClientLoad()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()">
     </script>
-    <script src="../../static/sites/leaflet.markercluster-src.js"></script>
     <script src="../../static/hawthorn_map/keyCountries.js"></script>
     <script src="../../static/hawthorn_map/main.js"></script>
     </div>
