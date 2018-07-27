@@ -54,6 +54,11 @@ class MapView(generic.ListView):
     template_name = 'sites/sites_map.html'
     context_object_name = 'sites_map'
 
+class HawthornMapView(generic.ListView):
+    model = Site # Not needed,consider switching to function based view
+    template_name = 'sites/hawthorn_map.html'
+    # context_object_name = 'sites_map'
+
 
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
