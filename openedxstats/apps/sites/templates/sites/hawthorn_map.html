@@ -31,129 +31,10 @@
     <div class="container-fluid">
 
     <div id="map"></div>
-        <p>Google Sheets API Quickstart</p>
 
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" style="display: none;">Authorize</button>
-    <button id="signout_button" style="display: none;">Sign Out</button>
-
-    <pre id="content"></pre>
     <script src="../../static/sites/leaflet.markercluster-src.js"></script>
 
     <script type="text/javascript">
-      // Client ID and API key from the Developer Console
-      var CLIENT_ID = '518928998774-acns36t67jtsnmvtlnur1sf9glmeg662.apps.googleusercontent.com';
-      var API_KEY = 'AIzaSyC6DH1917exPwEpcXQtUu78_7jws7hbMQw';
-
-      // Array of API discovery doc URLs for APIs used by the quickstart
-      var DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4"];
-
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      var SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly";
-
-      var authorizeButton = document.getElementById('authorize_button');
-      var signoutButton = document.getElementById('signout_button');
-
-      /**
-       *  On load, called to load the auth2 library and API client library.
-       */
-      function handleClientLoad() {
-        gapi.load('client:auth2', initClient);
-      }
-
-      /**
-       *  Initializes the API client library and sets up sign-in state
-       *  listeners.
-       */
-      function initClient() {
-        gapi.client.init({
-          apiKey: API_KEY,
-          clientId: CLIENT_ID,
-          discoveryDocs: DISCOVERY_DOCS,
-          scope: SCOPES
-        }).then(function () {
-          // Listen for sign-in state changes.
-          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-          // Handle the initial sign-in state.
-          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-          authorizeButton.onclick = handleAuthClick;
-          signoutButton.onclick = handleSignoutClick;
-        });
-      }
-
-      /**
-       *  Called when the signed in status changes, to update the UI
-       *  appropriately. After a sign-in, the API is called.
-       */
-      function updateSigninStatus(isSignedIn) {
-        if (isSignedIn) {
-          authorizeButton.style.display = 'none';
-          signoutButton.style.display = 'block';
-          listMajors();
-        } else {
-          authorizeButton.style.display = 'block';
-          signoutButton.style.display = 'none';
-        }
-      }
-
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick(event) {
-        gapi.auth2.getAuthInstance().signIn();
-      }
-
-      /**
-       *  Sign out the user upon button click.
-       */
-      function handleSignoutClick(event) {
-        gapi.auth2.getAuthInstance().signOut();
-      }
-
-      /**
-       * Append a pre element to the body containing the given message
-       * as its text node. Used to display the results of the API call.
-       *
-       * @param {string} message Text to be placed in pre element.
-       */
-      function appendPre(message) {
-        var pre = document.getElementById('content');
-        var textContent = document.createTextNode(message + '\n');
-        pre.appendChild(textContent);
-      }
-      const entries = [];
-
-      /**
-       * Print the names and majors of students in a sample spreadsheet:
-       * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-       */
-      function listMajors() {
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1v5EWlgFpXtDKORXcm8OWSgFsUHYuCR2ick5Q4kdnrQk',
-          range: 'A:H',
-        }).then(function(response) {
-          console.log('resonse', response);
-          var range = response.result;
-          if (range.values.length > 0) {
-            for (i = 1; i < range.values.length; i++) {
-              var row = range.values[i];
-              // Print columns A and E, which correspond to indices 0 and 4.
-              appendPre(row);
-              entries.push(row);
-            }
-            return entries
-          } else {
-            appendPre('No data found.');
-          }
-        }, function(response) {
-          appendPre('Error: ' + response.result.error.message);
-        }).then(function(data) {
-
-            populate();
-        });
-      }
 
 
       var tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJ5YW5rbGUiLCJhIjoiY2pqMGNvdTc4MGYxMDNrcDE4a2c0Y3ltcyJ9.7KV9GmiOap9nsGiI12RGZg', {
@@ -177,7 +58,7 @@ var europeCluster = new L.MarkerClusterGroup().addTo(map);
 var oceaniaCluster = new L.MarkerClusterGroup().addTo(map);
 
 
-function populate() {
+function populate(entries) {
 // Iterates through list of all entries examine each person one by one
 // Extract the country data of each person
 // Use country data and check against keyCountries to find continent
@@ -185,44 +66,45 @@ function populate() {
 // Extract coordinates
 // console.log('entries', entries.userData)
 for (var i = 0; i < entries.length; i++) {
-const data = entries[i];
-console.log(keyCountries);
-const country = data[2];
-const countryData = keyCountries[country];
-if (keyCountries.hasOwnProperty(country)) {
-     //console.log('countryData', countryData)
-     //console.log('countryData.geometry.coordinates', countryData.geometry.coordinates)
-    console.log('Name: ', countryData.properties.name);
-    const [lng, lat] = countryData.geometry.coordinates;
-    const continent = countryData.properties.continent;
-    const countryCluster = new L.MarkerClusterGroup();
-    const marker = new L.marker({lat, lng}).addTo(countryCluster);
 
-    if (continent === 'Asia') {
-        asiaCluster.addLayer(countryCluster);
+    const data = entries[i];
+    console.log(keyCountries);
+    const country = data[2];
+    const countryData = keyCountries[country];
+    if (keyCountries.hasOwnProperty(country)) {
+        //console.log('countryData', countryData)
+        //console.log('countryData.geometry.coordinates', countryData.geometry.coordinates)
+        console.log('Name: ', countryData.properties.name);
+        const [lng, lat] = countryData.geometry.coordinates;
+        const continent = countryData.properties.continent;
+        const countryCluster = new L.MarkerClusterGroup();
+        const marker = new L.marker({lat, lng}).addTo(countryCluster);
+
+        if (continent === 'Asia') {
+            asiaCluster.addLayer(countryCluster);
+        }
+        else if (continent === 'Africa') {
+            africaCluster.addLayer(countryCluster);
+        }
+        else if (continent === 'South America') {
+            southAmericaCluster.addLayer(countryCluster);
+        }
+        else if (continent === 'North America') {
+            northAmericaCluster.addLayer(countryCluster);
+        }
+        else if (continent === 'Europe') {
+            europeCluster.addLayer(countryCluster);
+        }
+        else if (continent === 'Oceania') {
+            oceaniaCluster.addLayer(countryCluster);
+        }
+        else {
+            console.log('Missing continents', continent)
+        }
     }
-    else if (continent === 'Africa') {
-        africaCluster.addLayer(countryCluster);
-    }
-    else if (continent === 'South America') {
-        southAmericaCluster.addLayer(countryCluster);
-    }
-    else if (continent === 'North America') {
-        northAmericaCluster.addLayer(countryCluster);
-    }
-    else if (continent === 'Europe') {
-        europeCluster.addLayer(countryCluster);
-    }
-    else if (continent === 'Oceania') {
-        oceaniaCluster.addLayer(countryCluster);
-    }
-    else {
-        console.log('Missing continents', continent)
-    }
-}
 
 
-}
+    }
 }
 
 markers.on('clusterclick', function (a) {
@@ -233,11 +115,20 @@ alert('marker ' + a.layer);
 });
 
 map.addLayer(markers);
+
+
+$.ajax({
+    url: "{% url 'sites:sites_list_json' %}",
+    dataType: 'json',
+    success: function (data) {
+        const entries = JSON.parse(data.my_list);
+        entries.shift();
+        console.log('entries', entries);
+       populate(entries);
+    }
+  });
     </script>
-    <script async defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};handleClientLoad()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()">
-    </script>
+
     <script src="../../static/hawthorn_map/keyCountries.js"></script>
     <script src="../../static/hawthorn_map/main.js"></script>
     </div>

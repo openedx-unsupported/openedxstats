@@ -21,6 +21,28 @@ from openedxstats.apps.sites.models import (
 )
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
+import pandas as pd
+
+# data = pd.read_csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSPFKLiw6u0o6bTAInJ80xctLt609FzcdXW2e1I6DAl5jkedLnnAuNatGLG9rGdt8F_k8WMo65muYGW/pub?output=csv', skiprows = 1)
+# print(data)
+# for entry in data:
+#     print(entry)
+
+import requests
+
+CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPFKLiw6u0o6bTAInJ80xctLt609FzcdXW2e1I6DAl5jkedLnnAuNatGLG9rGdt8F_k8WMo65muYGW/pub?output=csv'
+
+
+with requests.Session() as s:
+    download = s.get(CSV_URL)
+    decoded_content = download.content.decode('utf-8')
+    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    my_list = list(cr)
+    for row in my_list:
+        print(row)
+
+
+
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
     sites = Site.objects.all()
@@ -29,7 +51,19 @@ def SiteView_JSON(request):
     language = SiteLanguage.objects.filter()
     language_json = serializers.serialize("json", language)
     sites_json = serializers.serialize("json", sites)
-    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json})
+
+    with requests.Session() as s:
+        download = s.get(CSV_URL)
+        decoded_content = download.content.decode('utf-8')
+        cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+        my_list = list(cr)
+        for row in my_list:
+            print(row)
+
+    my_list_json = json.dumps(my_list)
+
+    # data_json = serializers.serialize("json", data)
+    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json, 'my_list': my_list_json})
 
 
 class ListView(generic.ListView):

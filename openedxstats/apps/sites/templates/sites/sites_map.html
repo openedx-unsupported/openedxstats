@@ -95,7 +95,8 @@
                             geoData.forEach(function(geoLoc) {
                                 siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
                             })
-
+                            console.log('hello world')
+                            console.log(json)
                             const siteLanguage = {}
                             const languageData = JSON.parse(json.language);
                             languageData.forEach(function(lang) {
