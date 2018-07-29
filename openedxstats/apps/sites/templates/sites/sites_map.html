@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
 <script type="text/javascript" language="javascript" src="{% static 'sites/leaflet.markercluster-src.js' %}"></script>
 <script type="text/javascript" language="javascript" src="{% static 'sites/allCountries.js' %}"></script>
+<script type="text/javascript" language="javascript" src="{% static 'sites/keyCountries.js' %}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
 {% endblock %}
 {% block content %}
@@ -44,7 +45,6 @@
         <div id="map">
         </div>
         <script type="text/javascript">
-            let fetchCountries;
             $(document).ready(function () {
                 // Nav active class selection
                 var url = window.location;
@@ -78,6 +78,25 @@
                 renderUrlString = url => `<a href="${url}">${url}</a>`
 
                 /**
+                * normalizeActiveSitesCount
+                * Converts mismatched country keys into API for compatibility with GeoJSON
+                */
+                normalizeActiveSitesCount = activeSitesCount => {
+                    const updatedActiveSitesCount = {};
+                    Object.keys(activeSitesCount).forEach(country => {
+                        if (country === 'US') {
+                            activeSitesCount['United States'] = activeSitesCount[country];
+                            delete activeSitesCount['US'];
+                        }
+                        else if (country === 'UK') {
+                            activeSitesCount['United Kingdom'] = activeSitesCount[country];
+                            delete activeSitesCount['UK'];
+                        }
+                    })
+                    return activeSitesCount;
+                }
+
+                /**
                 * Datatables configuration
                 * Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
                 */
@@ -87,7 +106,7 @@
                     "ajax":{
                         // Communicating to API endpoint serving JSON data from database
                         "url":"{% url 'sites:sites_list_json' %}",
-                        // Formatting data for DataTables
+                        // Formatting data for DataTables from AJAX
                         "dataSrc": json => {
                             const sites = JSON.parse(json.sites);
                             const siteGeolocation = {};
@@ -100,7 +119,7 @@
                             languageData.forEach(lang => {
                                 siteLanguage[lang.fields.site] = lang.fields.language;
                             })
-
+                            const activeSitesCount = normalizeActiveSitesCount(json.activeSitesCount);
                             Object.keys(sites).forEach(siteID => {
                                 const site = sites[siteID];
                                 // Rendering of elements for columns 'Current Version?' & 'Actions'
@@ -111,6 +130,8 @@
                                 site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
                                 site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
                             });
+
+                            populate(activeSitesCount);
                             return sites;
                         }},
                     // Data for each row item from JSON
@@ -137,12 +158,17 @@
             addClusterToMap = (cluster, layer) => {
                 cluster.addTo(layer);
             }
+
             clusterOnClick = cluster => {
+                console.log('clusterOnClick')
+                console.log('coordinateTable', coordinateTable)
                 cluster.on('clusterclick', layer => {
                     let {lat, lng} = layer.latlng;
                     lat = lat.toFixed(1);
                     lng = lng.toFixed(1);
                     const coordString = `${lat},${lng}`;
+                    console.log('coordString', coordString)
+                    console.log('coordinateTable[coordString]', coordinateTable[coordString])
                     const countryName = coordinateTable[coordString].properties.name;
                     const countryHeader = document.getElementById('country-name');
                     while (countryHeader.firstChild) {
@@ -150,12 +176,11 @@
                     }
                     const countryText = document.createTextNode(countryName);
                     countryHeader.appendChild(countryText);
-
                     const table = $('#sites').DataTable();
                     table
-                            .column(4)
-                            .search(countryName)
-                            .draw();
+                        .column(4)
+                        .search(countryName)
+                        .draw();
                     })
             }
 
@@ -169,22 +194,27 @@
             ];
 
             allClusters.forEach(cluster => {
+                console.log('allCluster', cluster)
                 addClusterToMap(cluster, map);
                 clusterOnClick(cluster);
             })
 
-            function populate() {
-                // Creates a country cluster for every possible country and appends to continent layer
-                for (var i = 0; i < countries.features[0].features.length; i++) {
-                    const countryData = countries.features[0].features[i];
-                    const [lng, lat] = countryData.geometry.centroid
-                    const { total_course_count, continent, name } = countries.features[0].features[i].properties
-                    let countryCluster = new L.MarkerClusterGroup();
-                    countryCluster.name = name
+            // Executed after AJAX request
+            function populate(activeSitesCount) {
+                console.log('activeSitesCount', activeSitesCount)
+                // console.log('keyCountries', keyCountries);
+                // Iterate object keyCountries from keyCountries.js
+                Object.keys(keyCountries).forEach(function(country) {
+                    const countryData = keyCountries[country];
+                    const [lng, lat] = countryData.geometry.coordinates;
+                    const {name, continent} = countryData.properties;
+                    const countryCluster = new L.MarkerClusterGroup();
+                    countryCluster.name = name;
 
-                    // Populates country by number of markers
-                    for (let j = 0; j < total_course_count; j++) {
-                        var m = new L.marker({lat, lng}).addTo(countryCluster);
+                    const siteCount = activeSitesCount[country];
+
+                    for (let i = 0; i < siteCount; i++) {
+                        const marker = new L.marker({lng, lat}).addTo(countryCluster);
                     }
 
                     switch(continent) {
@@ -207,9 +237,14 @@
                             oceaniaCluster.addLayer(countryCluster);
                             break;
                     }
-                }
+                })
+
+                // Creates a country cluster for every possible country and appends to continent layer
+
             }
-            populate()
+
+
+            //populate()
         </script>
 
         <div class="table-container">

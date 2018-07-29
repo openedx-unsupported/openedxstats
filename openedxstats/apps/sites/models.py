@@ -113,6 +113,7 @@ class SiteGeoZone(models.Model):
     geo_zone = models.ForeignKey('GeoZone', on_delete=models.CASCADE)
 
     def __str__(self):
+        # return [self.site.url, self.geo_zone.name]
         return self.site.url + '---' + self.geo_zone.name
 
 

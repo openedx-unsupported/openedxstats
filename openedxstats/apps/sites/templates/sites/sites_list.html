@@ -48,16 +48,17 @@
                 "processing": true,
                 "ajax":{
                     "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
-                    "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
-                        const data = JSON.parse(json.sites);
-                        Object.keys(data).forEach(function(siteID) {
-                            const site = data[siteID];
+                    "dataSrc": json => {                // Formatting data to be compatible with DataTables
+                        const sites = JSON.parse(json.sites);
+                        console.log(json.geo)
+                        Object.keys(sites).forEach(function(siteID) {
+                            const site = sites[siteID];
                             // Rendering of elements for columns 'Current Version?' & 'Actions'
                             site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                             site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
                             site.fields['urlString'] = renderUrlString(site.fields.url);
                         })
-                        return data;
+                        return sites;
                     }},
                 "columns": [                                    // Data for each row item from JSON
                      { "data": "fields.site_type" },
