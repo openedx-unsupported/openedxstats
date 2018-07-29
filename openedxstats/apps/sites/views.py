@@ -49,6 +49,11 @@ class SiteDelete(generic.DeleteView):
     template_name = 'sites/delete_site.html'
     success_url = reverse_lazy('sites:sites_list')
 
+class MapView(generic.ListView):
+    model = Site
+    template_name = 'sites/sites_map.html'
+    context_object_name = 'sites_map'
+
 
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
