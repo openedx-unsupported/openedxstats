@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import csv
 from datetime import datetime, timedelta
+import requests
 import json
 import re
 from urllib import parse
@@ -20,7 +21,6 @@ from openedxstats.apps.sites.models import (
     AccessLogAggregate, OverCount,
 )
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
-import requests
 
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
