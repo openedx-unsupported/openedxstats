@@ -84,10 +84,10 @@
         }
         // GET request for CSV
         $.ajax({
-            url: "{% url 'sites:sites_list_json' %}",
+            url: "{% url 'sites:hawthorn_map_json' %}",
             dataType: 'json',
             success: function (data) {
-                const entries = JSON.parse(data.my_list);
+                const entries = JSON.parse(data.hawthorn_user_data);
                 // Remove CSV table header
                 entries.shift();
                 populate(entries);
