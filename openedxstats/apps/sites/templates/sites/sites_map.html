@@ -174,6 +174,7 @@
             })
 
             function populate() {
+                // Creates a country cluster for every possible country and appends to continent layer
                 for (var i = 0; i < countries.features[0].features.length; i++) {
                     const countryData = countries.features[0].features[i];
                     const [lng, lat] = countryData.geometry.centroid
@@ -181,9 +182,9 @@
                     let countryCluster = new L.MarkerClusterGroup();
                     countryCluster.name = name
 
-                    // Populates country by number of markers one by one
+                    // Populates country by number of markers
                     for (let j = 0; j < total_course_count; j++) {
-                        var m = new L.marker({lat, lng, opacity: 0.1}).addTo(countryCluster);
+                        var m = new L.marker({lat, lng}).addTo(countryCluster);
                     }
 
                     switch(continent) {
