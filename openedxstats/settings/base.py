@@ -66,6 +66,7 @@ MIDDLEWARE_CLASSES = [
 LOGIN_URL = '/login/'
 LOGIN_EXEMPT_URLS = (
     r'^hawthorn/$',
+    r'^sites/hawthorn_map/json$',
     r'/logout',
 )
 

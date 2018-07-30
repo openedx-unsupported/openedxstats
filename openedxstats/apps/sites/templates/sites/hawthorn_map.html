@@ -51,9 +51,12 @@
         var europeCluster = new L.MarkerClusterGroup().addTo(map);
         var oceaniaCluster = new L.MarkerClusterGroup().addTo(map);
 
+        console.log('test')
+
         // Inspects entries array containing Hawthorn user data and places markers into
         // appropriate continent.
         function populate(entries) {
+            console.log('populating')
             for (var i = 0; i < entries.length; i++) {
                 const data = entries[i];
                 const country = data[2];
@@ -89,6 +92,7 @@
             url: "{% url 'sites:hawthorn_map_json' %}",
             dataType: 'json',
             success: function (data) {
+                console.log('AJAX success', data);
                 const entries = JSON.parse(data.hawthorn_user_data);
                 // Remove CSV table header
                 entries.shift();
