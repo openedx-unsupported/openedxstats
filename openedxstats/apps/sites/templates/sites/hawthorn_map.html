@@ -33,6 +33,7 @@
         var tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJ5YW5rbGUiLCJhIjoiY2pqMGNvdTc4MGYxMDNrcDE4a2c0Y3ltcyJ9.7KV9GmiOap9nsGiI12RGZg', {
             id: 'mapbox.emerald',
             maxZoom: 5,
+            minZoom: 2
         }),
         // Initial map location after load
         latlng = new L.LatLng(25, 0);
