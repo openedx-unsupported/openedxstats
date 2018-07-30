@@ -146,10 +146,36 @@
                          { "data": "fields.aliases", "visible": false }
                     ]
                 });
+
+                // Filtering
+                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                    var goodDate, goodCourses;
+
+                    var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
+                    if (latestOnly) {
+                        console.log()
+                        goodDate = isNaN(Date.parse(data[5]));
+                    }
+                    else {
+                        goodDate = Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
+                            && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
+                                || isNaN(Date.parse(data[5])));
+                    }
+
+                    var hideZeros = $("#hideZeros").prop("checked");
+                    if (hideZeros) {
+                        goodCourses = data[3] !== "0";
+                    }
+                    else {
+                        goodCourses = true;
+                    }
+                    return goodDate && goodCourses;
+                });
+
             });
 
             const tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJ5YW5rbGUiLCJhIjoiY2pqMGNvdTc4MGYxMDNrcDE4a2c0Y3ltcyJ9.7KV9GmiOap9nsGiI12RGZg', {
-                id: 'mapbox.run-bike-hike',
+                id: 'mapbox.emerald',
                 maxZoom: 5,
                 minZoom: 1
                 }),
