@@ -65,6 +65,7 @@ MIDDLEWARE_CLASSES = [
 # Login URL and exempt pages (for use in LoginRequiredMiddleware)
 LOGIN_URL = '/login/'
 LOGIN_EXEMPT_URLS = (
+    r'^hawthorn/$',
     r'/logout',
 )
 
