@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import csv
 from datetime import datetime, timedelta
+import requests
 import json
 import re
 from urllib import parse
@@ -31,6 +32,16 @@ def SiteView_JSON(request):
     sites_json = serializers.serialize("json", sites)
     return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json})
 
+# Downloads public Google Sheets for Hawthorn user data as CSV and parses into JSON
+def HawthornMap_JSON(request):
+    CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPFKLiw6u0o6bTAInJ80xctLt609FzcdXW2e1I6DAl5jkedLnnAuNatGLG9rGdt8F_k8WMo65muYGW/pub?output=csv'
+    with requests.Session() as s:
+            download = s.get(CSV_URL)
+            decoded_content = download.content.decode('utf-8')
+            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+            csv_data = list(cr)
+            csv_data_json = json.dumps(csv_data)
+    return JsonResponse({'hawthorn_user_data': csv_data_json})
 
 class ListView(generic.ListView):
     model = Site
@@ -48,6 +59,16 @@ class SiteDelete(generic.DeleteView):
     model = Site
     template_name = 'sites/delete_site.html'
     success_url = reverse_lazy('sites:sites_list')
+
+class MapView(generic.ListView):
+    model = Site
+    template_name = 'sites/sites_map.html'
+    context_object_name = 'sites_map'
+
+class HawthornMapView(generic.ListView):
+    model = Site # Not needed,consider switching to function based view
+    template_name = 'sites/hawthorn_map.html'
+    # context_object_name = 'sites_map'
 
 
 def json_response(text=None, data=None, **response_kwargs):
