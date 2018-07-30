@@ -18,6 +18,9 @@ class GeoZone(models.Model):
     """
     name = models.CharField(primary_key=True, max_length=255)
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
@@ -27,6 +30,9 @@ class Language(models.Model):
     A model describing a language.
     """
     name = models.CharField(primary_key=True, max_length=255)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name

@@ -11,14 +11,11 @@ default_url_errors = {
 
 class SiteForm(forms.ModelForm):
     url = forms.URLField(max_length=1000, required=True, error_messages=default_url_errors)
-    course_count = forms.IntegerField(min_value=0, required=False)
-    registered_user_count = forms.IntegerField(min_value=0, required=False)
-    active_learner_count = forms.IntegerField(min_value=0, required=False)
     aliases = SimpleArrayField(forms.CharField(), required=False, delimiter='\n', widget=forms.Textarea)
 
     class Meta:
         model = Site
-        exclude = ['active_end_date']
+        exclude = ['active_end_date', 'github_fork', 'registered_user_count', 'active_learner_count', 'course_type',]
         # If the corresponding attribute in site form is uncommented above, these help messages won't show
         help_texts = {
             "language": "Select multiple languages with CMD+Click",

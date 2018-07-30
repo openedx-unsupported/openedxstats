@@ -41,7 +41,7 @@
             //  renderUrlString
             //  Converts site URL into HTML link tag
             renderUrlString = url => `<a href="${url}">${url}</a>`
-
+            
             //    Datatables configuration
             //    Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
             var sitesTable = $('#sites').DataTable({
@@ -50,13 +50,29 @@
                     "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
                     "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
                         const data = JSON.parse(json.sites);
+
+                        const siteGeolocation = {};
+                        const geoData = JSON.parse(json.geo);
+                        geoData.forEach(function(geoLoc) {
+                            siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
+                        })
+                        
+                        const siteLanguage = {}
+                        const languageData = JSON.parse(json.language);
+                        languageData.forEach(function(lang) {
+                            siteLanguage[lang.fields.site] = lang.fields.language;
+                        })
+        
                         Object.keys(data).forEach(function(siteID) {
                             const site = data[siteID];
                             // Rendering of elements for columns 'Current Version?' & 'Actions'
                             site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                             site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
                             site.fields['urlString'] = renderUrlString(site.fields.url);
-                        })
+                            const sitePK = data[siteID].pk
+                            site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
+                            site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
+                        });
                         return data;
                     }},
                 "columns": [                                    // Data for each row item from JSON
@@ -67,7 +83,10 @@
                      { "data": "fields.active_start_date" },
                      { "data": "fields.active_end_date" },
                      { "data": "fields.isCurrentVersion" },
-                     { "data": "fields.actionButtons" }
+                     { "data": "fields.actionButtons" },
+                     { "data": "fields.geolocation", "visible": false },
+                     { "data": "fields.notes", "visible": false },
+                     { "data": "fields.language", "visible": false }
                 ]
             });
 
@@ -156,6 +175,9 @@
                 <th>Active Version End</th>
                 <th>Current Version?</th>
                 <th>Actions</th>
+                <th>Geolocation</th>
+                <th>Notes</th>
+                <th>Language</th>
             </tr>
             </thead>
             <tfoot>
@@ -168,6 +190,9 @@
                 <th>Active Version End</th>
                 <th>Current Version?</th>
                 <th>Actions</th>
+                <th>Geolocation</th>
+                <th>Notes</th>
+                <th>Language</th>
             </tr>
             </tfoot>
         </table>
