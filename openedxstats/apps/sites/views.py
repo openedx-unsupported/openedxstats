@@ -25,12 +25,22 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
     sites = Site.objects.all()
+    active_sites = Site.objects.exclude(active_end_date__isnull=False)
+    active_sites_id_set = set(map(lambda site:site['id'], active_sites.values('id')))
+    country_list = list(map(lambda country:country['geo_zone'], SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()))
+    country_site_count_dict = dict(((country, 0) for country in country_list))
+    all_geozone = SiteGeoZone.objects.values('site_id', 'geo_zone')
+    for loc in all_geozone:
+        site_id = loc['site_id']
+        geo_zone = loc['geo_zone']
+        if site_id in active_sites_id_set:
+            country_site_count_dict[geo_zone] += 1
     geo = SiteGeoZone.objects.all()
     geo_json = serializers.serialize("json", geo)
-    language = SiteLanguage.objects.filter()
+    language = SiteLanguage.objects.all()
     language_json = serializers.serialize("json", language)
     sites_json = serializers.serialize("json", sites)
-    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json})
+    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json, 'activeSitesCount': country_site_count_dict})
 
 # Downloads public Google Sheets for Hawthorn user data as CSV and parses into JSON
 def HawthornMap_JSON(request):

@@ -82,6 +82,7 @@
             * Converts mismatched country keys into API for compatibility with GeoJSON
             */
             normalizeActiveSitesCount = activeSitesCount => {
+                console.log(activeSitesCount);
                 const updatedActiveSitesCount = {};
                 Object.keys(activeSitesCount).forEach(country => {
                     if (country === 'US') {
@@ -108,12 +109,11 @@
                     "url":"{% url 'sites:sites_list_json' %}",
                     // Formatting data for DataTables from AJAX
                     "dataSrc": json => {
+                        console.log('json', json);
                         const sites = JSON.parse(json.sites);
                         const siteGeolocation = {};
                         const geoData = JSON.parse(json.geo);
                         geoData.forEach(geoLoc => {
-                            //console.log(geoLoc.fields.geo_zone);
-                            if (geoLoc.fields.geo_zone === 'Kenya') console.log(geoLoc);
                             siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
                         })
                         const siteLanguage = {}
@@ -122,19 +122,19 @@
                             siteLanguage[lang.fields.site] = lang.fields.language;
                         })
                         const activeSitesCount = normalizeActiveSitesCount(json.activeSitesCount);
-                        let test = {};
                         Object.keys(sites).forEach(siteID => {
-                            console.log('siteID', siteID);
                             let site = sites[siteID];
-                            const sitePK = sites[siteID].pk
                             // Rendering of elements for columns 'Current Version?' & 'Actions'
                             site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                             site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
                             site.fields['urlString'] = renderUrlString(site.fields.url);
+                            const sitePK = sites[siteID].pk
                             site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
                             site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
                         });
-                        populate(activeSitesCount);
+                        if (activeSitesCount !== undefined) {
+                            populate(activeSitesCount);
+                        }
                         return sites;
                     }},
                 // Data for each row item from JSON
