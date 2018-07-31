@@ -19,226 +19,235 @@
 {% include "navbar.html" %}
 
 <body>
-        <style>
-                #map {
-                    width: 48%;
-                    height: 500px;
-                    border: 1px solid #ccc;
-                    float: left;
-                }
-                .table-container {
-                    margin-left: 20px;
-                    width: 49%;
-                    float: left;
-                }
+    <style>
+        #map {
+            width: 48%;
+            height: 500px;
+            border: 1px solid #ccc;
+            float: left;
+        }
+        .table-container {
+            margin-left: 20px;
+            width: 49%;
+            float: left;
+        }
 
-                .dataTables_wrapper .dataTables_filter {
-                    float: right;
-                    text-align: right;
-                    visibility: hidden;
-                }
-                .leaflet-overlay-pane {
-                    z-index: 1; /* previously 4 */
-                }
-        </style>
-        <h1 id='country-name'></h1>
-        <div id="map">
-        </div>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                // Nav active class selection
-                var url = window.location;
-                $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
-                // Tooltips
-                $('[data-toggle="tooltip"]').tooltip();
-                // Table sorting
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+            text-align: right;
+            visibility: hidden;
+        }
+        .leaflet-overlay-pane {
+            z-index: 1; /* previously 4 */
+        }
+    </style>
+    <h1 id='country-name'></h1>
+    <div id="map">
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Nav active class selection
+            var url = window.location;
+            $('ul.nav.navbar-nav li a[href="' + url.pathname + '"]').parent().addClass('active');
+            // Tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+            // Table sorting
 
-                /**
-                * isCurrentVersion
-                * Determine rendering of green check box based on whether site is of the current version based on the sites active end date for each row
-                */
-                isCurrentVersion = activeEndDate => activeEndDate ? '<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: green; font-size: 30px;"></span>' : ''
+            /**
+            * isCurrentVersion
+            * Determine rendering of green check box based on whether site is of the current version based on the sites active end date for each row
+            */
+            isCurrentVersion = activeEndDate => activeEndDate ? '<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: green; font-size: 30px;"></span>' : ''
 
-                /**
-                * renderActionButtons
-                * Accepts arguments of the site ID and the website's active end date to determine which buttons to render inside the row under column 'Actions'
-                * At minimum will render the button for 'Detail' and 'Delete', 'Update' will be rendered if website is still active.
-                */
-                renderActionButtons = (siteId, activeEndDate) => {
-                    const detail_site = `<td class="action-button-cell"><a href="/sites/site_detail/${siteId}"><button type="button" class="btn btn-primary" aria-label="Detail" data-toggle="tooltip" data-placement="bottom" title="Detail"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button></a></td>`
-                    const update_site = `<td class="action-button-cell"><a href="/sites/update_site/${siteId}"><button type="button" class="btn btn-primary" aria-label="Edit" data-toggle="tooltip" data-placement="bottom" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a></td>`
-                    const delete_site = `<td class="action-button-cell"><a href="/sites/delete_site/${siteId}"><button type="button" class="btn btn-danger" aria-label="Delete" data-toggle="tooltip" data-placement="bottom" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></a></td>`
-                    return `<td style="width: 1%; vertical-align: middle;"><table><tr>${detail_site + (!activeEndDate ? update_site : '') + delete_site}</tr></table></td>`
-                }
+            /**
+            * renderActionButtons
+            * Accepts arguments of the site ID and the website's active end date to determine which buttons to render inside the row under column 'Actions'
+            * At minimum will render the button for 'Detail' and 'Delete', 'Update' will be rendered if website is still active.
+            */
+            renderActionButtons = (siteId, activeEndDate) => {
+                const detail_site = `<td class="action-button-cell"><a href="/sites/site_detail/${siteId}"><button type="button" class="btn btn-primary" aria-label="Detail" data-toggle="tooltip" data-placement="bottom" title="Detail"><span class="glyphicon glyphicon-list" aria-hidden="true"></span></button></a></td>`
+                const update_site = `<td class="action-button-cell"><a href="/sites/update_site/${siteId}"><button type="button" class="btn btn-primary" aria-label="Edit" data-toggle="tooltip" data-placement="bottom" title="Edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button></a></td>`
+                const delete_site = `<td class="action-button-cell"><a href="/sites/delete_site/${siteId}"><button type="button" class="btn btn-danger" aria-label="Delete" data-toggle="tooltip" data-placement="bottom" title="Delete"><span class="glyphicon glyphicon-trash"></span></button></a></td>`
+                return `<td style="width: 1%; vertical-align: middle;"><table><tr>${detail_site + (!activeEndDate ? update_site : '') + delete_site}</tr></table></td>`
+            }
 
-                /**
-                * renderUrlString
-                * Converts site URL into HTML link tag
-                */
-                renderUrlString = url => `<a href="${url}">${url}</a>`
+            /**
+            * renderUrlString
+            * Converts site URL into HTML link tag
+            */
+            renderUrlString = url => `<a href="${url}">${url}</a>`
 
-                /**
-                * normalizeActiveSitesCount
-                * Converts mismatched country keys into API for compatibility with GeoJSON
-                */
-                normalizeActiveSitesCount = activeSitesCount => {
-                    const updatedActiveSitesCount = {};
-                    Object.keys(activeSitesCount).forEach(country => {
-                        if (country === 'US') {
-                            activeSitesCount['United States'] = activeSitesCount[country];
-                            delete activeSitesCount['US'];
-                        }
-                        else if (country === 'UK') {
-                            activeSitesCount['United Kingdom'] = activeSitesCount[country];
-                            delete activeSitesCount['UK'];
-                        }
-                    })
-                    return activeSitesCount;
-                }
-
-                /**
-                * Datatables configuration
-                * Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
-                */
-                const sitesTable = $('#sites').DataTable({
-                    "searching": true,
-                    "processing": true,
-                    "ajax":{
-                        // Communicating to API endpoint serving JSON data from database
-                        "url":"{% url 'sites:sites_list_json' %}",
-                        // Formatting data for DataTables from AJAX
-                        "dataSrc": json => {
-                            const sites = JSON.parse(json.sites);
-                            const siteGeolocation = {};
-                            const geoData = JSON.parse(json.geo);
-                            geoData.forEach(geoLoc => {
-                                siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
-                            })
-                            const siteLanguage = {}
-                            const languageData = JSON.parse(json.language);
-                            languageData.forEach(lang => {
-                                siteLanguage[lang.fields.site] = lang.fields.language;
-                            })
-                            const activeSitesCount = normalizeActiveSitesCount(json.activeSitesCount);
-                            Object.keys(sites).forEach(siteID => {
-                                const site = sites[siteID];
-                                // Rendering of elements for columns 'Current Version?' & 'Actions'
-                                site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
-                                site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
-                                site.fields['urlString'] = renderUrlString(site.fields.url);
-                                const sitePK = sites[siteID].pk
-                                site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
-                                site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
-                            });
-
-                            populate(activeSitesCount);
-                            return sites;
-                        }},
-                    // Data for each row item from JSON
-                    "columns": [
-                         { "data": "fields.site_type" },
-                         { "data": "fields.name" },
-                         { "data": "fields.urlString" },
-                         { "data": "fields.course_count" },
-                         { "data": "fields.geolocation", "visible": true },
-                         { "data": "fields.notes", "visible": false },
-                         { "data": "fields.language", "visible": false },
-                         { "data": "fields.aliases", "visible": false }
-                    ]
-                });
-
-                // Filtering
-                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                    var goodDate, goodCourses;
-
-                    var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
-                    if (latestOnly) {
-                        console.log()
-                        goodDate = isNaN(Date.parse(data[5]));
+            /**
+            * normalizeActiveSitesCount
+            * Converts mismatched country keys into API for compatibility with GeoJSON
+            */
+            normalizeActiveSitesCount = activeSitesCount => {
+                const updatedActiveSitesCount = {};
+                Object.keys(activeSitesCount).forEach(country => {
+                    if (country === 'US') {
+                        activeSitesCount['United States'] = activeSitesCount[country];
+                        delete activeSitesCount['US'];
                     }
-                    else {
-                        goodDate = Date.parse(data[4]) <= Date.parse($('#dateInput').val() || data[4])
-                            && (Date.parse($('#dateInput').val() || data[5]) <= Date.parse(data[5])
-                                || isNaN(Date.parse(data[5])));
+                    else if (country === 'UK') {
+                        activeSitesCount['United Kingdom'] = activeSitesCount[country];
+                        delete activeSitesCount['UK'];
                     }
+                })
+                return activeSitesCount;
+            }
 
-                    var hideZeros = $("#hideZeros").prop("checked");
-                    if (hideZeros) {
-                        goodCourses = data[3] !== "0";
-                    }
-                    else {
-                        goodCourses = true;
-                    }
-                    return goodDate && goodCourses;
-                });
-
+            /**
+            * Datatables configuration
+            * Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
+            */
+            const sitesTable = $('#sites').DataTable({
+                "searching": true,
+                "processing": true,
+                "ajax":{
+                    // Communicating to API endpoint serving JSON data from database
+                    "url":"{% url 'sites:sites_list_json' %}",
+                    // Formatting data for DataTables from AJAX
+                    "dataSrc": json => {
+                        const sites = JSON.parse(json.sites);
+                        const siteGeolocation = {};
+                        const geoData = JSON.parse(json.geo);
+                        geoData.forEach(geoLoc => {
+                            //console.log(geoLoc.fields.geo_zone);
+                            if (geoLoc.fields.geo_zone === 'Kenya') console.log(geoLoc);
+                            siteGeolocation[geoLoc.fields.site] = geoLoc.fields.geo_zone;
+                        })
+                        const siteLanguage = {}
+                        const languageData = JSON.parse(json.language);
+                        languageData.forEach(lang => {
+                            siteLanguage[lang.fields.site] = lang.fields.language;
+                        })
+                        const activeSitesCount = normalizeActiveSitesCount(json.activeSitesCount);
+                        let test = {};
+                        Object.keys(sites).forEach(siteID => {
+                            console.log('siteID', siteID);
+                            let site = sites[siteID];
+                            const sitePK = sites[siteID].pk
+                            // Rendering of elements for columns 'Current Version?' & 'Actions'
+                            site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
+                            site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
+                            site.fields['urlString'] = renderUrlString(site.fields.url);
+                            site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
+                            site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
+                        });
+                        populate(activeSitesCount);
+                        return sites;
+                    }},
+                // Data for each row item from JSON
+                "columns": [
+                        { "data": "fields.site_type" },
+                        { "data": "fields.name" },
+                        { "data": "fields.urlString" },
+                        { "data": "fields.course_count" },
+                        { "data": "fields.active_start_date", "visible": false },
+                        { "data": "fields.active_end_date", "visible": false },
+                        { "data": "fields.isCurrentVersion", "visible": false },
+                        { "data": "fields.actionButtons", "visible": false },
+                        { "data": "fields.geolocation", "visible": true },
+                        { "data": "fields.notes", "visible": false },
+                        { "data": "fields.language", "visible": false },
+                        { "data": "fields.aliases", "visible": false }
+                ]
             });
 
-            const tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJ5YW5rbGUiLCJhIjoiY2pqMGNvdTc4MGYxMDNrcDE4a2c0Y3ltcyJ9.7KV9GmiOap9nsGiI12RGZg', {
-                id: 'mapbox.emerald',
-                maxZoom: 5,
-                minZoom: 1
-                }),
-                latlng = new L.LatLng(0, 0);
-            const map = new L.Map('map', {center: latlng, zoom: 1, layers: [tiles]});
+            // Filtering to live sites by default
+            $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                const goodDate = isNaN(Date.parse(data[5]));
+                const goodCourses = data[3] !== "0";
+                return goodDate && goodCourses;
+            });
 
-            addClusterToMap = (cluster, layer) => {
-                cluster.addTo(layer);
-            }
+        });
 
-            clusterOnClick = cluster => {
-                cluster.on('clusterclick', layer => {
-                    let {lat, lng} = layer.latlng;
-                    lat = lat.toFixed(1);
-                    lng = lng.toFixed(1);
-                    const coordString = `${lat},${lng}`;
-                    console.log('coordinateTable', coordinateTable);
-                    console.log('coordString', coordString);
-                    const countryName = coordinateTable[coordString].properties.name;
-                    const countryHeader = document.getElementById('country-name');
-                    while (countryHeader.firstChild) {
-                        countryHeader.removeChild(countryHeader.firstChild);
-                    }
-                    const countryText = document.createTextNode(countryName);
-                    countryHeader.appendChild(countryText);
-                    const table = $('#sites').DataTable();
-                    table
-                        .column(4)
-                        .search(countryName)
-                        .draw();
-                    })
-            }
+        // Map tileset and settings
+        const tiles = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiYnJ5YW5rbGUiLCJhIjoiY2pqMGNvdTc4MGYxMDNrcDE4a2c0Y3ltcyJ9.7KV9GmiOap9nsGiI12RGZg', {
+            id: 'mapbox.emerald',
+            maxZoom: 7,
+            minZoom: 1
+            }),
+            latlng = new L.LatLng(0, 0);
+        const map = new L.Map('map', {center: latlng, zoom: 1, layers: [tiles]});
 
-            const allClusters = [
-                northAmericaCluster = new L.MarkerClusterGroup(),
-                southAmericaCluster = new L.MarkerClusterGroup(),
-                asiaCluster = new L.MarkerClusterGroup(),
-                africaCluster = new L.MarkerClusterGroup(),
-                europeCluster = new L.MarkerClusterGroup(),
-                oceaniaCluster = new L.MarkerClusterGroup()
-            ];
+        addClusterToMap = (cluster, layer) => {
+            cluster.addTo(layer);
+        }
 
-            allClusters.forEach(cluster => {
-                addClusterToMap(cluster, map);
-                clusterOnClick(cluster);
-            })
+        /**
+        * countryOnClick() accepts a country layer which may be a cluster or marker for 'country', and
+        * and either string of 'cluster' or 'marker' for 'type'.
+        * All clusters which display a numerical value of x has x markers populated at a specific coordinate.
+        * Countries with 1 site would normally be designated as a single marker, but in this case have been
+        * modified to look like clusters.
+        * Clusters and markers require different types of event handlers, which this function will assign the
+        * functionality given approppriate arguments.
+        */
+        countryOnClick = (country, type) => {
+            let clickEvent;
+            if (type === 'cluster') clickEvent = 'clusterclick';
+            else if (type === 'marker') clickEvent = 'click';
+            country.on(clickEvent, layer => {
+                let {lat, lng} = layer.latlng;
+                lat = lat.toFixed(1);
+                lng = lng.toFixed(1);
+                const coordString = `${lat},${lng}`;
+                let countryName = coordinateTable[coordString].properties.name;
+                const countryHeader = document.getElementById('country-name');
+                while (countryHeader.firstChild) {
+                    countryHeader.removeChild(countryHeader.firstChild);
+                }
+                const countryText = document.createTextNode(countryName);
+                countryHeader.appendChild(countryText);
 
-            // Executed after AJAX request
-            function populate(activeSitesCount) {
-                // Iterate object keyCountries from keyCountries.js
-                Object.keys(keyCountries).forEach(function(country) {
-                    const countryData = keyCountries[country];
-                    const [lng, lat] = countryData.geometry.coordinates;
-                    const {name, continent} = countryData.properties;
-                    const countryCluster = new L.MarkerClusterGroup();
-                    countryCluster.name = name;
+                // Normalize country names from database that cannot be matched with GeoJSON
+                if (countryName === 'United States') countryName = 'US';
+                else if (countryName === 'United Kingdom') countryName = 'UK';
 
+                const table = $('#sites').DataTable();
+                table
+                    .column(8)
+                    .search(countryName)
+                    .draw();
+                })
+        }
+
+        // Clusters for each continent
+        const allClusters = [
+            northAmericaCluster = new L.MarkerClusterGroup(),
+            southAmericaCluster = new L.MarkerClusterGroup(),
+            asiaCluster = new L.MarkerClusterGroup(),
+            africaCluster = new L.MarkerClusterGroup(),
+            europeCluster = new L.MarkerClusterGroup(),
+            oceaniaCluster = new L.MarkerClusterGroup()
+        ];
+
+        allClusters.forEach(cluster => {
+            addClusterToMap(cluster, map);
+            countryOnClick(cluster, 'cluster');
+        })
+
+        // Executed after AJAX request
+        function populate(activeSitesCount) {
+            // Iterate object keyCountries from keyCountries.js
+            Object.keys(keyCountries).forEach(function(country) {
+                const countryData = keyCountries[country];
+                const [lng, lat] = countryData.geometry.coordinates;
+                const {name, continent} = countryData.properties;
+                const countryCluster = new L.MarkerClusterGroup();
+                countryCluster.name = name;
+                if (activeSitesCount.hasOwnProperty(country)) {
                     const siteCount = activeSitesCount[country];
-
+                    console.log(`${country} has ${siteCount} sites.`);
                     for (let i = 0; i < siteCount; i++) {
                         const marker = new L.marker({lng, lat}).addTo(countryCluster);
+                        if (siteCount === 1) {
+                            // Assign appropriate click handler for countries with a single marker instead
+                            countryOnClick(marker, 'marker');
+                        }
                     }
-
                     switch(continent) {
                         case 'Asia':
                             asiaCluster.addLayer(countryCluster);
@@ -259,38 +268,47 @@
                             oceaniaCluster.addLayer(countryCluster);
                             break;
                     }
-                })
-            }
-        </script>
+                }
+            })
+        }
+    </script>
 
-        <div class="table-container">
-            <table id="sites" class="table table-bordered table-responsive table-sm">
-                <thead>
-                <tr>
-                    <th>Site Type</th>
-                    <th>Name</th>
-                    <th>Url</th>
-                    <th>Course Count</th>
-                    <th>Geolocation</th>
+    <div class="table-container">
+        <table id="sites" class="table table-bordered table-responsive table-sm">
+            <thead>
+            <tr>
+                <th>Site Type</th>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Course Count</th>
+                <th>Active Version Start</th>
+                <th>Active Version End</th>
+                <th>Current Version?</th>
+                <th>Actions</th>
+                <th>Geolocation</th>
                 <th>Notes</th>
                 <th>Language</th>
                 <th>Aliases</th>
-                </tr>
-                </thead>
-                <tfoot>
-                <tr>
-                    <th>Site Type</th>
-                    <th>Name</th>
-                    <th>Url</th>
-                    <th>Course Count</th>
-                    <th>Geolocation</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th>Site Type</th>
+                <th>Name</th>
+                <th>Url</th>
+                <th>Course Count</th>
+                <th>Geolocation</th>
+                <th>Active Version Start</th>
+                <th>Active Version End</th>
+                <th>Current Version?</th>
+                <th>Actions</th>
                 <th>Notes</th>
                 <th>Language</th>
                 <th>Aliases</th>
-                </tr>
-                </tfoot>
-            </table>
-        </div>
-    </body>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
 
 {% endblock %}
