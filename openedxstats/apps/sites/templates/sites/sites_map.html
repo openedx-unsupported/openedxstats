@@ -14,6 +14,8 @@
 <script type="text/javascript" language="javascript" src="{% static 'sites/allCountries.js' %}"></script>
 <script type="text/javascript" language="javascript" src="{% static 'sites/keyCountries.js' %}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/u/bs/dt-1.10.12/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
 {% endblock %}
 {% block content %}
 {% include "navbar.html" %}
@@ -21,15 +23,10 @@
 <body>
     <style>
         #map {
-            width: 48%;
             height: 500px;
-            border: 1px solid #ccc;
-            float: left;
         }
         .table-container {
-            margin-left: 20px;
-            width: 49%;
-            float: left;
+
         }
 
         .dataTables_wrapper .dataTables_filter {
@@ -40,10 +37,51 @@
         .leaflet-overlay-pane {
             z-index: 1; /* previously 4 */
         }
+
     </style>
-    <h1 id='country-name'></h1>
-    <div id="map">
+    <div class="container">
+        <h1 id='country-name'></h1>
+        <div class="row">
+            <div id="map" class="col-md-7"></div>
+            <div class="col-md-5">
+                <table id="sites" class="table table-bordered table-responsive">
+                    <thead>
+                    <tr>
+                        <th>Site Type</th>
+                        <th>Name</th>
+                        <th>Url</th>
+                        <th>Course Count</th>
+                        <th>Active Version Start</th>
+                        <th>Active Version End</th>
+                        <th>Current Version?</th>
+                        <th>Actions</th>
+                        <th>Geolocation</th>
+                        <th>Notes</th>
+                        <th>Language</th>
+                        <th>Aliases</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Site Type</th>
+                        <th>Name</th>
+                        <th>Url</th>
+                        <th>Course Count</th>
+                        <th>Geolocation</th>
+                        <th>Active Version Start</th>
+                        <th>Active Version End</th>
+                        <th>Current Version?</th>
+                        <th>Actions</th>
+                        <th>Notes</th>
+                        <th>Language</th>
+                        <th>Aliases</th>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
+
     <script type="text/javascript">
         $(document).ready(function () {
             // Nav active class selection
@@ -102,9 +140,14 @@
             * Data is retrieved the API end point served from the view 'sites_list_json' (see views.py)
             */
             const sitesTable = $('#sites').DataTable({
-                "searching": true,
-                "processing": true,
-                "ajax":{
+                searching: true,
+                processing: true,
+                responsive: true,
+                language: {
+                    "infoFiltered": ""
+                },
+                autoWidth: false,
+                ajax:{
                     // Communicating to API endpoint serving JSON data from database
                     "url":"{% url 'sites:sites_list_json' %}",
                     // Formatting data for DataTables from AJAX
@@ -138,20 +181,20 @@
                         return sites;
                     }},
                 // Data for each row item from JSON
-                "columns": [
-                        { "data": "fields.site_type" },
-                        { "data": "fields.name" },
-                        { "data": "fields.urlString" },
-                        { "data": "fields.course_count" },
-                        { "data": "fields.active_start_date", "visible": false },
-                        { "data": "fields.active_end_date", "visible": false },
-                        { "data": "fields.isCurrentVersion", "visible": false },
-                        { "data": "fields.actionButtons", "visible": false },
-                        { "data": "fields.geolocation", "visible": true },
-                        { "data": "fields.notes", "visible": false },
-                        { "data": "fields.language", "visible": false },
-                        { "data": "fields.aliases", "visible": false }
-                ]
+                columns: [
+                        { data: "fields.site_type", visible: false , responsivePriority: 5},
+                        { data: "fields.name", visible: false , responsivePriority: 4},
+                        { data: "fields.urlString" , visible: true, responsivePriority: 2, width: "5%"},
+                        { data: "fields.course_count" , visible: true, responsivePriority: 1},
+                        { data: "fields.active_start_date", visible: false , responsivePriority: 6},
+                        { data: "fields.active_end_date", visible: false , responsivePriority: 7},
+                        { data: "fields.isCurrentVersion", visible: false , responsivePriority: 8},
+                        { data: "fields.actionButtons", visible: false , responsivePriority: 9},
+                        { data: "fields.geolocation", visible: false , responsivePriority: 10},
+                        { data: "fields.notes", visible: false , responsivePriority: 11},
+                        { data: "fields.language", visible: true , responsivePriority: 3},
+                        { data: "fields.aliases", visible: false, responsivePriority: 12}
+                ],
             });
 
             // Filtering to live sites by default
@@ -272,43 +315,6 @@
             })
         }
     </script>
-
-    <div class="table-container">
-        <table id="sites" class="table table-bordered table-responsive table-sm">
-            <thead>
-            <tr>
-                <th>Site Type</th>
-                <th>Name</th>
-                <th>Url</th>
-                <th>Course Count</th>
-                <th>Active Version Start</th>
-                <th>Active Version End</th>
-                <th>Current Version?</th>
-                <th>Actions</th>
-                <th>Geolocation</th>
-                <th>Notes</th>
-                <th>Language</th>
-                <th>Aliases</th>
-            </tr>
-            </thead>
-            <tfoot>
-            <tr>
-                <th>Site Type</th>
-                <th>Name</th>
-                <th>Url</th>
-                <th>Course Count</th>
-                <th>Geolocation</th>
-                <th>Active Version Start</th>
-                <th>Active Version End</th>
-                <th>Current Version?</th>
-                <th>Actions</th>
-                <th>Notes</th>
-                <th>Language</th>
-                <th>Aliases</th>
-            </tr>
-            </tfoot>
-        </table>
-    </div>
 </body>
 
 {% endblock %}
