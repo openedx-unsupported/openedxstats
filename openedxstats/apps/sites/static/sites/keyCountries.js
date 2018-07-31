@@ -17834,3 +17834,21 @@ const keyCountries = {
       }
     }
   };
+
+
+const coordinateTable = {};
+
+// console.log(Object.keys(keyCountries.India));
+
+Object.keys(keyCountries).forEach(function(country) {
+    let [lat, lng] = keyCountries[country].geometry.coordinates;
+    lat = lat.toFixed(1);
+    lng = lng.toFixed(1);
+    let coordStr = `${lng},${lat}`;
+    coordinateTable[coordStr] = keyCountries[country];
+})
+
+
+// Object.keys(coordinateTable).forEach(function(coord) {
+//     console.log(coord);
+// })
