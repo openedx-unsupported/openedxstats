@@ -233,6 +233,7 @@ def add_site(request, pk=None):
         if site_form.is_valid() and geo_form.is_valid():
             new_site = site_form.save(commit=False)
             new_geo_zone = geo_form.save()
+            new_lang = language_form.save()
             new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
             # site entries when trying to update a site
@@ -306,11 +307,10 @@ def add_site(request, pk=None):
             geo_form = GeoZoneForm()
     # print('site_form', site_form)
     # print('geo_form', geo_form)
-    geo_form = '<input id="id_name" maxlength="255" name="name" type="text" />'
 
     # print('pk:', pk)
     return render(request, 'add_site.html',
-                      {'site_form': site_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
+                      {'site_form': site_form, 'geo_form': geo_form, 'language_form': language_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):

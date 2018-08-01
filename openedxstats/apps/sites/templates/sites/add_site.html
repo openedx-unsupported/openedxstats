@@ -28,6 +28,7 @@
                     {% csrf_token %}
                     {% bootstrap_form site_form %}
                     {% bootstrap_form geo_form %}
+                    {% bootstrap_form language_form %}
                     <input type="submit" class="btn btn-primary" value="Submit"/>
                     <a href="{% url "sites:sites_list" %}">
                         <button type="button" class="btn btn-default" value="Cancel">Cancel</button>
@@ -41,6 +42,6 @@
                 </p>
             </div>
         </div>
-        <br/>
-    </div>
+    </div>        <br/>
+
 {% endblock %}
