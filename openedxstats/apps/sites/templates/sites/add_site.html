@@ -26,12 +26,14 @@
                 <!-- Insert form here -->
                 <form action="{{ post_url }}" method="post" class="form">
                     {% csrf_token %}
-                    {% bootstrap_form form %}
+                    {% bootstrap_form site_form %}
+                    {% bootstrap_form geo_form %}
                     <input type="submit" class="btn btn-primary" value="Submit"/>
                     <a href="{% url "sites:sites_list" %}">
                         <button type="button" class="btn btn-default" value="Cancel">Cancel</button>
                     </a>
                 </form>
+
             </div>
             <div class="col-md-6">
                 <p>

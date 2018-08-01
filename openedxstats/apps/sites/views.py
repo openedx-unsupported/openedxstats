@@ -222,11 +222,17 @@ def add_site(request, pk=None):
             return response
     else:
         s = Site()
-
+        l = Language()
+        g = GeoZone()
+    # Runs when user clicks Submit
     if request.method == 'POST':
-        form = SiteForm(request.POST, instance=s)
-        if form.is_valid():
-            new_site = form.save(commit=False)
+        print("Page submitted")
+        site_form = SiteForm(request.POST, instance=s)
+        language_form = LanguageForm(request.POST, instance=l)
+        geo_form = GeoZoneForm(request.POST, instance=g)
+        if site_form.is_valid() and geo_form.is_valid():
+            new_site = site_form.save(commit=False)
+            new_geo_zone = geo_form.save()
             new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
             # site entries when trying to update a site
@@ -235,7 +241,7 @@ def add_site(request, pk=None):
                 new_site.validate_unique()
             except ValidationError as err:
                 messages.error(request, ",".join(err.messages))
-                return render_site_form(request, form, pk)
+                return render_site_form(request, site_form, pk)
 
             if pk: # If updating
                 # We must grab the same object from the DB again, as s is linked to the form and using it here will
@@ -263,8 +269,10 @@ def add_site(request, pk=None):
                         next_most_recent_version_of_site.active_end_date = new_form_created_time
                         next_most_recent_version_of_site.save()
 
-            languages = form.cleaned_data.pop('language')
-            geozones = form.cleaned_data.pop('geography')
+            print('form.cleaned_data', site_form.cleaned_data)
+            languages = site_form.cleaned_data.pop('language')
+            geozones = site_form.cleaned_data.pop('geography')
+
 
             new_site.save(force_insert=True)
 
@@ -285,16 +293,21 @@ def add_site(request, pk=None):
 
         else:
             # Display errors
-            form_errors_string = generate_form_errors_string(form.errors)
+            form_errors_string = generate_form_errors_string(site_form.errors)
             messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
-
+    # Initial page load
     else:
+        print("Page loaded")
         if pk:
-            form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
+            site_form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
         else:
-            form = SiteForm()
-
-    return render_site_form(request, form, pk)
+            site_form = SiteForm()
+            language_form = LanguageForm()
+            geo_form = GeoZoneForm()
+    # print('Form', site_form)
+    # print('pk:', pk)
+    return render(request, 'add_site.html',
+                      {'site_form': site_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):
