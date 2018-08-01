@@ -304,7 +304,10 @@ def add_site(request, pk=None):
             site_form = SiteForm()
             language_form = LanguageForm()
             geo_form = GeoZoneForm()
-    # print('Form', site_form)
+    # print('site_form', site_form)
+    # print('geo_form', geo_form)
+    geo_form = '<input id="id_name" maxlength="255" name="name" type="text" />'
+
     # print('pk:', pk)
     return render(request, 'add_site.html',
                       {'site_form': site_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
