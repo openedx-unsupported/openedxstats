@@ -258,17 +258,7 @@ def add_site(request, pk=None):
                 old_version.active_end_date = new_form_created_time
                 old_version.save()
             else:
-
                 print('Else')
-                for geozone in GeoZone.objects.all():
-                    print(geozone)
-                newly_created_geozone = geo_form.cleaned_data['geozone_name']
-                print('newly_created_geozone', newly_created_geozone)
-
-                print('Searching for newly created geozone in table...')
-                print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
-
-
                 # Check if there are other versions of site
                 if Site.objects.filter(url=new_site.url).count() > 0:
                     next_most_recent_version_of_site = None
@@ -288,9 +278,30 @@ def add_site(request, pk=None):
                         next_most_recent_version_of_site.active_end_date = new_form_created_time
                         next_most_recent_version_of_site.save()
 
+            newly_created_language = language_form.cleaned_data['language_name']
+            print('newly_created_language', newly_created_language)
+            new_language_instance = Language.objects.filter(language_name = newly_created_language)
+
+            newly_created_geozone = geo_form.cleaned_data['geozone_name']
+            new_geozone_instance = GeoZone.objects.filter(geozone_name = newly_created_geozone)
+
             print('form.cleaned_data', site_form.cleaned_data)
-            languages = site_form.cleaned_data.pop('language')
-            geozones = site_form.cleaned_data.pop('geography')
+
+            languages = site_form.cleaned_data.pop('language') | new_language_instance
+            geozones = site_form.cleaned_data.pop('geography') | new_geozone_instance
+
+
+            # for geozone in GeoZone.objects.all():
+            #     print(geozone)
+            print('newly_created_geozone', newly_created_geozone)
+
+            print('Searching for newly created geozone in table...')
+            print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
+
+
+
+
+
             print('geozone')
             print('geo_form.cleaned_data', geo_form.cleaned_data)
             print('lang_form.cleaned_data', language_form.cleaned_data)
@@ -322,12 +333,13 @@ def add_site(request, pk=None):
     # Initial page load
     else:
         print("Page loaded")
+        language_form = LanguageForm()
+        geo_form = GeoZoneForm()
         if pk:
             site_form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
         else:
             site_form = SiteForm()
-            language_form = LanguageForm()
-            geo_form = GeoZoneForm()
+
     # print('site_form', site_form)
     # print('geo_form', geo_form)
 
