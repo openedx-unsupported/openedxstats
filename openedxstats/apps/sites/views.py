@@ -210,6 +210,10 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
     def render_to_response(self, context):
         return super(OTChartView, self).render_to_response(context)
 
+# TODO: If Add Language or Add Geography section is left blank, do not add as a new entry
+# TODO: If Language/Geography being added already exists, do not add
+# TODO: Change language/geography 'name' field to unique
+# TODO: If adding new language/geography, add to new site data
 
 def add_site(request, pk=None):
     if pk:
@@ -230,7 +234,7 @@ def add_site(request, pk=None):
         site_form = SiteForm(request.POST, instance=s)
         language_form = LanguageForm(request.POST, instance=l)
         geo_form = GeoZoneForm(request.POST, instance=g)
-        if site_form.is_valid() and geo_form.is_valid():
+        if site_form.is_valid():
             new_site = site_form.save(commit=False)
             new_geo_zone = geo_form.save()
             new_lang = language_form.save()
@@ -273,9 +277,14 @@ def add_site(request, pk=None):
             print('form.cleaned_data', site_form.cleaned_data)
             languages = site_form.cleaned_data.pop('language')
             geozones = site_form.cleaned_data.pop('geography')
+            print('geozone')
+            print('geo_form.cleaned_data', geo_form.cleaned_data)
+            print('lang_form.cleaned_data', language_form.cleaned_data)
 
 
             new_site.save(force_insert=True)
+            # new_geo_zone.save(force_insert=True)
+            # new_lang.save(force_insert=True)
 
             if pk: # Delete existing languages and geographies if updating to prevent duplicates
                 new_site.language.clear()
@@ -310,7 +319,7 @@ def add_site(request, pk=None):
 
     # print('pk:', pk)
     return render(request, 'add_site.html',
-                      {'site_form': site_form, 'geo_form': geo_form, 'language_form': language_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
+                      {'site_form': site_form, 'language_form':language_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):

@@ -16,7 +16,7 @@ class GeoZone(models.Model):
     """
     A model describing a geographical zone.
     """
-    name = models.CharField(primary_key=True, max_length=255)
+    name = models.CharField(primary_key=True, max_length=255, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -29,7 +29,7 @@ class Language(models.Model):
     """
     A model describing a language.
     """
-    name = models.CharField(primary_key=True, max_length=255)
+    name = models.CharField(primary_key=True, max_length=255, blank=True)
 
     class Meta:
         ordering = ['name']
