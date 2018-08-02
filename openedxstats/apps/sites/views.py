@@ -211,9 +211,10 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
         return super(OTChartView, self).render_to_response(context)
 
 # TODO: If Add Language or Add Geography section is left blank, do not add as a new entry
-# TODO: If Language/Geography being added already exists, do not add
 # TODO: Change language/geography 'name' field to unique
 # TODO: If adding new language/geography, add to new site data
+# TODO: LOW - Try/Catch when creating a new language/geography that already exists
+# TODO: If Language/Geography being added already exists, do not add
 
 def add_site(request, pk=None):
     if pk:
@@ -234,7 +235,7 @@ def add_site(request, pk=None):
         site_form = SiteForm(request.POST, instance=s)
         language_form = LanguageForm(request.POST, instance=l)
         geo_form = GeoZoneForm(request.POST, instance=g)
-        if site_form.is_valid():
+        if site_form.is_valid() and language_form.is_valid() and geo_form.is_valid():
             new_site = site_form.save(commit=False)
             new_geo_zone = geo_form.save()
             new_lang = language_form.save()
@@ -244,6 +245,8 @@ def add_site(request, pk=None):
             try:
                 new_site.pk = None
                 new_site.validate_unique()
+                new_geo_zone.validate_unique()
+                new_lang.validate_unique()
             except ValidationError as err:
                 messages.error(request, ",".join(err.messages))
                 return render_site_form(request, site_form, pk)
@@ -255,6 +258,17 @@ def add_site(request, pk=None):
                 old_version.active_end_date = new_form_created_time
                 old_version.save()
             else:
+
+                print('Else')
+                for geozone in GeoZone.objects.all():
+                    print(geozone)
+                newly_created_geozone = geo_form.cleaned_data['geozone_name']
+                print('newly_created_geozone', newly_created_geozone)
+
+                print('Searching for newly created geozone in table...')
+                print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
+
+
                 # Check if there are other versions of site
                 if Site.objects.filter(url=new_site.url).count() > 0:
                     next_most_recent_version_of_site = None

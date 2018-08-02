@@ -16,26 +16,26 @@ class GeoZone(models.Model):
     """
     A model describing a geographical zone.
     """
-    name = models.CharField(primary_key=True, max_length=255, blank=True)
+    geozone_name = models.CharField(primary_key=True, max_length=255, blank=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['geozone_name']
 
     def __str__(self):
-        return self.name
+        return self.geozone_name
 
 
 class Language(models.Model):
     """
     A model describing a language.
     """
-    name = models.CharField(primary_key=True, max_length=255, blank=True)
+    language_name = models.CharField(primary_key=True, max_length=255, blank=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['language_name']
 
     def __str__(self):
-        return self.name
+        return self.language_name
 
 
 class OverCount(models.Model):

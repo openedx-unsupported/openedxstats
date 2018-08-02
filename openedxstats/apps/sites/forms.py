@@ -34,9 +34,9 @@ class LanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = ['name']
+        fields = ['language_name']
         labels = {
-            'name': _('Add Language'),
+            'languange_name': _('Add Language'),
         }
 
 
@@ -44,9 +44,9 @@ class GeoZoneForm(forms.ModelForm):
 
     class Meta:
         model = GeoZone
-        fields = ['name']
+        fields = ['geozone_name']
         labels = {
-            'name': _('Add Geozone'),
+            'geozone_name': _('Add Geozone'),
         }
 
 
