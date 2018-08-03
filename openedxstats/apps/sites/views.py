@@ -234,7 +234,7 @@ def add_site(request, pk=None):
         s = Site()
         l = Language()
         g = GeoZone()
-
+    # Runs when user clicks Submit
     if request.method == 'POST':
         print("Page submitted")
         site_form = SiteForm(request.POST, instance=s)
@@ -244,6 +244,7 @@ def add_site(request, pk=None):
             new_site = site_form.save(commit=False)
             new_geo_zone = geo_form.save(commit=False)
             new_lang = language_form.save(commit=False)
+            new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
             # site entries when trying to update a site
             try:
@@ -286,12 +287,15 @@ def add_site(request, pk=None):
             geozones = site_form.cleaned_data.pop('geography')
 
             if language_form.data['language_name'] is not '':
+
                 newly_created_language = language_form.cleaned_data['language_name']
                 new_language_instance = Language.objects.filter(language_name = newly_created_language)
                 languages = languages | new_language_instance
                 new_lang.save(force_insert=True)
-             # elif language_form.data['language_name'] is '':
+
+            # elif language_form.data['language_name'] is '':
             #     print('Nothing entered for language')
+
             if geo_form.data['geozone_name'] is not '':
                 print('geo_form data is not ''')
                 newly_created_geozone = geo_form.cleaned_data['geozone_name']
@@ -299,7 +303,29 @@ def add_site(request, pk=None):
                 geozones = geozones | new_geozone_instance
                 new_geo_zone.save(force_insert=True)
 
+            # elif geo_form.data['geozone_name'] is '':
+            #     print('Nothing entered for geography')
+            #     print('geozones:', geozones)
+            #     for geo in GeoZone.objects.all():
+            #         print(geo)
+
+
+            # print('newly_created_geozone', newly_created_geozone)
+
+            # print('Searching for newly created geozone in table...')
+            # print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
+
+
+
+
+
+            # print('geozone')
+            # print('geo_form.cleaned_data', geo_form.cleaned_data)
+            # print('lang_form.cleaned_data', language_form.cleaned_data)
+
+
             new_site.save(force_insert=True)
+            # new_lang.save(force_insert=True)
 
             if pk: # Delete existing languages and geographies if updating to prevent duplicates
                 new_site.language.clear()
@@ -320,14 +346,23 @@ def add_site(request, pk=None):
             # Display errors
             form_errors_string = generate_form_errors_string(site_form.errors)
             messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
-
+    # Initial page load
     else:
+        print("Page loaded")
+        language_form = LanguageForm()
+        geo_form = GeoZoneForm()
         if pk:
             site_form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
         else:
             site_form = SiteForm()
 
-    return render_site_form(request, site_form, pk)
+    # print('site_form', site_form)
+    # print('geo_form', geo_form)
+
+    # print('pk:', pk)
+
+    return render(request, 'add_site.html',
+                      {'site_form': site_form, 'language_form':language_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):
