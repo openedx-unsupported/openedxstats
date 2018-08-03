@@ -238,7 +238,7 @@ def add_site(request, pk=None):
         if site_form.is_valid() and language_form.is_valid() and geo_form.is_valid():
             new_site = site_form.save(commit=False)
             new_geo_zone = geo_form.save(commit=False)
-            new_lang = language_form.save()
+            new_lang = language_form.save(commit=False)
             new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
             # site entries when trying to update a site
@@ -258,7 +258,7 @@ def add_site(request, pk=None):
                 old_version.active_end_date = new_form_created_time
                 old_version.save()
             else:
-                print('Else')
+                print('New entry')
                 # Check if there are other versions of site
                 if Site.objects.filter(url=new_site.url).count() > 0:
                     next_most_recent_version_of_site = None
@@ -286,9 +286,10 @@ def add_site(request, pk=None):
                 newly_created_language = language_form.cleaned_data['language_name']
                 new_language_instance = Language.objects.filter(language_name = newly_created_language)
                 languages = languages | new_language_instance
+                new_lang.save(force_insert=True)
 
-            elif language_form.data['language_name'] is '':
-                print('Nothing entered for language')
+            # elif language_form.data['language_name'] is '':
+            #     print('Nothing entered for language')
 
             if geo_form.data['geozone_name'] is not '':
                 print('geo_form data is not ''')
@@ -297,11 +298,11 @@ def add_site(request, pk=None):
                 geozones = geozones | new_geozone_instance
                 new_geo_zone.save(force_insert=True)
 
-            elif geo_form.data['geozone_name'] is '':
-                print('Nothing entered for geography')
-                print('geozones:', geozones)
-                for geo in GeoZone.objects.all():
-                    print(geo)
+            # elif geo_form.data['geozone_name'] is '':
+            #     print('Nothing entered for geography')
+            #     print('geozones:', geozones)
+            #     for geo in GeoZone.objects.all():
+            #         print(geo)
 
 
             # print('newly_created_geozone', newly_created_geozone)
