@@ -237,7 +237,7 @@ def add_site(request, pk=None):
         geo_form = GeoZoneForm(request.POST, instance=g)
         if site_form.is_valid() and language_form.is_valid() and geo_form.is_valid():
             new_site = site_form.save(commit=False)
-            new_geo_zone = geo_form.save()
+            new_geo_zone = geo_form.save(commit=False)
             new_lang = language_form.save()
             new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
@@ -278,37 +278,47 @@ def add_site(request, pk=None):
                         next_most_recent_version_of_site.active_end_date = new_form_created_time
                         next_most_recent_version_of_site.save()
 
-            newly_created_language = language_form.cleaned_data['language_name']
-            print('newly_created_language', newly_created_language)
-            new_language_instance = Language.objects.filter(language_name = newly_created_language)
+            languages = site_form.cleaned_data.pop('language')
+            geozones = site_form.cleaned_data.pop('geography')
 
-            newly_created_geozone = geo_form.cleaned_data['geozone_name']
-            new_geozone_instance = GeoZone.objects.filter(geozone_name = newly_created_geozone)
+            if language_form.data['language_name'] is not '':
 
-            print('form.cleaned_data', site_form.cleaned_data)
+                newly_created_language = language_form.cleaned_data['language_name']
+                new_language_instance = Language.objects.filter(language_name = newly_created_language)
+                languages = languages | new_language_instance
 
-            languages = site_form.cleaned_data.pop('language') | new_language_instance
-            geozones = site_form.cleaned_data.pop('geography') | new_geozone_instance
+            elif language_form.data['language_name'] is '':
+                print('Nothing entered for language')
+
+            if geo_form.data['geozone_name'] is not '':
+                print('geo_form data is not ''')
+                newly_created_geozone = geo_form.cleaned_data['geozone_name']
+                new_geozone_instance = GeoZone.objects.filter(geozone_name = newly_created_geozone)
+                geozones = geozones | new_geozone_instance
+                new_geo_zone.save(force_insert=True)
+
+            elif geo_form.data['geozone_name'] is '':
+                print('Nothing entered for geography')
+                print('geozones:', geozones)
+                for geo in GeoZone.objects.all():
+                    print(geo)
 
 
-            # for geozone in GeoZone.objects.all():
-            #     print(geozone)
-            print('newly_created_geozone', newly_created_geozone)
+            # print('newly_created_geozone', newly_created_geozone)
 
-            print('Searching for newly created geozone in table...')
-            print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
+            # print('Searching for newly created geozone in table...')
+            # print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
 
 
 
 
 
-            print('geozone')
-            print('geo_form.cleaned_data', geo_form.cleaned_data)
-            print('lang_form.cleaned_data', language_form.cleaned_data)
+            # print('geozone')
+            # print('geo_form.cleaned_data', geo_form.cleaned_data)
+            # print('lang_form.cleaned_data', language_form.cleaned_data)
 
 
             new_site.save(force_insert=True)
-            # new_geo_zone.save(force_insert=True)
             # new_lang.save(force_insert=True)
 
             if pk: # Delete existing languages and geographies if updating to prevent duplicates
@@ -344,13 +354,13 @@ def add_site(request, pk=None):
     # print('geo_form', geo_form)
 
     # print('pk:', pk)
+
     return render(request, 'add_site.html',
                       {'site_form': site_form, 'language_form':language_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):
     l = Language()
-
     if request.method == 'POST':
         form = LanguageForm(request.POST, instance=l)
         if form.is_valid():

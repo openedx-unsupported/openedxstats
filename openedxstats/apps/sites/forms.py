@@ -39,7 +39,6 @@ class LanguageForm(forms.ModelForm):
             'languange_name': _('Add Language'),
         }
 
-
 class GeoZoneForm(forms.ModelForm):
 
     class Meta:
@@ -48,6 +47,13 @@ class GeoZoneForm(forms.ModelForm):
         labels = {
             'geozone_name': _('Add Geozone'),
         }
+
+    def __init__(self, *args, **kwargs):
+        # first call parent's constructor
+        super(GeoZoneForm, self).__init__(*args, **kwargs)
+        # there's a `fields` property now
+        self.fields['geozone_name'].required = False
+
 
 
 class UserForm(forms.ModelForm):
