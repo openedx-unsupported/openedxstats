@@ -1852,7 +1852,7 @@ const keyCountries = {
     Canada: {
       type: "Feature",
       id: "country_centroids_az8.39",
-      geometry: { type: "Point", coordinates: [-98.3077702819, 61.3620632437] },
+      geometry: { type: "Point", coordinates: [-106.346800, 56.130400] },
       geometry_name: "the_geom",
       properties: {
         FID_: 38,
@@ -5330,7 +5330,7 @@ const keyCountries = {
     France: {
       type: "Feature",
       id: "country_centroids_az8.73",
-      geometry: { type: "Point", coordinates: [-2.76172944519, 42.1734401107] },
+      geometry: { type: "Point", coordinates: [2.349014, 48.864716] },
       geometry_name: "the_geom",
       properties: {
         FID_: 72,
@@ -7106,7 +7106,7 @@ const keyCountries = {
     Indonesia: {
       type: "Feature",
       id: "country_centroids_az8.97",
-      geometry: { type: "Point", coordinates: [117.240113662, -2.21505456346] },
+      geometry: { type: "Point", coordinates: [113.921300, -0.789300] },
       geometry_name: "the_geom",
       properties: {
         FID_: 96,
@@ -11990,7 +11990,7 @@ const keyCountries = {
     Norway: {
       type: "Feature",
       id: "country_centroids_az8.163",
-      geometry: { type: "Point", coordinates: [15.3483465622, 68.7501557205] },
+      geometry: { type: "Point", coordinates: [8.468900, 60.472000] },
       geometry_name: "the_geom",
       properties: {
         FID_: 162,
@@ -16726,7 +16726,7 @@ const keyCountries = {
     "United States": {
       type: "Feature",
       id: "country_centroids_az8.227",
-      geometry: { type: "Point", coordinates: [-112.4616737, 45.6795472026] },
+      geometry: { type: "Point", coordinates: [-95.712900, 37.090200] },
       geometry_name: "the_geom",
       properties: {
         FID_: 226,
@@ -17244,7 +17244,7 @@ const keyCountries = {
     Vietnam: {
       type: "Feature",
       id: "country_centroids_az8.234",
-      geometry: { type: "Point", coordinates: [106.299146978, 16.6460167019] },
+      geometry: { type: "Point", coordinates: [108.277200, 14.058300] },
       geometry_name: "the_geom",
       properties: {
         FID_: 233,
@@ -17834,3 +17834,21 @@ const keyCountries = {
       }
     }
   };
+
+
+const coordinateTable = {};
+
+// console.log(Object.keys(keyCountries.India));
+
+Object.keys(keyCountries).forEach(function(country) {
+    let [lat, lng] = keyCountries[country].geometry.coordinates;
+    lat = lat.toFixed(1);
+    lng = lng.toFixed(1);
+    let coordStr = `${lng},${lat}`;
+    coordinateTable[coordStr] = keyCountries[country];
+})
+
+
+// Object.keys(coordinateTable).forEach(function(coord) {
+//     console.log(coord);
+// })
