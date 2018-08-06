@@ -80,6 +80,13 @@ class HawthornMapView(generic.ListView):
     template_name = 'sites/hawthorn_map.html'
     # context_object_name = 'sites_map'
 
+class StatsView(generic.ListView):
+    model = Site
+    template_name = 'sites/sites_stats.html'
+
+def stats_view(request):
+    return render(request, 'sites/sites_stats.html', {})
+
 
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
