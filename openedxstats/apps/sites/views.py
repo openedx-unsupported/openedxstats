@@ -85,7 +85,20 @@ class StatsView(generic.ListView):
     template_name = 'sites/sites_stats.html'
 
 def stats_view(request):
-    return render(request, 'sites/sites_stats.html', {})
+    active_sites_count = len(Site.objects.exclude(active_end_date__isnull=False))
+    active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
+    language_count = len(Language.objects.all())
+    geozones_count = len(GeoZone.objects.all())
+    print(active_sites_course_count)
+    stats_dict = {
+        'sites': active_sites_count,
+        'courses': active_sites_course_count,
+        'languages': language_count,
+        'countries': geozones_count
+    }
+
+    # print('Active site count', Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count')))
+    return render(request, 'sites/sites_stats.html', context=stats_dict)
 
 
 def json_response(text=None, data=None, **response_kwargs):
