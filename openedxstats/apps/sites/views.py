@@ -89,15 +89,12 @@ def stats_view(request):
     active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
     language_count = len(Language.objects.all())
     geozones_count = len(GeoZone.objects.all())
-    print(active_sites_course_count)
     stats_dict = {
         'sites': active_sites_count,
         'courses': active_sites_course_count,
         'languages': language_count,
         'countries': geozones_count
     }
-
-    # print('Active site count', Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count')))
     return render(request, 'sites/sites_stats.html', context=stats_dict)
 
 
@@ -256,7 +253,6 @@ def add_site(request, pk=None):
         g = GeoZone()
     # Runs when user clicks Submit
     if request.method == 'POST':
-        print("Page submitted")
         site_form = SiteForm(request.POST, instance=s)
         language_form = LanguageForm(request.POST, instance=l)
         geo_form = GeoZoneForm(request.POST, instance=g)
@@ -283,7 +279,6 @@ def add_site(request, pk=None):
                 old_version.active_end_date = new_form_created_time
                 old_version.save()
             else:
-                print('New entry')
                 # Check if there are other versions of site
                 if Site.objects.filter(url=new_site.url).count() > 0:
                     next_most_recent_version_of_site = None
@@ -307,45 +302,18 @@ def add_site(request, pk=None):
             geozones = site_form.cleaned_data.pop('geography')
 
             if language_form.data['language_name'] is not '':
-
                 newly_created_language = language_form.cleaned_data['language_name']
                 new_language_instance = Language.objects.filter(language_name = newly_created_language)
                 languages = languages | new_language_instance
                 new_lang.save(force_insert=True)
 
-            # elif language_form.data['language_name'] is '':
-            #     print('Nothing entered for language')
-
             if geo_form.data['geozone_name'] is not '':
-                print('geo_form data is not ''')
                 newly_created_geozone = geo_form.cleaned_data['geozone_name']
                 new_geozone_instance = GeoZone.objects.filter(geozone_name = newly_created_geozone)
                 geozones = geozones | new_geozone_instance
                 new_geo_zone.save(force_insert=True)
 
-            # elif geo_form.data['geozone_name'] is '':
-            #     print('Nothing entered for geography')
-            #     print('geozones:', geozones)
-            #     for geo in GeoZone.objects.all():
-            #         print(geo)
-
-
-            # print('newly_created_geozone', newly_created_geozone)
-
-            # print('Searching for newly created geozone in table...')
-            # print(GeoZone.objects.filter(geozone_name=newly_created_geozone))
-
-
-
-
-
-            # print('geozone')
-            # print('geo_form.cleaned_data', geo_form.cleaned_data)
-            # print('lang_form.cleaned_data', language_form.cleaned_data)
-
-
             new_site.save(force_insert=True)
-            # new_lang.save(force_insert=True)
 
             if pk: # Delete existing languages and geographies if updating to prevent duplicates
                 new_site.language.clear()
@@ -375,11 +343,6 @@ def add_site(request, pk=None):
             site_form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
         else:
             site_form = SiteForm()
-
-    # print('site_form', site_form)
-    # print('geo_form', geo_form)
-
-    # print('pk:', pk)
 
     return render(request, 'add_site.html',
                       {'site_form': site_form, 'language_form':language_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
