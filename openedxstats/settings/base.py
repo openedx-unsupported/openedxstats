@@ -80,7 +80,7 @@ WSGI_APPLICATION = 'openedxstats.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'openedxstatshalf',
+        'NAME': 'openedxstats_august_3',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
