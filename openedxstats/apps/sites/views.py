@@ -80,6 +80,23 @@ class HawthornMapView(generic.ListView):
     template_name = 'sites/hawthorn_map.html'
     # context_object_name = 'sites_map'
 
+class StatsView(generic.ListView):
+    model = Site
+    template_name = 'sites/sites_stats.html'
+
+def stats_view(request):
+    active_sites_count = len(Site.objects.exclude(active_end_date__isnull=False))
+    active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
+    language_count = len(Language.objects.all())
+    geozones_count = len(GeoZone.objects.all())
+    stats_dict = {
+        'sites': active_sites_count,
+        'courses': active_sites_course_count,
+        'languages': language_count,
+        'countries': geozones_count
+    }
+    return render(request, 'sites/sites_stats.html', context=stats_dict)
+
 
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
@@ -232,20 +249,28 @@ def add_site(request, pk=None):
             return response
     else:
         s = Site()
-
+        l = Language()
+        g = GeoZone()
+    # Runs when user clicks Submit
     if request.method == 'POST':
-        form = SiteForm(request.POST, instance=s)
-        if form.is_valid():
-            new_site = form.save(commit=False)
+        site_form = SiteForm(request.POST, instance=s)
+        language_form = LanguageForm(request.POST, instance=l)
+        geo_form = GeoZoneForm(request.POST, instance=g)
+        if site_form.is_valid() and language_form.is_valid() and geo_form.is_valid():
+            new_site = site_form.save(commit=False)
+            new_geo_zone = geo_form.save(commit=False)
+            new_lang = language_form.save(commit=False)
             new_form_created_time = new_site.active_start_date
             # We must check for uniqueness explicitly, as SiteForm has trouble raising unique key errors for duplicate
             # site entries when trying to update a site
             try:
                 new_site.pk = None
                 new_site.validate_unique()
+                new_geo_zone.validate_unique()
+                new_lang.validate_unique()
             except ValidationError as err:
                 messages.error(request, ",".join(err.messages))
-                return render_site_form(request, form, pk)
+                return render_site_form(request, site_form, pk)
 
             if pk: # If updating
                 # We must grab the same object from the DB again, as s is linked to the form and using it here will
@@ -273,8 +298,20 @@ def add_site(request, pk=None):
                         next_most_recent_version_of_site.active_end_date = new_form_created_time
                         next_most_recent_version_of_site.save()
 
-            languages = form.cleaned_data.pop('language')
-            geozones = form.cleaned_data.pop('geography')
+            languages = site_form.cleaned_data.pop('language')
+            geozones = site_form.cleaned_data.pop('geography')
+
+            if language_form.data['language_name'] is not '':
+                newly_created_language = language_form.cleaned_data['language_name']
+                new_language_instance = Language.objects.filter(language_name = newly_created_language)
+                languages = languages | new_language_instance
+                new_lang.save(force_insert=True)
+
+            if geo_form.data['geozone_name'] is not '':
+                newly_created_geozone = geo_form.cleaned_data['geozone_name']
+                new_geozone_instance = GeoZone.objects.filter(geozone_name = newly_created_geozone)
+                geozones = geozones | new_geozone_instance
+                new_geo_zone.save(force_insert=True)
 
             new_site.save(force_insert=True)
 
@@ -295,16 +332,20 @@ def add_site(request, pk=None):
 
         else:
             # Display errors
-            form_errors_string = generate_form_errors_string(form.errors)
+            form_errors_string = generate_form_errors_string(site_form.errors)
             messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
-
+    # Initial page load
     else:
+        print("Page loaded")
+        language_form = LanguageForm()
+        geo_form = GeoZoneForm()
         if pk:
-            form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
+            site_form = SiteForm(initial={'active_start_date':datetime.now()}, instance=s)
         else:
-            form = SiteForm()
+            site_form = SiteForm()
 
-    return render_site_form(request, form, pk)
+    return render(request, 'add_site.html',
+                      {'site_form': site_form, 'language_form':language_form, 'geo_form': geo_form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 
 def add_language(request):
@@ -318,7 +359,7 @@ def add_language(request):
             return HttpResponseRedirect(reverse('sites:sites_list'))
         else:
             # Display errors
-            form_errors_string = generate_form_errors_string(form.errors)
+            form_errors_string = generate_form_errors_string(site_form.errors)
             messages.error(request, 'Oops! Something went wrong! Details: %s' % form_errors_string)
     else:
         form = LanguageForm()

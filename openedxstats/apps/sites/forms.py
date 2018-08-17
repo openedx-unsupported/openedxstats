@@ -1,8 +1,10 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.contrib.postgres.forms import SimpleArrayField
 from openedxstats.apps.sites.models import Site, Language, GeoZone
 from datetimewidget.widgets import DateTimeWidget
+from django.template.defaultfilters import mark_safe
 
 default_url_errors = {
     'required': 'This field is required',
@@ -32,14 +34,26 @@ class LanguageForm(forms.ModelForm):
 
     class Meta:
         model = Language
-        fields = '__all__'
-
+        fields = ['language_name']
+        labels = {
+            'languange_name': _('Add Language'),
+        }
 
 class GeoZoneForm(forms.ModelForm):
 
     class Meta:
         model = GeoZone
-        fields = '__all__'
+        fields = ['geozone_name']
+        labels = {
+            'geozone_name': _('Add Geozone'),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # first call parent's constructor
+        super(GeoZoneForm, self).__init__(*args, **kwargs)
+        # there's a `fields` property now
+        self.fields['geozone_name'].required = False
+
 
 
 class UserForm(forms.ModelForm):

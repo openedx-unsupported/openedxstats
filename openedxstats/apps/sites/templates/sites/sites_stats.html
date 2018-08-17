@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}{% endblock %}
+{% block bootstrap3_extra_head %}
+
+{% endblock %}
+{% block content %}
+    <!-- Navbar -->
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+    <style type="text/css">
+        .stats-container {
+            <!-- background-color: black; -->
+
+        }
+        .stats-content {
+            padding-top: 2em;
+            padding-bottom: 2em;
+            <!-- background-color: black; -->
+        }
+        .stats-content:hover {
+            background-color: #1f9fd9;
+        }
+        .desc-text {
+            font-family: 'Open Sans', sans-serif;
+            text-align: center;
+            font-weight: 400;
+        }
+        .banner-container {
+            margin-bottom: 2em;
+        }
+        .banner-image {
+            width: 80%;
+        }
+        .center-image {
+            display: block;
+            margin: 0 auto;
+        }
+        .info-image {
+            width: 40%;
+        }
+        .column-padding {
+            <!-- background-color:red; -->
+        }
+        .zero-padding {
+            padding-right: 0;
+            padding-left: 0;
+        }
+
+    </style>
+    <!-- Content -->
+    <div class="container">
+        <div class="row">
+            <div class='col-md-2 column-padding'></div>
+            <div class='col-md-8'>
+                <div class='banner-container'>
+                    <img class="banner-image center-image" src="../../static/stats/open-edx-logo-with-reg.png" alt="">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 zero-padding">
+                        <div class='stats-container'>
+                            <div class="stats-content">
+                                <img class="info-image center-image" src="../../static/stats/002-computer.png" alt="">
+                                <h1 class='desc-text'>{{sites}} sites</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 zero-padding">
+                        <div class='stats-container'>
+                            <div class="stats-content">
+                                <img class="info-image center-image" src="../../static/stats/003-books.png" alt="">
+                                <h1 class='desc-text'>{{courses}} courses</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 zero-padding">
+                        <div class='stats-container'>
+                            <div class="stats-content">
+                                <img class="info-image center-image" src="../../static/stats/005-translate.png" alt="">
+                                <h1 class='desc-text'>{{languages}} languages</h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 zero-padding">
+                        <div class='stats-container'>
+                            <div class="stats-content">
+                                <img class="info-image center-image" src="../../static/stats/004-earth-globe.png" alt="">
+                                <h1 class='desc-text'>{{countries}} countries</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='col-md-2 column-padding'></div>
+        </div>
+    </div>
+{% endblock %}
