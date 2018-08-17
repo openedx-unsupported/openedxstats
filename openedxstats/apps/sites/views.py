@@ -80,6 +80,18 @@ class HawthornMapView(generic.ListView):
     template_name = 'sites/hawthorn_map.html'
     # context_object_name = 'sites_map'
 
+def stats_view(request):
+    active_sites_count = Site.objects.exclude(active_end_date__isnull=False).count()
+    active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
+    language_count = Language.objects.all().count()
+    geozones_count = GeoZone.objects.all().count()
+    stats_dict = {
+        'sites': active_sites_count,
+        'courses': active_sites_course_count,
+        'languages': language_count,
+        'countries': geozones_count
+    }
+    return render(request, 'sites/sites_stats.html', context=stats_dict)
 
 def json_response(text=None, data=None, **response_kwargs):
     """Create a JSON response"""
