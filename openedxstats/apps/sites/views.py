@@ -81,7 +81,7 @@ class HawthornMapView(generic.ListView):
     # context_object_name = 'sites_map'
 
 def stats_view(request):
-    active_sites_count = Site.objects.exclude(active_end_date__isnull=False).filter(course_count == 0).count()
+    active_sites_count = Site.objects.exclude(active_end_date__isnull=False).filter(course_count__gt=0).count()
     active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
     language_count = Language.objects.all().count()
     geozones_count = GeoZone.objects.all().count()
