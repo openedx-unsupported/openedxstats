@@ -81,13 +81,14 @@ class HawthornMapView(generic.ListView):
     # context_object_name = 'sites_map'
 
 def stats_view(request):
-    active_sites_count = Site.objects.exclude(active_end_date__isnull=False).filter(course_count__gt=0).count()
-    active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
+    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter((Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)).aggregate(sites=Count('*'), courses=Sum('course_count'))
+    over_count = OverCount.objects.all().last().course_count
+    valid_course_count = active_sites['courses'] - over_count
     language_count = Language.objects.all().count()
     geozones_count = GeoZone.objects.all().count()
     stats_dict = {
-        'sites': active_sites_count,
-        'courses': active_sites_course_count,
+        'sites': active_sites['sites'],
+        'courses': valid_course_count,
         'languages': language_count,
         'countries': geozones_count
     }
@@ -203,7 +204,6 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
                 over_count = OverCount.objects.get(date_select).course_count
             except OverCount.DoesNotExist:
                 over_count = 0
-
             # Generate summary object for day
             daily_summary_obj = SiteSummarySnapshot(
                 timestamp=day,
