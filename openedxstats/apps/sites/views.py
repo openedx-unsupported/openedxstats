@@ -24,12 +24,23 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
+    all_site_geo_zone = SiteGeoZone.objects.prefetch_related()
     all_sites = Site.objects.all()
     active_sites = Site.objects.exclude(active_end_date__isnull=False)
+
     count = 0
-    for site in active_sites:
-        if (site.course_count == 0):
-            count += 1
+    for data in all_site_geo_zone:
+        # print(data.site.course_count)
+        if data.geo_zone.name == 'US':
+            if data.site.active_end_date is not None:
+                if data.site.course_count != 0:
+            # if active_sites.get(id=data.site.id)
+                    count += 1
+                    print(count, data.site.id, data.site)
+        # print(data.geo_zone)
+    print('US count', count)
+    print('all_site_geo_zone', all_site_geo_zone)
+
     active_sites_id_set = set(map(lambda site:site['id'], active_sites.values('id')))
     country_list = list(map(lambda country:country['geo_zone'], SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()))
     country_site_count_dict = dict(((country, 0) for country in country_list))
@@ -40,7 +51,6 @@ def SiteView_JSON(request):
         if site_id in active_sites_id_set:
             if (active_sites.get(id=site_id).course_count != 0):
                 country_site_count_dict[geo_zone] += 1
-    print(country_site_count_dict)
     geo = SiteGeoZone.objects.all()
     geo_json = serializers.serialize("json", geo)
     language = SiteLanguage.objects.all()
