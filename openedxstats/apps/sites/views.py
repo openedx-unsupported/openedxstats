@@ -78,10 +78,9 @@ class MapView(generic.ListView):
 class HawthornMapView(generic.ListView):
     model = Site # Not needed,consider switching to function based view
     template_name = 'sites/hawthorn_map.html'
-    # context_object_name = 'sites_map'
 
 def stats_view(request):
-    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter((Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)).aggregate(sites=Count('*'), courses=Sum('course_count'))
+    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter(get_valid_courses()).aggregate(sites=Count('*'), courses=Sum('course_count'))
     over_count = OverCount.objects.all().last().course_count
     valid_course_count = active_sites['courses'] - over_count
     language_count = Language.objects.all().count()
@@ -194,9 +193,9 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
                 Q(active_start_date__lte=day) &
                 (Q(active_end_date__gte=day) | Q(active_end_date=None))
             )
+
             day_stats = Site.objects.filter(
-                (Q(course_count__gt=0) | Q(is_private_instance=True)) &
-                Q(is_gone=False) &
+                get_valid_courses() &
                 date_select
             ).aggregate(sites=Count('*'), courses=Sum('course_count'))
             try:
@@ -454,3 +453,11 @@ def bulk_update(request):
         resp['updated_over_count'] = False
 
     return json_response(data=resp)
+
+def get_valid_courses():
+    """
+    Helper function for stats_view and OTChartView
+    Retrieves valid courses
+    """
+    return (Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)
+
