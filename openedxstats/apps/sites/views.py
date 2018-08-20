@@ -199,7 +199,6 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
                 Q(is_gone=False) &
                 date_select
             ).aggregate(sites=Count('*'), courses=Sum('course_count'))
-            print('day_Stats', day_stats)
             try:
                 over_count = OverCount.objects.get(date_select).course_count
             except OverCount.DoesNotExist:
