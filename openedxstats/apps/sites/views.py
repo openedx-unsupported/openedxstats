@@ -80,7 +80,7 @@ class HawthornMapView(generic.ListView):
     template_name = 'sites/hawthorn_map.html'
 
 def stats_view(request):
-    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter(valid_course_query()).aggregate(sites=Count('*'), courses=Sum('course_count'))
+    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter(valid_sites_query()).aggregate(sites=Count('*'), courses=Sum('course_count'))
     over_count = OverCount.objects.all().last().course_count
     valid_course_count = active_sites['courses'] - over_count
     language_count = Language.objects.all().count()
@@ -195,7 +195,7 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
             )
 
             day_stats = Site.objects.filter(
-                valid_course_query() &
+                valid_sites_query() &
                 date_select
             ).aggregate(sites=Count('*'), courses=Sum('course_count'))
             try:
@@ -454,9 +454,9 @@ def bulk_update(request):
 
     return json_response(data=resp)
 
-def valid_courses_query():
+def valid_sites_query():
     """
-    Helper function for stats_view and OTChartView to query valid courses
+    Helper function for stats_view and OTChartView to query valid sites
     """
     return (Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)
 
