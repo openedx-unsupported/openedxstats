@@ -454,7 +454,7 @@ def bulk_update(request):
 
     return json_response(data=resp)
 
-def valid_course_query():
+def valid_courses_query():
     """
     Helper function for stats_view and OTChartView to query valid courses
     """
