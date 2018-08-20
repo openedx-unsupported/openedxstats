@@ -456,8 +456,7 @@ def bulk_update(request):
 
 def get_valid_courses():
     """
-    Helper function for stats_view and OTChartView
-    Retrieves valid courses
+    Helper function for stats_view and OTChartView to retrieve valid courses
     """
     return (Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)
 
