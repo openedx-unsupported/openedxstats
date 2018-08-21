@@ -24,7 +24,6 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
-    all_site_geo_zone = SiteGeoZone.objects.prefetch_related()
     all_sites = Site.objects.all()
     active_sites = Site.objects.exclude(active_end_date__isnull=False)
     active_sites_id_set = set(map(lambda site:site['id'], active_sites.values('id')))
