@@ -78,16 +78,16 @@ class MapView(generic.ListView):
 class HawthornMapView(generic.ListView):
     model = Site # Not needed,consider switching to function based view
     template_name = 'sites/hawthorn_map.html'
-    # context_object_name = 'sites_map'
 
 def stats_view(request):
-    active_sites_count = Site.objects.exclude(active_end_date__isnull=False).count()
-    active_sites_course_count = Site.objects.exclude(active_end_date__isnull=False).aggregate(Sum('course_count'))['course_count__sum']
+    active_sites = Site.objects.exclude(active_end_date__isnull=False).filter(valid_sites_query()).aggregate(sites=Count('*'), courses=Sum('course_count'))
+    over_count = OverCount.objects.all().last().course_count
+    valid_course_count = active_sites['courses'] - over_count
     language_count = Language.objects.all().count()
     geozones_count = GeoZone.objects.all().count()
     stats_dict = {
-        'sites': active_sites_count,
-        'courses': active_sites_course_count,
+        'sites': active_sites['sites'],
+        'courses': valid_course_count,
         'languages': language_count,
         'countries': geozones_count
     }
@@ -193,17 +193,15 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
                 Q(active_start_date__lte=day) &
                 (Q(active_end_date__gte=day) | Q(active_end_date=None))
             )
+
             day_stats = Site.objects.filter(
-                (Q(course_count__gt=0) | Q(is_private_instance=True)) &
-                Q(is_gone=False) &
+                valid_sites_query() &
                 date_select
             ).aggregate(sites=Count('*'), courses=Sum('course_count'))
-
             try:
                 over_count = OverCount.objects.get(date_select).course_count
             except OverCount.DoesNotExist:
                 over_count = 0
-
             # Generate summary object for day
             daily_summary_obj = SiteSummarySnapshot(
                 timestamp=day,
@@ -455,3 +453,10 @@ def bulk_update(request):
         resp['updated_over_count'] = False
 
     return json_response(data=resp)
+
+def valid_sites_query():
+    """
+    Helper function for stats_view and OTChartView to query valid sites
+    """
+    return (Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)
+
