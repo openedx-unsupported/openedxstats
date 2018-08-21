@@ -180,14 +180,14 @@
                 // Data for each row item from JSON
                 columns: [
                         { data: "fields.site_type", visible: false , responsivePriority: 5},
-                        { data: "fields.name", visible: false , responsivePriority: 4},
+                        { data: "fields.name", visible: false , responsivePriority: 10},
                         { data: "fields.urlString" , visible: true, responsivePriority: 2},
                         { data: "fields.course_count" , visible: true, responsivePriority: 1},
                         { data: "fields.active_start_date", visible: false , responsivePriority: 6},
                         { data: "fields.active_end_date", visible: false , responsivePriority: 7},
                         { data: "fields.isCurrentVersion", visible: false , responsivePriority: 8},
                         { data: "fields.actionButtons", visible: false , responsivePriority: 9},
-                        { data: "fields.geolocation", visible: false , responsivePriority: 10},
+                        { data: "fields.geolocation", visible: false , responsivePriority: 4},
                         { data: "fields.notes", visible: false , responsivePriority: 11},
                         { data: "fields.language", visible: true , responsivePriority: 3},
                         { data: "fields.aliases", visible: false, responsivePriority: 12}
@@ -241,17 +241,14 @@
                 }
                 const countryText = document.createTextNode(countryName);
                 countryHeader.appendChild(countryText);
-
-                // Normalize country names from database that cannot be matched with GeoJSON
+                const table = $('#sites').DataTable();
                 if (countryName === 'United States') countryName = 'US';
                 else if (countryName === 'United Kingdom') countryName = 'UK';
-
-                const table = $('#sites').DataTable();
                 table
                     .column(8)
-                    .search(countryName)
+                    .search(`^${countryName}$`, true, false)
                     .draw();
-                })
+            })
         }
 
         // Clusters for each continent
@@ -280,7 +277,6 @@
                 countryCluster.name = name;
                 if (activeSitesCount.hasOwnProperty(country)) {
                     const siteCount = activeSitesCount[country];
-                    console.log(`${country} has ${siteCount} sites.`);
                     for (let i = 0; i < siteCount; i++) {
                         const marker = new L.marker({lng, lat}).addTo(countryCluster);
                         if (siteCount === 1) {
