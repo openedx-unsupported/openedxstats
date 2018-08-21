@@ -6,13 +6,13 @@
 {% endblock %}
 {% block content %}
     <!-- Navbar -->
+    {% include "navbar.html" %}
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
     <style type="text/css">
         .stats-content {
             padding-top: 2em;
-            padding-bottom: 2em;
         }
         .stats-content:hover {
             background-color: #1f9fd9;
@@ -23,7 +23,6 @@
             font-weight: 400;
         }
         .banner-container {
-            margin-top: -2em;
             margin-bottom: 2em;
         }
         .banner-image {
