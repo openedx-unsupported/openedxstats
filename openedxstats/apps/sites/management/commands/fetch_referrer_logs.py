@@ -6,7 +6,7 @@ from urllib import parse
 
 import boto
 from django.core.management.base import BaseCommand
-import psycopg2
+from django.db import IntegrityError
 
 from openedxstats.apps.sites.models import AccessLogAggregate, FilenameLog
 
@@ -124,7 +124,7 @@ def process_log_file(file_content, log_name):
     for log_to_save in aggregate_logs: #TODO: Change to commit=false until entire program runs through?
         try:
             log_to_save.save()
-        except psycopg2.IntegrityError as ex:
+        except IntegrityError as ex:
             print("Ignoring {}".format(ex))
 
 
