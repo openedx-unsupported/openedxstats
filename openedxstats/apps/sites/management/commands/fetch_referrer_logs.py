@@ -6,6 +6,7 @@ from urllib import parse
 
 import boto
 from django.core.management.base import BaseCommand
+import psycopg2
 
 from openedxstats.apps.sites.models import AccessLogAggregate, FilenameLog
 
@@ -121,7 +122,10 @@ def process_log_file(file_content, log_name):
         )
         aggregate_logs.append(new_aggregate_log)
     for log_to_save in aggregate_logs: #TODO: Change to commit=false until entire program runs through?
-        log_to_save.save()
+        try:
+            log_to_save.save()
+        except psycopg2.IntegrityError as ex:
+            print("Ignoring {}".format(ex))
 
 
 def get_accessible_keys(bucket, prefix="openedx-assets-cloudfront/"):
