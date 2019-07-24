@@ -82,6 +82,7 @@
                      { "data": "fields.course_count" },
                      { "data": "fields.active_start_date" },
                      { "data": "fields.active_end_date" },
+                     { "data": "fields.is_gone" },
                      { "data": "fields.isCurrentVersion" },
                      { "data": "fields.actionButtons" },
                      { "data": "fields.geolocation", "visible": false },
@@ -92,7 +93,7 @@
 
             // Filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                var goodDate, goodCourses;
+                var goodDate, goodCourses, goodSite;
 
                 var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
                 if (latestOnly) {
@@ -111,11 +112,21 @@
                 else {
                     goodCourses = true;
                 }
-                return goodDate && goodCourses;
+
+                var hideGone = $("#hideGone").prop("checked");
+                if (hideGone) {
+                    goodSite = data[6] === "false";
+                }
+                else {
+                    goodSite = true;
+                }
+
+                return goodDate && goodCourses && goodSite;
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
             $('#latestOnly').on('click', sitesTable.draw);
             $('#hideZeros').on('click', sitesTable.draw);
+            $('#hideGone').on('click', sitesTable.draw);
             $('#dateInput').keyup(function (e) {
                 if (e.keyCode == 13) {
                     sitesTable.draw()
@@ -163,6 +174,9 @@
             <div class="col-md-2">
                 <input id="hideZeros" type="checkbox" value="Hide Zeros" checked="checked"> Hide Zeros
             </div>
+            <div class="col-md-2">
+                <input id="hideGone" type="checkbox" value="Hide Gone" checked="checked"> Hide Gone
+            </div>
         </div>
         <table id="sites" class="table table-bordered table-responsive table-sm">
             <thead>
@@ -173,6 +187,7 @@
                 <th>Course Count</th>
                 <th>Active Version Start</th>
                 <th>Active Version End</th>
+                <th>Is gone?</th>
                 <th>Current Version?</th>
                 <th>Actions</th>
                 <th>Geolocation</th>
@@ -188,6 +203,7 @@
                 <th>Course Count</th>
                 <th>Active Version Start</th>
                 <th>Active Version End</th>
+                <th>Is gone?</th>
                 <th>Current Version?</th>
                 <th>Actions</th>
                 <th>Geolocation</th>
