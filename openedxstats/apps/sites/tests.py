@@ -1,3 +1,4 @@
+import unittest
 from datetime import datetime, date, timedelta
 import json
 import os.path
@@ -144,8 +145,13 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertIn("Site with this Url and Active start date already exists.", list(storage)[0].message)
 
     def test_add_a_new_version(self):
-        new_site = Site(url='https://test.com', active_start_date='2016-10-10 15:55', course_type='SPOC')
+        new_site = Site(
+            url='https://test.com',
+            active_start_date='2016-10-10 15:55',
+            course_type='SPOC'
+        )
         new_site.save()
+
         form_data = {
             'site_type': 'TEST',
             'url': 'https://test.com',
@@ -161,7 +167,7 @@ class SubmitSiteFormTestCase(TestCase):
         old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
         self.assertEqual(Site.objects.count(), 2)
         self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
-        self.assertEqual(updated_site.course_type, 'Both')
+        self.assertEqual(updated_site.course_type, 'Unknown')
         self.assertEqual(old_site.active_end_date, datetime(2016, 10, 10, 16, 30))
         self.assertIsNone(updated_site.active_end_date)
 
@@ -409,8 +415,9 @@ class OTChartTestCase(TestCase):
             snapshot_list.append(empty_snapshot)
 
         # Ajax request
-        response = self.client.post('/sites/ot_chart/', context_type='application/json',
-                                    HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        response = self.client.post(
+            '/sites/ot_chart/', context_type='application/json', HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
         self.assertEqual(response.status_code, 200)
         expected_json = json.loads(serialize('json', [snapshot]))
         response_json = json.loads(response.content.decode())
@@ -455,9 +462,13 @@ class UpdateSiteTestCase(TestCase):
         self.assertIsNone(updated_site.active_end_date)
 
     def test_updating_with_valid_changes(self):
-        new_site = Site(name='TEST', url='https://test.com', active_start_date=datetime(2015, 10, 10, 15, 55),
-                        course_type='SPOC', site_type='General')
+        new_site = Site(
+            name='TEST', url='https://test.com',
+            active_start_date=datetime(2015, 10, 10, 15, 55),
+            course_type='SPOC', site_type='General'
+        )
         new_site.save()
+
         form_data = {
             'name': 'TEST2',
             'site_type': 'General',
@@ -469,7 +480,6 @@ class UpdateSiteTestCase(TestCase):
         }
         form = SiteForm(data=form_data)
         self.assertTrue(form.is_valid())
-
         self.assertEqual(Site.objects.count(), 1)
         self.client.post('/sites/update_site/'+str(new_site.pk)+'/', form_data)
 
@@ -477,7 +487,8 @@ class UpdateSiteTestCase(TestCase):
         old_site = Site.objects.filter(url='https://test.com').order_by('-active_start_date').last()
         self.assertEqual(Site.objects.count(), 2)
         self.assertEqual(Site.objects.filter(url='https://test.com').count(), 2)
-        self.assertEqual(updated_site.course_type, 'MOOC')
+
+        self.assertEqual(updated_site.course_type, 'SPOC')
         self.assertEqual(updated_site.notes, 'Some basic changes')
         self.assertEqual(old_site.notes, '')
         self.assertGreater(updated_site.active_start_date, old_site.active_start_date)
@@ -536,6 +547,7 @@ class UpdateSiteTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
+@unittest.skip("These tests need valid AWS credentials for edX")
 class ReferrerLogTestCase(TestCase):
     """
     Tests for fetch_referrer_logs management script.
