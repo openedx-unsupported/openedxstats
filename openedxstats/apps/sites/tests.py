@@ -11,6 +11,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.serializers import serialize
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.six import StringIO
 
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
@@ -334,6 +335,16 @@ class SubmitSiteFormTestCase(TestCase):
         response = self.client.get('/sites/add_geozone/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(0, GeoZone.objects.count())
+
+    def test_page_is_accessible_url(self):
+        """verify all page urls are working fine."""
+        for urls in [
+            'sites:sites_list', 'sites:sites_list_json', 'sites:sites_map',
+            'sites:hawthorn_map', 'sites:add_site',
+            'sites:add_language', 'sites:add_geozone', 'login'
+        ]:
+            response = self.client.get(reverse(urls))
+            self.assertEqual(response.status_code, 200)
 
 
 class ModelsTestCase(TestCase):

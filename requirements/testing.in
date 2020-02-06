@@ -1,0 +1,7 @@
+# Packages required for local development
+-c constraints.txt
+-r base.in
+
+mock
+model-mommy
+pylint
