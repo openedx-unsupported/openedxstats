@@ -1,0 +1,24 @@
+# Packages required in a production environment
+-c constraints.txt
+
+boto
+click
+colorama
+dj-database-url
+Django
+django-bootstrap3
+django-datetime-widget
+django-dotenv
+django-filter
+django-model-utils
+djangorestframework
+lazy-object-proxy
+ordereddict
+Pygments
+python-dateutil
+python-dotenv
+pytz
+requests
+slacker
+urwid
+wrapt
