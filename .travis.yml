@@ -1,0 +1,23 @@
+services:
+  - postgresql
+
+language: python
+
+python:
+  - 3.5
+
+before_install:
+  - export DJANGO_SETTINGS_MODULE=openedxstats.settings.testing
+
+before_script:
+  - make static
+
+cache:
+  - pip
+
+install:
+  - make requirements
+  - make install-test
+
+script:
+  - make tests
