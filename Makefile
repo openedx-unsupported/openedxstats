@@ -24,3 +24,6 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	pip-compile --rebuild --upgrade -o requirements/jenkins.txt requirements/jenkins.in
 	pip-compile --rebuild --upgrade -o requirements/testing.txt requirements/testing.in
 	pip-compile --rebuild --upgrade -o requirements/production.txt requirements/production.in
+static:
+	python manage.py collectstatic --noinput
+
