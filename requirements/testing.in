@@ -5,3 +5,6 @@
 mock
 model-mommy
 pylint
+pytest
+pytest-cov
+pytest-django

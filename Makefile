@@ -14,7 +14,7 @@ install-test: ## install requirements for tests
 	pip install -r requirements/testing.txt
 
 tests:  ## execute the all tests
-	python manage.py test --settings=openedxstats.settings.testing
+	python -Wd -m pytest
 
 export CUSTOM_COMPILE_COMMAND = make upgrade
 upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
