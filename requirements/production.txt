@@ -18,7 +18,7 @@ django-model-utils==3.2.0
 django==1.11.28
 djangorestframework==3.11.0
 gunicorn==20.0.4
-idna==2.8                 # via requests
+idna==2.9                 # via requests
 lazy-object-proxy==1.4.0
 ordereddict==1.1
 psycopg2==2.8.4
@@ -26,13 +26,13 @@ pygments==2.5.2
 python-dateutil==2.8.1
 python-dotenv==0.6.0
 pytz==2019.3
-requests==2.22.0
+requests==2.23.0
 six==1.14.0               # via python-dateutil
-slacker==0.13.0
+slacker==0.14.0
 urllib3==1.25.8           # via requests
 urwid==2.1.0
 whitenoise==3.3.1
-wrapt==1.11.2
+wrapt==1.12.0
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

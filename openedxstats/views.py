@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.views.generic.base import TemplateView
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 class HomePageView(TemplateView):
     template_name = 'home.html'

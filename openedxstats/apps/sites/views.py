@@ -10,7 +10,8 @@ from urllib import parse
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
+
 from django.contrib import messages
 from django.core import serializers
 from django.core.exceptions import ValidationError
