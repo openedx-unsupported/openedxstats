@@ -24,3 +24,7 @@ whitenoise<4.0
 
 # greater versions giving errors.
 lazy-object-proxy==1.4.0
+
+
+# astroid 2.3.3 has requirement wrapt==1.11 thats why pinned it here.
+wrapt==1.11

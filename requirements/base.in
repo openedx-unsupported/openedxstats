@@ -7,7 +7,6 @@ colorama
 dj-database-url
 Django
 django-bootstrap3
-django-datetime-widget
 django-dotenv
 django-filter
 django-model-utils
@@ -22,3 +21,7 @@ requests
 slacker
 urwid
 wrapt
+
+
+# Third Party repos
+git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget
