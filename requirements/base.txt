@@ -15,7 +15,7 @@ git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a603
 django-dotenv==1.4.2      # via -r requirements/base.in
 django-filter==2.2.0      # via -r requirements/base.in
 django-model-utils==3.2.0  # via -c requirements/constraints.txt, -r requirements/base.in
-django==1.11.28           # via -c requirements/constraints.txt, -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
+django==2.2.10            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
 djangorestframework==3.11.0  # via -r requirements/base.in
 idna==2.9                 # via requests
 lazy-object-proxy==1.4.0  # via -c requirements/constraints.txt, -r requirements/base.in
@@ -27,6 +27,7 @@ pytz==2019.3              # via -r requirements/base.in, django, django-datetime
 requests==2.23.0          # via -r requirements/base.in, slacker
 six==1.14.0               # via python-dateutil
 slacker==0.14.0           # via -r requirements/base.in
+sqlparse==0.3.1           # via django
 urllib3==1.25.8           # via requests
 urwid==2.1.0              # via -r requirements/base.in
 wrapt==1.11               # via -c requirements/constraints.txt, -r requirements/base.in
