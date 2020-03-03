@@ -1,0 +1,1 @@
+django==1.11.28           # via -c requirements/constraints.txt, -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
