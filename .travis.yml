@@ -7,9 +7,6 @@ services:
   - postgresql
 
 env:
-  - TOXENV=django111
-  - TOXENV=django20
-  - TOXENV=django21
   - TOXENV=django22
 
 before_install:
