@@ -46,6 +46,7 @@ pytz==2019.3              # via -r requirements/base.in, django, django-datetime
 requests==2.23.0          # via -r requirements/base.in, slacker
 six==1.14.0               # via astroid, mock, packaging, pathlib2, python-dateutil
 slacker==0.14.0           # via -r requirements/base.in
+sqlparse==0.3.1           # via django
 typed-ast==1.4.1          # via astroid
 urllib3==1.25.8           # via requests
 urwid==2.1.0              # via -r requirements/base.in
