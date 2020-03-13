@@ -127,7 +127,7 @@ create a superuser through the command::
 
 **Development:**
 If you plan on developing or making changes to the code, make sure to turn DEBUG mode to True in the base.py
-Django settings, or you will not be able to see errors! Remember to turn it back to False once you are done 
+Django settings, or you will not be able to see errors! Remember to turn it back to False once you are done
 making changes for production testing.
 
 
@@ -210,7 +210,7 @@ How to Use
 
 **2.  The Sites List**
     This is where all Open edX Site versions will be listed, and is the homepage for the dashboard.
-    
+
     **a.  Navigating the DataTable**
         The Sites List page uses the JQuery `DataTables plugin`_, allowing for easy sorting and viewing of large amounts of
         data. The table is presorted upon page load to show current versions of sites first, ordered by most recently
@@ -325,7 +325,7 @@ Please see the file named LICENSE.rst
 .. _Python 3.5+: https://www.python.org/downloads/
 .. _postgresql wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
-.. _Heroku:
+.. _Heroku: https://heroku.com
 .. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
 .. _Open edX platform: https://open.edx.org/
 .. _pip: https://pip.pypa.io/en/stable/
