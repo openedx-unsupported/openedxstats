@@ -7,22 +7,22 @@
 boto==2.39.0              # via -c requirements/constraints.txt, -r requirements/base.in
 certifi==2019.11.28       # via requests
 chardet==3.0.4            # via requests
-click==7.0                # via -r requirements/base.in, python-dotenv
+click==7.1.1              # via -r requirements/base.in, python-dotenv
 colorama==0.4.3           # via -r requirements/base.in
 dj-database-url==0.5.0    # via -r requirements/base.in
 django-bootstrap3==12.0.3  # via -r requirements/base.in
 git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget  # via -r requirements/base.in
 django-dotenv==1.4.2      # via -r requirements/base.in
 django-filter==2.2.0      # via -r requirements/base.in
-django-model-utils==3.2.0  # via -c requirements/constraints.txt, -r requirements/base.in
-django==2.2.10            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
+django-model-utils==4.0.0  # via -r requirements/base.in
+django==2.2.11            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
 djangorestframework==3.11.0  # via -r requirements/base.in
 gunicorn==20.0.4          # via -r requirements/production.in
 idna==2.9                 # via requests
 lazy-object-proxy==1.4.0  # via -c requirements/constraints.txt, -r requirements/base.in
 ordereddict==1.1          # via -r requirements/base.in
 psycopg2==2.8.4           # via -r requirements/production.in
-pygments==2.5.2           # via -r requirements/base.in
+pygments==2.6.1           # via -r requirements/base.in
 python-dateutil==2.8.1    # via -r requirements/base.in
 python-dotenv==0.6.0      # via -c requirements/constraints.txt, -r requirements/base.in
 pytz==2019.3              # via -r requirements/base.in, django, django-datetime-widget

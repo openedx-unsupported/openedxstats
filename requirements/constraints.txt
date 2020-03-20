@@ -10,9 +10,6 @@
 
 boto==2.39.0
 
-# Version 4.0.0 dropped support for Django < 2.0.1
-django-model-utils<4.0.0
-
 # above this versions are giving error.
 python-dotenv==0.6.0
 
