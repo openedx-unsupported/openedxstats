@@ -5,17 +5,17 @@
 #    make upgrade
 #
 boto==2.39.0              # via -c requirements/constraints.txt, -r requirements/base.in
-certifi==2019.11.28       # via requests
+certifi==2020.4.5.1       # via requests
 chardet==3.0.4            # via requests
-click==7.1.1              # via -r requirements/base.in, python-dotenv
+click==7.1.2              # via -r requirements/base.in, python-dotenv
 colorama==0.4.3           # via -r requirements/base.in
 dj-database-url==0.5.0    # via -r requirements/base.in
-django-bootstrap3==12.0.3  # via -r requirements/base.in
+django-bootstrap3==12.1.0  # via -r requirements/base.in
 git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget  # via -r requirements/base.in
 django-dotenv==1.4.2      # via -r requirements/base.in
 django-filter==2.2.0      # via -r requirements/base.in
 django-model-utils==4.0.0  # via -r requirements/base.in
-django==2.2.11            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
+django==2.2.12            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
 djangorestframework==3.11.0  # via -r requirements/base.in
 idna==2.9                 # via requests
 lazy-object-proxy==1.4.0  # via -c requirements/constraints.txt, -r requirements/base.in
@@ -23,11 +23,11 @@ ordereddict==1.1          # via -r requirements/base.in
 pygments==2.6.1           # via -r requirements/base.in
 python-dateutil==2.8.1    # via -r requirements/base.in
 python-dotenv==0.6.0      # via -c requirements/constraints.txt, -r requirements/base.in
-pytz==2019.3              # via -r requirements/base.in, django, django-datetime-widget
+pytz==2020.1              # via -r requirements/base.in, django, django-datetime-widget
 requests==2.23.0          # via -r requirements/base.in, slacker
 six==1.14.0               # via python-dateutil
 slacker==0.14.0           # via -r requirements/base.in
 sqlparse==0.3.1           # via django
-urllib3==1.25.8           # via requests
+urllib3==1.25.9           # via requests
 urwid==2.1.0              # via -r requirements/base.in
 wrapt==1.11               # via -c requirements/constraints.txt, -r requirements/base.in
