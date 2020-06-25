@@ -62,7 +62,7 @@ def db_check():
         try:
             print("Rows already detected in SiteSummarySnapshot DB table, importing new data could/"
                   " result in errors or duplicates.")
-            user_input = str(input("Continue with import? Enter 'yes' or 'no': "))
+            user_input = str(eval(input("Continue with import? Enter 'yes' or 'no': ")))
             if user_input.lower().strip() != "yes":
                 print("Exiting...")
                 sys.exit()

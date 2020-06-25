@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import csv
 from datetime import datetime, timedelta
 import requests
@@ -27,8 +25,8 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 def SiteView_JSON(request):
     all_sites = Site.objects.all()
     active_sites = Site.objects.exclude(active_end_date__isnull=False)
-    active_sites_id_set = set(map(lambda site:site['id'], active_sites.values('id')))
-    country_list = list(map(lambda country:country['geo_zone'], SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()))
+    active_sites_id_set = set([site['id'] for site in active_sites.values('id')])
+    country_list = list([country['geo_zone'] for country in SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()])
     country_site_count_dict = dict(((country, 0) for country in country_list))
     all_geozone = SiteGeoZone.objects.values('site_id', 'geo_zone')
     for loc in all_geozone:
@@ -419,7 +417,7 @@ def bulk_update(request):
     updated = []
     not_found = []
 
-    for siteurl, update in updates['sites'].items():
+    for siteurl, update in list(updates['sites'].items()):
         site_match = Q(url__endswith=siteurl) | Q(url__endswith=siteurl+"/")
         sites = Site.objects.filter(site_match, active_end_date=None)
         if not sites:

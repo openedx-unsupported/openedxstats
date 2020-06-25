@@ -12,7 +12,7 @@ def get_users():
     for user in users_response:
         name = user['name']
         deleted = False
-        if user['profile'].has_key('email'):
+        if 'email' in user['profile']:
             email = user['profile']['email']
         else:
             email = None
