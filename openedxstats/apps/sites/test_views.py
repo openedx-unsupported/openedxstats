@@ -221,7 +221,7 @@ class SubmitSiteFormTestCase(TestCase):
         lang1.save()
         lang2.save()
         geozone1 = GeoZone(name="Greece")
-        geozone2 = GeoZone(name="\u00e9")
+        geozone2 = GeoZone(name="\\u00e9")
         geozone1.save()
         geozone2.save()
 
@@ -232,7 +232,7 @@ class SubmitSiteFormTestCase(TestCase):
             'course_count': '1337',
             'org_type': 'Academic',
             'language': ('English', 'Chinese'),
-            'geography': ('Greece', '\u00e9'),
+            'geography': ('Greece', '\\u00e9'),
             'github_fork': 'Estranged-Spork',
             'notes': 'What a day it is to be alive.',
             'course_type': 'Unknown',
@@ -375,7 +375,7 @@ class ModelsTestCase(TestCase):
         new_site.url = "https://www.κόσμε.co"
         new_site.save()
         geozone1 = GeoZone(name="Greece")
-        geozone2 = GeoZone(name="\u00e9")
+        geozone2 = GeoZone(name="\\u00e9")
         geozone1.save()
         geozone2.save()
         sitegeozone1 = SiteGeoZone(site_id=new_site.pk, geo_zone_id=geozone1.pk)
@@ -385,9 +385,9 @@ class ModelsTestCase(TestCase):
         sitegeozone2.save()
 
         # Renamed from assertItemsEqual in python 2
-        self.assertCountEqual(new_site.get_geographies(), "Greece, \u00e9")
+        self.assertCountEqual(new_site.get_geographies(), "Greece, \\u00e9")
         self.assertEqual(str(sitegeozone1), "https://www.κόσμε.co---Greece")
-        self.assertEqual(str(geozone2), "\u00e9")
+        self.assertEqual(str(geozone2), "\\u00e9")
 
 
 class OTChartTestCase(TestCase):
