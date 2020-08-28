@@ -52,7 +52,7 @@ After the repo has been pulled onto your local machine, we recommend designating
 virtualenv for the project. This documentation assumes you are on a Linux or Mac machine, with the
 following already installed (we recommend installing in this order if you don't):
 
-- `Python 3.5+`_ (this project is not compatible with Python 2!)
+- `Python 3.8+`_
 - PostgreSQL_ (OPTIONAL IF YOU ONLY PLAN ON RUNNING TESTS! See 'Testing' section below)
 - pip_
 - virtualenv_
@@ -322,7 +322,7 @@ Please see the file named LICENSE.rst
 .. _guide: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
 .. _seen here: http://stackoverflow.com/a/18664239
 .. _PostgreSQL: https://www.postgresql.org/
-.. _Python 3.5+: https://www.python.org/downloads/
+.. _Python 3.8+: https://www.python.org/downloads/
 .. _postgresql wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
 .. _Heroku: https://heroku.com
