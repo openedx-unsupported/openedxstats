@@ -5,29 +5,30 @@
 #    make upgrade
 #
 astroid==2.4.2            # via pylint
-attrs==19.3.0             # via pytest
+attrs==20.1.0             # via pytest
 boto==2.39.0              # via -c requirements/constraints.txt, -r requirements/base.in
 certifi==2020.6.20        # via requests
 chardet==3.0.4            # via requests
 click==7.1.2              # via -r requirements/base.in, python-dotenv
 colorama==0.4.3           # via -r requirements/base.in
-coverage==5.2             # via pytest-cov
+coverage==5.2.1           # via pytest-cov
 dj-database-url==0.5.0    # via -r requirements/base.in
 django-bootstrap3==12.1.0  # via -r requirements/base.in
 git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget  # via -r requirements/base.in
 django-dotenv==1.4.2      # via -r requirements/base.in
 django-filter==2.3.0      # via -r requirements/base.in
 django-model-utils==4.0.0  # via -r requirements/base.in
-djangorestframework==3.11.0  # via -r requirements/base.in
+djangorestframework==3.11.1  # via -r requirements/base.in
 gunicorn==20.0.4          # via -r requirements/production.in
 idna==2.10                # via requests
 importlib-metadata==1.7.0  # via pluggy, pytest
+iniconfig==1.0.1          # via pytest
 isort==4.3.21             # via pylint
 lazy-object-proxy==1.4.0  # via -c requirements/constraints.txt, -r requirements/base.in, astroid
 mccabe==0.6.1             # via pylint
 mock==3.0.5               # via -r requirements/testing.in
 model-mommy==2.0.0        # via -r requirements/testing.in
-more-itertools==8.4.0     # via pytest
+more-itertools==8.5.0     # via pytest
 ordereddict==1.1          # via -r requirements/base.in
 packaging==20.4           # via pytest
 pathlib2==2.3.5           # via pytest
@@ -35,11 +36,11 @@ pluggy==0.13.1            # via pytest
 psycopg2==2.8.5           # via -r requirements/production.in
 py==1.9.0                 # via pytest
 pygments==2.6.1           # via -r requirements/base.in
-pylint==2.5.3             # via -r requirements/testing.in
+pylint==2.6.0             # via -r requirements/testing.in
 pyparsing==2.4.7          # via packaging
-pytest-cov==2.10.0        # via -r requirements/testing.in
+pytest-cov==2.10.1        # via -r requirements/testing.in
 pytest-django==3.9.0      # via -r requirements/testing.in
-pytest==5.4.3             # via -r requirements/testing.in, pytest-cov, pytest-django
+pytest==6.0.1             # via -r requirements/testing.in, pytest-cov, pytest-django
 python-dateutil==2.8.1    # via -r requirements/base.in
 python-dotenv==0.6.0      # via -c requirements/constraints.txt, -r requirements/base.in
 pytz==2020.1              # via -r requirements/base.in, django, django-datetime-widget
@@ -47,11 +48,10 @@ requests==2.24.0          # via -r requirements/base.in, slacker
 six==1.15.0               # via astroid, mock, packaging, pathlib2, python-dateutil
 slacker==0.14.0           # via -r requirements/base.in
 sqlparse==0.3.1           # via django
-toml==0.10.1              # via pylint
+toml==0.10.1              # via pylint, pytest
 typed-ast==1.4.1          # via astroid
-urllib3==1.25.9           # via requests
-urwid==2.1.0              # via -r requirements/base.in
-wcwidth==0.2.5            # via pytest
+urllib3==1.25.10          # via requests
+urwid==2.1.1              # via -r requirements/base.in
 whitenoise==3.3.1         # via -c requirements/constraints.txt, -r requirements/production.in
 wrapt==1.11.0             # via -c requirements/constraints.txt, -r requirements/base.in, astroid
 zipp==1.2.0               # via importlib-metadata
