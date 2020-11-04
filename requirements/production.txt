@@ -4,35 +4,35 @@
 #
 #    make upgrade
 #
-boto==2.39.0              # via -c requirements/constraints.txt, -r requirements/base.in
-certifi==2020.6.20        # via requests
+boto==2.49.0              # via -r requirements/base.in
+certifi==2020.11.8        # via requests
 chardet==3.0.4            # via requests
-click==7.1.2              # via -r requirements/base.in, python-dotenv
-colorama==0.4.3           # via -r requirements/base.in
+click==7.1.2              # via -r requirements/base.in
+colorama==0.4.4           # via -r requirements/base.in
 dj-database-url==0.5.0    # via -r requirements/base.in
-django-bootstrap3==12.1.0  # via -r requirements/base.in
+django-bootstrap3==14.2.0  # via -r requirements/base.in
 git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget  # via -r requirements/base.in
 django-dotenv==1.4.2      # via -r requirements/base.in
-django-filter==2.3.0      # via -r requirements/base.in
+django-filter==2.4.0      # via -r requirements/base.in
 django-model-utils==4.0.0  # via -r requirements/base.in
-django==2.2.16            # via -r requirements/base.in, django-datetime-widget, django-filter, django-model-utils, djangorestframework
-djangorestframework==3.11.1  # via -r requirements/base.in
+django==2.2.17            # via -r requirements/base.in, django-bootstrap3, django-datetime-widget, django-filter, django-model-utils, djangorestframework
+djangorestframework==3.12.2  # via -r requirements/base.in
 gunicorn==20.0.4          # via -r requirements/production.in
 idna==2.10                # via requests
-lazy-object-proxy==1.4.0  # via -c requirements/constraints.txt, -r requirements/base.in
+lazy-object-proxy==1.5.1  # via -r requirements/base.in
 ordereddict==1.1          # via -r requirements/base.in
-psycopg2==2.8.5           # via -r requirements/production.in
-pygments==2.6.1           # via -r requirements/base.in
+psycopg2==2.8.6           # via -r requirements/production.in
+pygments==2.7.2           # via -r requirements/base.in
 python-dateutil==2.8.1    # via -r requirements/base.in
-python-dotenv==0.6.0      # via -c requirements/constraints.txt, -r requirements/base.in
-pytz==2020.1              # via -r requirements/base.in, django, django-datetime-widget
+python-dotenv==0.15.0     # via -r requirements/base.in
+pytz==2020.4              # via -r requirements/base.in, django, django-datetime-widget
 requests==2.24.0          # via -r requirements/base.in, slacker
 six==1.15.0               # via python-dateutil
 slacker==0.14.0           # via -r requirements/base.in
-sqlparse==0.3.1           # via django
-urllib3==1.25.10          # via requests
-urwid==2.1.1              # via -r requirements/base.in
-whitenoise==3.3.1         # via -c requirements/constraints.txt, -r requirements/production.in
+sqlparse==0.4.1           # via django
+urllib3==1.25.11          # via requests
+urwid==2.1.2              # via -r requirements/base.in
+whitenoise==5.2.0         # via -r requirements/production.in
 wrapt==1.11               # via -c requirements/constraints.txt, -r requirements/base.in
 
 # The following packages are considered to be unsafe in a requirements file:

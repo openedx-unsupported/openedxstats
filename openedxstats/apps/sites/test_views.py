@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime, date, timedelta
+from io import StringIO
 import json
 import os.path
 
@@ -12,7 +13,6 @@ from django.core.management.base import CommandError
 from django.core.serializers import serialize
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.six import StringIO
 
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 from openedxstats.apps.sites.management.commands import fetch_referrer_logs

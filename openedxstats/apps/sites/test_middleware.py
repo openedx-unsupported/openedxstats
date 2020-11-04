@@ -11,7 +11,7 @@ class TestAdminView(TestCase):
     Tests of the admin view to verify the middleware functionality.
     """
     def setUp(self):
-        super(TestAdminView, self).setUp()
+        super().setUp()
         self.client = Client()
 
     def test_admin_view_with_anonymous_user(self):

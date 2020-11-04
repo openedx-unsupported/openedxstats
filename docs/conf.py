@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # slackstats documentation build configuration file, created by
 # sphinx-quickstart on Sun Feb 17 11:46:20 2013.

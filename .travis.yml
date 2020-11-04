@@ -8,6 +8,8 @@ services:
 
 env:
   - TOXENV=django22
+  - TOXENV=django30
+  - TOXENV=django31
 
 before_install:
   - export DJANGO_SETTINGS_MODULE=openedxstats.settings.testing
