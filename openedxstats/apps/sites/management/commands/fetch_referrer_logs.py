@@ -49,7 +49,7 @@ class Command(BaseCommand):
         run_command()
 
 
-class LogLine(object):
+class LogLine:
     def __init__(self, line):
         self.parts = line.split("\t")
         self.parsed = parse.urlparse(self.parts[9])
@@ -75,7 +75,7 @@ class LogLine(object):
         return self.parts[1]
 
 
-class HostInfo(object):
+class HostInfo:
     def __init__(self):
         self.hits = 0
         self.ips = set()
@@ -100,7 +100,7 @@ def add_to_filename_log(log_name):
 
 def process_log_file(file_content, log_name):
     if DEBUG:
-        print(("Processing %s ..." % log_name))
+        print("Processing %s ..." % log_name)
     line_counter = collections.defaultdict(int)
     aggregate_logs = []
 
@@ -125,7 +125,7 @@ def process_log_file(file_content, log_name):
         try:
             log_to_save.save()
         except IntegrityError as ex:
-            print(("Ignoring {}".format(ex)))
+            print(f"Ignoring {ex}")
 
 
 def get_accessible_keys(bucket, prefix="openedx-assets-cloudfront/"):
@@ -147,13 +147,13 @@ def process_keys(accessible_keys):
     num_files_processed = 0
     for key in accessible_keys:
         if DEBUG:
-            print(("Processing %r" % (key,)))
+            print("Processing %r" % (key,))
         # Process in-memory file
         key_name = key.name
         if not is_in_filename_log(key_name):
             file_content = get_key_content(key)
             if DEBUG:
-                print(("%s not found, adding!" % key_name))
+                print("%s not found, adding!" % key_name)
             process_log_file(file_content, key_name)
             add_to_filename_log(key_name)
             num_files_processed += 1
@@ -172,4 +172,4 @@ def run_command():
     print("Processing keys...")
     num_files_processed = process_keys(accessible_keys)
 
-    print(("Finished! New files processed: %s" % num_files_processed))
+    print("Finished! New files processed: %s" % num_files_processed)

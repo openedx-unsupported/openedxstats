@@ -25,9 +25,9 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 def SiteView_JSON(request):
     all_sites = Site.objects.all()
     active_sites = Site.objects.exclude(active_end_date__isnull=False)
-    active_sites_id_set = set([site['id'] for site in active_sites.values('id')])
+    active_sites_id_set = {site['id'] for site in active_sites.values('id')}
     country_list = list([country['geo_zone'] for country in SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()])
-    country_site_count_dict = dict(((country, 0) for country in country_list))
+    country_site_count_dict = {country: 0 for country in country_list}
     all_geozone = SiteGeoZone.objects.values('site_id', 'geo_zone')
     for loc in all_geozone:
         site_id = loc['site_id']
@@ -130,8 +130,8 @@ class SiteDiscoveryListView(generic.TemplateView):
         # Filter out all logs with domains that are: aws owned, edx owned, blank, an ip address, and/or have a custom port
         # Then aggregate based on domain and access date
         aggregate_logs_by_day = AccessLogAggregate.objects.filter(
-            (~Q(domain__endswith='.amazonaws.com') & ~Q(domain__endswith='.edx.org') & ~Q(domain='') &
-             ~Q(domain__regex=r'^[0-9]+(?:\.[0-9]+){3}$') & ~Q(domain__regex=r':[0-9]+'))
+            ~Q(domain__endswith='.amazonaws.com') & ~Q(domain__endswith='.edx.org') & ~Q(domain='') &
+             ~Q(domain__regex=r'^[0-9]+(?:\.[0-9]+){3}$') & ~Q(domain__regex=r':[0-9]+')
         ).values(
             'access_date',
             'domain'
@@ -162,7 +162,7 @@ class SiteDiscoveryListView(generic.TemplateView):
         return json_response(data=new_domains)
 
     def render_to_response(self, context):
-        return super(SiteDiscoveryListView, self).render_to_response(context)
+        return super().render_to_response(context)
 
 
 class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list.BaseListView):
@@ -232,7 +232,7 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
         return json_response(text=serialized_data)
 
     def render_to_response(self, context):
-        return super(OTChartView, self).render_to_response(context)
+        return super().render_to_response(context)
 
 
 def add_site(request, pk=None):

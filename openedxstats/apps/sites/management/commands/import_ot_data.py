@@ -121,7 +121,7 @@ def import_data(csvfile):
                 col = field_default_value
 
             # If date, format to datetime object
-            if col_name is 'timestamp':
+            if col_name == 'timestamp':
                 col = parser.parse(col)
 
             setattr(new_snapshot,col_name,col)
