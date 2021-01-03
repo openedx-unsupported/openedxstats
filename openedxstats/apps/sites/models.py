@@ -109,6 +109,9 @@ class Site(models.Model):
 
     class Meta:
         unique_together = ("url", "active_start_date")
+        indexes = [
+            models.Index(fields=["active_end_date"]),
+        ]
 
 
 class SiteGeoZone(models.Model):

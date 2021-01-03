@@ -178,10 +178,14 @@ master branch, use the following command to deploy::
 **Important:** This command will push whatever local branch you are on to Heroku's master, even if you aren't on your
 local master!
 
-If you encounter database errors after pushing changes to models, try running the following commands::
+You can run migrations on Heroku and keep them for committing to git like this::
 
-    heroku run python manage.py makemigrations
-    heroku run python manage.py migrate
+    heroku run --app=openedxstats -- python manage.py makemigrations --dry-run --verbosity 3
+
+The text of the migration file will be written to the terminal.  Create that
+file and commit it.  Push that new file to Heroku, then run the migration with::
+
+    heroku run --app=openedxstats -- python manage.py migrate
 
 There is a huge amount of functionality and associated use-cases that Heroku has built in, and we highly recommend
 you visit their `comprehensive docs`_ to help answer any questions you have.
