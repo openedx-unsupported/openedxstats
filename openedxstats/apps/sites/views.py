@@ -390,6 +390,7 @@ def sites_csv_view(request):
     complete = bool(request.GET.get('complete', ''))
 
     sites = Site.objects.filter(active_end_date=None)
+    sites.select_related("language", "geography")
     if not complete:
         sites = [site for site in sites if not site.is_gone]
 
