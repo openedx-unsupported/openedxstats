@@ -45,17 +45,6 @@ def SiteView_JSON(request):
 
     return JsonResponse(resp_data)
 
-# Downloads public Google Sheets for Hawthorn user data as CSV and parses into JSON
-def HawthornMap_JSON(request):
-    CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPFKLiw6u0o6bTAInJ80xctLt609FzcdXW2e1I6DAl5jkedLnnAuNatGLG9rGdt8F_k8WMo65muYGW/pub?output=csv'
-    with requests.Session() as s:
-            download = s.get(CSV_URL)
-            decoded_content = download.content.decode('utf-8')
-            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            csv_data = list(cr)
-            csv_data_json = json.dumps(csv_data)
-    return JsonResponse({'hawthorn_user_data': csv_data_json})
-
 class ListView(generic.ListView):
     model = Site
     template_name = 'sites/sites_list.html'
@@ -77,10 +66,6 @@ class MapView(generic.ListView):
     model = Site
     template_name = 'sites/sites_map.html'
     context_object_name = 'sites_map'
-
-class HawthornMapView(generic.ListView):
-    model = Site # Not needed,consider switching to function based view
-    template_name = 'sites/hawthorn_map.html'
 
 def stats_view(request):
     active_sites = Site.objects.exclude(active_end_date__isnull=False).filter(valid_sites_query()).aggregate(sites=Count('*'), courses=Sum('course_count'))

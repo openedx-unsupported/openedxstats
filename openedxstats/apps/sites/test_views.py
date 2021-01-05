@@ -340,7 +340,7 @@ class SubmitSiteFormTestCase(TestCase):
         """verify all page urls are working fine."""
         for urls in [
             'sites:sites_list', 'sites:sites_list_json', 'sites:sites_map',
-            'sites:hawthorn_map', 'sites:add_site',
+            'sites:add_site',
             'sites:add_language', 'sites:add_geozone', 'login'
         ]:
             response = self.client.get(reverse(urls))
