@@ -23,23 +23,27 @@ from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
-    all_sites = Site.objects.all()
-    active_sites = Site.objects.exclude(active_end_date__isnull=False)
-    active_sites_id_set = {site['id'] for site in active_sites.values('id')}
-    country_list = list([country['geo_zone'] for country in SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()])
-    country_site_count_dict = {country: 0 for country in country_list}
-    all_geozone = SiteGeoZone.objects.values('site_id', 'geo_zone')
-    for loc in all_geozone:
-        site_id = loc['site_id']
-        geo_zone = loc['geo_zone']
-        if site_id in active_sites_id_set and active_sites.get(id=site_id).course_count != 0:
-            country_site_count_dict[geo_zone] += 1
-    geo = SiteGeoZone.objects.all()
-    geo_json = serializers.serialize("json", geo)
-    language = SiteLanguage.objects.all()
-    language_json = serializers.serialize("json", language)
-    sites_json = serializers.serialize("json", all_sites)
-    return JsonResponse({'sites': sites_json, 'geo': geo_json, 'language': language_json, 'activeSitesCount': country_site_count_dict})
+    resp_data = {
+        "sites": serializers.serialize("json", Site.objects.all()),
+        "geo": serializers.serialize("json", SiteGeoZone.objects.all()),
+        "language": serializers.serialize("json", SiteLanguage.objects.all()),
+    }
+
+    active_counts = bool(request.GET.get("active_counts", ""))
+    if active_counts:
+        active_sites = Site.objects.exclude(active_end_date__isnull=False)
+        active_sites_id_set = {site['id'] for site in active_sites.values('id')}
+        country_list = [country['geo_zone'] for country in SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()]
+        country_site_count_dict = {country: 0 for country in country_list}
+        all_geozone = SiteGeoZone.objects.values('site_id', 'geo_zone')
+        for loc in all_geozone:
+            site_id = loc['site_id']
+            geo_zone = loc['geo_zone']
+            if site_id in active_sites_id_set and active_sites.get(id=site_id).course_count != 0:
+                country_site_count_dict[geo_zone] += 1
+        resp_data["activeSitesCount"] = country_site_count_dict
+
+    return JsonResponse(resp_data)
 
 # Downloads public Google Sheets for Hawthorn user data as CSV and parses into JSON
 def HawthornMap_JSON(request):

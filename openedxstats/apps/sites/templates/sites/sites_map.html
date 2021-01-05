@@ -146,7 +146,7 @@
                 autoWidth: false,
                 ajax:{
                     // Communicating to API endpoint serving JSON data from database
-                    "url":"{% url 'sites:sites_list_json' %}",
+                    "url":"{% url 'sites:sites_list_json' %}?active_counts=1",
                     // Formatting data for DataTables from AJAX
                     "dataSrc": json => {
                         console.log('json', json);
