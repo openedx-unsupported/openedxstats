@@ -150,9 +150,6 @@ class SiteDiscoveryListView(generic.TemplateView):
         new_domains = self.discover_domains(request.POST['start_date'], request.POST['end_date'])
         return json_response(data=new_domains)
 
-    def render_to_response(self, context):
-        return super().render_to_response(context)
-
 
 class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list.BaseListView):
     model = SiteSummarySnapshot
@@ -219,9 +216,6 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
 
         serialized_data = serializers.serialize('json', old_ot_data+new_ot_data)
         return json_response(text=serialized_data)
-
-    def render_to_response(self, context):
-        return super().render_to_response(context)
 
 
 def add_site(request, pk=None):
