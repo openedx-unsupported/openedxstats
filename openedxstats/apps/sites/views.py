@@ -193,12 +193,14 @@ class OTChartView(generic.list.MultipleObjectTemplateResponseMixin, generic.list
             if daily_courses_count is None:
                 daily_courses_count = 0
 
+            print(f"Making a new summary for {day}")
             daily_summary_obj = SiteSummarySnapshot(
                 timestamp=day,
                 num_sites=day_stats['sites'],
                 num_courses=daily_courses_count - over_count,
                 notes="Auto-generated day summary"
             )
+            daily_summary_obj.save()
             daily_summary_obj_list.append(daily_summary_obj)
 
         return daily_summary_obj_list
