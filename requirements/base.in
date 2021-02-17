@@ -18,6 +18,7 @@ Pygments
 python-dateutil
 python-dotenv
 pytz
+PyYAML
 requests
 slacker
 urwid

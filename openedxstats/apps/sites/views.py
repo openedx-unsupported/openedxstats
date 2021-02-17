@@ -5,6 +5,8 @@ import json
 import re
 from urllib import parse
 
+import yaml
+
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
@@ -444,9 +446,83 @@ def bulk_update(request):
 
     return json_response(data=resp)
 
+@csrf_exempt
+def bulk_create(request):
+    """
+        - url: https://foo
+          name: some site
+          count: 47
+          language: Spanish
+          geography: Ecuador
+          notes: eduNEXT
+
+        - url: https://bar.bar
+          count: 1
+          language: French
+    """
+
+    sites = yaml.safe_load(request.body.decode("utf-8"))
+    now = datetime.now()
+    site_dicts = []
+    resp = []
+    ok = True
+
+    for site in sites:
+        siteurl = site["url"]
+        site_match = Q(url__endswith=siteurl) | Q(url__endswith=siteurl+"/")
+        existing_sites = Site.objects.filter(site_match, active_end_date=None)
+        if existing_sites:
+            resp.append(f"Error: {siteurl} already exists: {existing_sites}")
+            ok = False
+            continue
+
+        kwargs = {
+            k:v for k, v in site.items()
+            if v and (k in {"name", "url", "course_count", "notes"})
+            }
+
+        site_obj = Site(**kwargs)
+        site_dicts.append({"site": site_obj})
+
+        # This endpoint can only make a single language per site.
+        lang = site.get("language")
+        if lang:
+            try:
+                lang_obj = Language.objects.get(name=lang)
+            except Language.DoesNotExist:
+                resp.append(f"Error: Language {lang!r} doesn't exist")
+                ok = False
+                continue
+            site_dicts[-1]["lang"] = lang_obj
+
+        # This endpoint can only make a single geography per site.
+        geo = site.get("geography")
+        if geo:
+            try:
+                geo_obj = GeoZone.objects.get(name=geo)
+            except GeoZone.DoesNotExist:
+                resp.append(f"Error: GeoZone {geo!r} doesn't exist")
+                ok = False
+                continue
+            site_dicts[-1]["geo"] = geo_obj
+
+    if ok:
+        for site_dict in site_dicts:
+            site_obj = site_dict["site"]
+            site_obj.save()
+
+            if "lang" in site_dict:
+                SiteLanguage.objects.create(language=site_dict["lang"], site=site_obj).save()
+            if "geo" in site_dict:
+                SiteGeoZone.objects.create(geo_zone=site_dict["geo"], site=site_obj).save()
+
+        resp.append(f"Created {len(site_dicts)} sites")
+
+    return HttpResponse("\n".join(resp))
+
+
 def valid_sites_query():
     """
     Helper function for stats_view and OTChartView to query valid sites
     """
     return (Q(course_count__gt=0) | Q(is_private_instance=True)) & Q(is_gone=False)
-

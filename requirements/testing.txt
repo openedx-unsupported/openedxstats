@@ -41,6 +41,7 @@ pytest==6.2.1             # via -r requirements/testing.in, pytest-cov, pytest-d
 python-dateutil==2.8.1    # via -r requirements/base.in
 python-dotenv==0.15.0     # via -r requirements/base.in
 pytz==2020.5              # via -r requirements/base.in, django, django-datetime-widget
+PyYAML==5.4.1   # by hand
 requests==2.25.1          # via -r requirements/base.in, slacker
 six==1.15.0               # via astroid, python-dateutil
 slacker==0.14.0           # via -r requirements/base.in

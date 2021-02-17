@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^sites/ot_chart/$', views.OTChartView.as_view(), name='ot_chart'),
     url(r'^sites/site_discovery/$', views.SiteDiscoveryListView.as_view(), name='site_discovery'),
     url(r'^sites/csv/$', views.sites_csv_view, name='sites_csv'),
-    url(r'^sites/bulk/$', views.bulk_update, name='bulk_update'),
+    url(r'^sites/bulk_update/$', views.bulk_update),
+    url(r'^sites/bulk_create/$', views.bulk_create),
 ]
