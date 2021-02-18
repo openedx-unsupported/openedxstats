@@ -26,7 +26,7 @@
 
             //    isCurrentVersion
             //    Determine rendering of green check box based on whether site is of the current version based on the sites active end date for each row
-            isCurrentVersion = activeEndDate => activeEndDate ? '<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: green; font-size: 30px;"></span>' : ''
+            isCurrentVersion = activeEndDate => activeEndDate ? '' : '<span class="glyphicon glyphicon-ok" aria-hidden="true" style="color: green; font-size: 30px;"></span>'
 
             //    renderActionButtons
             //    Accepts arguments of the site ID and the website's active end date to determine which buttons to render inside the row under column 'Actions'
@@ -47,10 +47,12 @@
             var sitesTable = $('#sites').DataTable({
                 "processing": true,
                 "ajax":{
-                    "url":"{% url 'sites:sites_list_json' %}", // Communicating to API endpoint serving JSON data from database
+                    // Communicating to API endpoint serving JSON data from database
+                    "url":"{% url 'sites:sites_list_json' %}{% if all %}?all=1&lang=1&geo=1{% endif %}",
                     "dataSrc": function(json) {                // Formatting data to be compatible with DataTables
                         const data = JSON.parse(json.sites);
 
+                        {% if all %}
                         const siteGeolocation = {};
                         const geoData = JSON.parse(json.geo);
                         geoData.forEach(function(geoLoc) {
@@ -62,16 +64,18 @@
                         languageData.forEach(function(lang) {
                             siteLanguage[lang.fields.site] = lang.fields.language;
                         })
+                        {% endif %}
 
                         Object.keys(data).forEach(function(siteID) {
                             const site = data[siteID];
-                            // Rendering of elements for columns 'Current Version?' & 'Actions'
-                            site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                             site.fields['actionButtons'] = renderActionButtons(site.pk, site.fields.active_end_date);
                             site.fields['urlString'] = renderUrlString(site.fields.url);
+                            {% if all %}
+                            site.fields['isCurrentVersion'] = isCurrentVersion(site.fields.active_end_date);
                             const sitePK = data[siteID].pk
                             site.fields['geolocation'] = siteGeolocation[sitePK] ? siteGeolocation[sitePK] : '';
                             site.fields['language'] = siteLanguage[sitePK] ? siteLanguage[sitePK] : '';
+                            {% endif %}
                         });
                         return data;
                     }},
@@ -81,18 +85,21 @@
                      { "data": "fields.urlString" },
                      { "data": "fields.course_count" },
                      { "data": "fields.active_start_date" },
+                    {% if all %}
                      { "data": "fields.active_end_date" },
                      { "data": "fields.is_gone" },
                      { "data": "fields.isCurrentVersion" },
-                     { "data": "fields.actionButtons" },
                      { "data": "fields.geolocation", "visible": false },
                      { "data": "fields.notes", "visible": false },
-                     { "data": "fields.language", "visible": false }
+                     { "data": "fields.language", "visible": false },
+                    {% endif %}
+                     { "data": "fields.actionButtons" }
                 ]
             });
 
             // Filtering
             $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+                {% if all %}
                 var goodDate, goodCourses, goodSite;
 
                 var latestOnly = $("#latestOnly").prop("checked") && !$('#dateInput').val();
@@ -122,6 +129,9 @@
                 }
 
                 return goodDate && goodCourses && goodSite;
+                {% else %}
+                return true;
+                {% endif %}
             });
             $('#dateSearchButton').on('click', sitesTable.draw);
             $('#latestOnly').on('click', sitesTable.draw);
@@ -142,6 +152,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+                {% if all %}
                 <p>
                     Use the date search bar to enter a datetime <em>(YYYY-MM-DD HH:MM)</em> you wish to see a list of
                     sites active at that time for. For instance, if you enter <em>2016-04-03 05:37</em>, the version of
@@ -151,12 +162,16 @@
                     its name (or better yet, URL) into the generic search bar on the right. Use the links above to
                     perform other actions like adding a new site or site version, language, or geozone.
                 </p>
+                {% else %}
+                <p>Historical, language, and geographic data is on the <a href="/sites/all">/sites/all</a> page.</p>
+                {% endif %}
                 <p style="font-weight: bold;">
                     Comprehensive documentation and source code can be found <a target="_blank"
                         href="https://github.com/edx/openedxstats">here</a>.
                 </p>
             </div>
         </div>
+        {% if all %}
         <div class="row extra-padding-10">
             <div class="col-md-4">
                 <div class="input-group">
@@ -178,6 +193,7 @@
                 <input id="hideGone" type="checkbox" value="Hide Gone" checked="checked"> Hide Gone
             </div>
         </div>
+        {% endif %}
         <table id="sites" class="table table-bordered table-responsive table-sm">
             <thead>
             <tr>
@@ -186,13 +202,15 @@
                 <th>Url</th>
                 <th>Course Count</th>
                 <th>Active Version Start</th>
+                {% if all %}
                 <th>Active Version End</th>
                 <th>Is gone?</th>
                 <th>Current Version?</th>
-                <th>Actions</th>
                 <th>Geolocation</th>
                 <th>Notes</th>
                 <th>Language</th>
+                {% endif %}
+                <th>Actions</th>
             </tr>
             </thead>
             <tfoot>
@@ -202,13 +220,15 @@
                 <th>Url</th>
                 <th>Course Count</th>
                 <th>Active Version Start</th>
+                {% if all %}
                 <th>Active Version End</th>
                 <th>Is gone?</th>
                 <th>Current Version?</th>
-                <th>Actions</th>
                 <th>Geolocation</th>
                 <th>Notes</th>
                 <th>Language</th>
+                {% endif %}
+                <th>Actions</th>
             </tr>
             </tfoot>
         </table>

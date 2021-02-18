@@ -330,7 +330,7 @@ Please see the file named LICENSE.rst
 .. _postgresql wiki: https://wiki.postgresql.org/wiki/Detailed_installation_guides
 .. _homebrew: http://brew.sh/
 .. _Heroku: https://heroku.com
-.. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com/sites/all
+.. _openedxstats.herokuapp.com: https://openedxstats.herokuapp.com
 .. _Open edX platform: https://open.edx.org/
 .. _pip: https://pip.pypa.io/en/stable/
 .. _virtualenv: https://virtualenv.pypa.io/en/stable/

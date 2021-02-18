@@ -23,16 +23,27 @@ from openedxstats.apps.sites.models import (
 )
 from openedxstats.apps.sites.forms import SiteForm, LanguageForm, GeoZoneForm
 
+def bool_option(request, opt_name):
+    return request.GET.get(opt_name, "f").lower()[0] in "ty1"
+
 # Converts site data into JSON format for Ajax request
 def SiteView_JSON(request):
-    resp_data = {
-        "sites": serializers.serialize("json", Site.objects.all()),
-        "geo": serializers.serialize("json", SiteGeoZone.objects.all()),
-        "language": serializers.serialize("json", SiteLanguage.objects.all()),
-    }
+    resp_data = {}
 
-    active_counts = bool(request.GET.get("active_counts", ""))
-    if active_counts:
+    if bool_option(request, "all"):
+        sites = Site.objects.all()
+    else:
+        sites = Site.objects.exclude(active_end_date__isnull=False).filter(valid_sites_query())
+
+    resp_data["sites"] = serializers.serialize("json", sites)
+
+    if bool_option(request, "lang"):
+        resp_data["language"] = serializers.serialize("json", SiteLanguage.objects.all())
+
+    if bool_option(request, "geo"):
+        resp_data["geo"] = serializers.serialize("json", SiteGeoZone.objects.all())
+
+    if bool_option(request, "active_counts"):
         active_sites = Site.objects.exclude(active_end_date__isnull=False)
         active_sites_id_set = {site['id'] for site in active_sites.values('id')}
         country_list = [country['geo_zone'] for country in SiteGeoZone.objects.values('geo_zone').order_by('geo_zone').distinct()]
@@ -47,10 +58,19 @@ def SiteView_JSON(request):
 
     return JsonResponse(resp_data)
 
-class ListView(generic.ListView):
-    model = Site
+class ListSomeView(generic.TemplateView):
     template_name = 'sites/sites_list.html'
-    context_object_name = 'sites_list'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all'] = self.all
+        return context
+
+class ListAllView(ListSomeView):
+    all = True
+
+class ListView(ListSomeView):
+    all = False
 
 
 class SiteDetailView(generic.DetailView):
