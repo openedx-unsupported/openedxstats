@@ -213,7 +213,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_site.url, form_data['url'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all/')
+        self.assertEqual(response['location'], '/sites/current/')
 
     def test_add_a_single_site_with_all_fields(self):
         lang1 = Language(name="English")
@@ -257,7 +257,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_site.course_type, form_data['course_type'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all/')
+        self.assertEqual(response['location'], '/sites/current/')
 
     def test_add_language(self):
         form_data = {
@@ -272,7 +272,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_language.name, form_data['name'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all/')
+        self.assertEqual(response['location'], '/sites/current/')
 
     def test_add_language_that_already_exists(self):
         new_language = Language(name='κόσμε')
@@ -303,7 +303,7 @@ class SubmitSiteFormTestCase(TestCase):
         self.assertEqual(saved_geozone.name, form_data['name'])
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/sites/all/')
+        self.assertEqual(response['location'], '/sites/current/')
 
     def test_add_geozone_that_already_exists(self):
         new_geozone = GeoZone(name='ANewGeozone')
