@@ -391,21 +391,33 @@ def render_site_form(request, form, pk):
                       {'form': form, 'post_url': reverse('sites:add_site'), 'page_title': 'Add Site'})
 
 def sites_csv_view(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="sites.csv"'
+    try:
+        return _sites_csv_view(request)
+    except:
+        import traceback
+        traceback.print_exc()
+        raise
 
-    complete = bool(request.GET.get('complete', ''))
+def _sites_csv_view(request):
+    include_gone = bool(request.GET.get("include_gone", ""))
+    skip_lang_geo = bool(request.GET.get("skip_lang_geo", ""))
 
     sites = Site.objects.filter(active_end_date=None)
-    sites.select_related("language", "geography")
-    if not complete:
+    if not skip_lang_geo:
+        sites.select_related("language", "geography")
+    if not include_gone:
         sites = [site for site in sites if not site.is_gone]
 
     attrs = ['name', 'url', 'course_count']
-    if complete:
+    if include_gone:
         attrs.extend(['is_private_instance', 'is_gone'])
-    methods = ['languages', 'geographies']
+    methods = []
+    if not skip_lang_geo:
+        methods.extend(['languages', 'geographies'])
     other = ['updated']
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="sites.csv"'
     writer = csv.DictWriter(response, fieldnames=attrs + methods + other)
     writer.writeheader()
     for site in sites:
