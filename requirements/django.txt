@@ -1,1 +1,1 @@
-django==2.2.17            # via -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt, -r requirements/base.in, django-bootstrap3, django-datetime-widget, django-filter, django-model-utils, djangorestframework
+django==2.2.24
