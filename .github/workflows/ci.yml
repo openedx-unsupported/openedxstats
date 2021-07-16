@@ -50,8 +50,6 @@ jobs:
       run:  pip install tox
     - name: Run Tests
       env:
-#        POSTGRES_HOST: postgres
-#        POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
         DJANGO_SETTINGS_MODULE: openedxstats.settings.testing
         TOXENV: ${{ matrix.toxenv }}
       run: |
