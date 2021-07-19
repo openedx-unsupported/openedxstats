@@ -19,12 +19,6 @@ jobs:
           - ubuntu-20.04
         python-version: ['3.8']
         toxenv: ['django22', 'django30', 'django31']
-        allow-failure: [ false ]
-        include:
-          - runs-on: ubuntu-latest
-            python-version: 3.8
-            toxenv: django32
-            allow-failure: true
     services:
       postgres:
         image: postgres:10.8
