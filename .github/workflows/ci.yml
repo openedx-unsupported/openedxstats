@@ -11,6 +11,7 @@ on:
 jobs:
   run_tests:
     name: Tests
+    continue-on-error: true
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -44,7 +45,6 @@ jobs:
     - name: Install tox
       run:  pip install tox
     - name: Run Tests
-      continue-on-error: true
       env:
           TOXENV: ${{ matrix.toxenv }}
       run: |
