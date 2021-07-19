@@ -1,0 +1,24 @@
+language: python
+
+python:
+- "3.8"
+
+services:
+  - postgresql
+
+env:
+  - TOXENV=django22
+  - TOXENV=django30
+  - TOXENV=django31
+
+before_install:
+  - export DJANGO_SETTINGS_MODULE=openedxstats.settings.testing
+
+before_script:
+  - pip install -r requirements/travis.txt
+
+cache:
+  - pip
+
+script:
+  - make tests
