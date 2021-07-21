@@ -8,7 +8,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.2
+charset-normalizer==2.0.3
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -74,7 +74,7 @@ urllib3==1.26.6
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
-whitenoise==5.2.0
+whitenoise==5.3.0
     # via -r requirements/production.in
 wrapt==1.11
     # via

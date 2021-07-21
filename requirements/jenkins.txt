@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.2
+astroid==2.6.4
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -12,7 +12,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.2
+charset-normalizer==2.0.3
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -77,7 +77,7 @@ py==1.10.0
     # via pytest
 pygments==2.9.0
     # via -r requirements/base.in
-pylint==2.9.3
+pylint==2.9.4
     # via -r requirements/testing.in
 pyparsing==2.4.7
     # via packaging
@@ -120,7 +120,7 @@ urllib3==1.26.6
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
-whitenoise==5.2.0
+whitenoise==5.3.0
     # via -r requirements/production.in
 wrapt==1.11.0
     # via
