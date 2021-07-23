@@ -1,3 +1,4 @@
+from django.apps import apps as proj_apps
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
@@ -32,4 +33,7 @@ class TestAdminView(TestCase):
         response = self.client.get(reverse('logout'))
         assert response.status_code == 200
 
-
+    def test_app_configs(self):
+        """Verifying apps are loading with django3.2 condition."""
+        assert proj_apps.get_app_config('sites').label == 'sites'
+        assert proj_apps.get_app_config('slackdata').label == 'slackdata'
