@@ -12,7 +12,5 @@
 
 -c common_constraints.txt
 
-Django<2.3
-
 # astroid 2.3.3 has requirement wrapt==1.11 thats why pinned it here.
 wrapt==1.11
