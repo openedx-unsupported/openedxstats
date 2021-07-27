@@ -23,8 +23,13 @@ static:
 tests: static
 	$(TOX)python -Wd -m pytest
 
-export CUSTOM_COMPILE_COMMAND = make upgrade
-upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
+COMMON_CONSTRAINTS_TXT=requirements/common_constraints.txt
+.PHONY: $(COMMON_CONSTRAINTS_TXT)
+$(COMMON_CONSTRAINTS_TXT):
+	wget https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt || touch "$(@)"
+
+upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+upgrade: $(COMMON_CONSTRAINTS_TXT)  ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
 	pip install -q -r requirements/pip_tools.txt
 	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
 	pip-compile --rebuild --upgrade -o requirements/pip_tools.txt requirements/pip_tools.in
