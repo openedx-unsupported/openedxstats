@@ -23,7 +23,6 @@ coverage==5.5
 dj-database-url==0.5.0
     # via -r requirements/base.in
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
     #   -r requirements/base.in
     #   django-bootstrap3
     #   django-datetime-widget
