@@ -15,9 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
-        - ubuntu-20.04
-        python-version: []
+        os: [ubuntu-20.04]
+        python-version: [3.8]
         toxenv: [django22, django30, django31, django32]
     services:
       postgres:
