@@ -23,8 +23,16 @@ static:
 tests: static
 	$(TOX)python -Wd -m pytest
 
-export CUSTOM_COMPILE_COMMAND = make upgrade
-upgrade: ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
+COMMON_CONSTRAINTS_TXT=requirements/common_constraints.txt
+.PHONY: $(COMMON_CONSTRAINTS_TXT)
+$(COMMON_CONSTRAINTS_TXT):
+	wget -O "$(@)" https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt || touch "$(@)"
+
+upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+upgrade: $(COMMON_CONSTRAINTS_TXT)  ## update the requirements/*.txt files with the latest packages satisfying requirements/*.in
+	# in case of different django version coming from common constraint pip-tools throws error.
+	sed 's/Django<2.3//g' requirements/common_constraints.txt > requirements/common_constraints.tmp
+	mv requirements/common_constraints.tmp requirements/common_constraints.txt
 	pip install -q -r requirements/pip_tools.txt
 	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
 	pip-compile --rebuild --upgrade -o requirements/pip_tools.txt requirements/pip_tools.in
@@ -36,3 +44,4 @@ upgrade: ## update the requirements/*.txt files with the latest packages satisfy
 	grep -e "^django==" requirements/production.txt > requirements/django.txt
 	sed '/^[dD]jango==/d' requirements/testing.txt > requirements/test.tmp
 	mv requirements/test.tmp requirements/testing.txt
+

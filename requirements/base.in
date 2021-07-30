@@ -1,7 +1,7 @@
 # Packages required in a production environment
 -c constraints.txt
 
-Django >= 1.11, <2.3
+Django
 boto
 click
 colorama

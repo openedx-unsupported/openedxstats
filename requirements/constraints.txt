@@ -9,7 +9,10 @@
 # linking to it here is good.
 
 # Common constraints for edx repos
--c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
- 
+
+-c common_constraints.txt
+
+Django<2.3
+
 # astroid 2.3.3 has requirement wrapt==1.11 thats why pinned it here.
 wrapt==1.11

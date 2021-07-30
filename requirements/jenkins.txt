@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.2
+astroid==2.6.5
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -12,7 +12,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.2
+charset-normalizer==2.0.3
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -24,7 +24,7 @@ dj-database-url==0.5.0
     # via -r requirements/base.in
 django==2.2.24
     # via
-    #   -c https://raw.githubusercontent.com/edx/edx-lint/master/edx_lint/files/common_constraints.txt
+    #   -c requirements/constraints.txt
     #   -r requirements/base.in
     #   django-bootstrap3
     #   django-datetime-widget
@@ -77,7 +77,7 @@ py==1.10.0
     # via pytest
 pygments==2.9.0
     # via -r requirements/base.in
-pylint==2.9.3
+pylint==2.9.5
     # via -r requirements/testing.in
 pyparsing==2.4.7
     # via packaging
@@ -92,7 +92,7 @@ pytest-django==4.4.0
     # via -r requirements/testing.in
 python-dateutil==2.8.2
     # via -r requirements/base.in
-python-dotenv==0.18.0
+python-dotenv==0.19.0
     # via -r requirements/base.in
 pytz==2021.1
     # via
@@ -120,7 +120,7 @@ urllib3==1.26.6
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
-whitenoise==5.2.0
+whitenoise==5.3.0
     # via -r requirements/production.in
 wrapt==1.11.0
     # via
