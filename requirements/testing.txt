@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.6.5
+astroid==2.6.6
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -12,7 +12,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.3
+charset-normalizer==2.0.4
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -49,7 +49,7 @@ idna==3.2
     # via requests
 iniconfig==1.1.1
     # via pytest
-isort==5.9.2
+isort==5.9.3
     # via pylint
 lazy-object-proxy==1.6.0
     # via
@@ -73,7 +73,7 @@ py==1.10.0
     # via pytest
 pygments==2.9.0
     # via -r requirements/base.in
-pylint==2.9.5
+pylint==2.9.6
     # via -r requirements/testing.in
 pyparsing==2.4.7
     # via packaging
