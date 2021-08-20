@@ -36,7 +36,7 @@ django-bootstrap3==15.0.0
     # via -r requirements/base.in
 git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget
     # via -r requirements/base.in
-django-dotenv==1.4.2
+django-environ-2==2.1.0
     # via -r requirements/base.in
 django-filter==2.4.0
     # via -r requirements/base.in
