@@ -8,7 +8,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.3
+charset-normalizer==2.0.4
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -43,7 +43,7 @@ lazy-object-proxy==1.6.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
-pygments==2.9.0
+pygments==2.10.0
     # via -r requirements/base.in
 python-dateutil==2.8.2
     # via -r requirements/base.in
