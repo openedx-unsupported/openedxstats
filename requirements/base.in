@@ -8,7 +8,7 @@ colorama
 dj-database-url
 Django
 django-bootstrap3
-django-dotenv
+django-environ-2
 django-filter
 django-model-utils
 djangorestframework

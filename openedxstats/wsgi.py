@@ -8,13 +8,13 @@ import os
 from os.path import abspath, dirname, join
 from sys import path
 
-import dotenv
+import environ
 
 SITE_ROOT = dirname(dirname(abspath(__file__)))
 path.append(SITE_ROOT)
 
-dotenv_path = join(dirname(__file__), '.env')
-dotenv.load_dotenv(dotenv_path)
+env_file_path = join(dirname(__file__), '.env')
+environ.Env.read_env(env_file_path)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openedxstats.settings")
 
