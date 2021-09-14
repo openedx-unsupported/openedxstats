@@ -34,14 +34,11 @@ upgrade: $(COMMON_CONSTRAINTS_TXT)  ## update the requirements/*.txt files with 
 	sed 's/Django<2.3//g' requirements/common_constraints.txt > requirements/common_constraints.tmp
 	mv requirements/common_constraints.tmp requirements/common_constraints.txt
 	pip install -q -r requirements/pip_tools.txt
-	pip-compile --upgrade -o requirements/travis.txt requirements/travis.in
 	pip-compile --rebuild --upgrade -o requirements/pip_tools.txt requirements/pip_tools.in
 	pip-compile --rebuild --upgrade -o requirements/base.txt requirements/base.in
-	pip-compile --rebuild --upgrade -o requirements/jenkins.txt requirements/jenkins.in
 	pip-compile --rebuild --upgrade -o requirements/testing.txt requirements/testing.in
 	pip-compile --rebuild --upgrade -o requirements/production.txt requirements/production.in
 	# Let tox control the Django version for tests
 	grep -e "^django==" requirements/production.txt > requirements/django.txt
 	sed '/^[dD]jango==/d' requirements/testing.txt > requirements/test.tmp
 	mv requirements/test.tmp requirements/testing.txt
-
