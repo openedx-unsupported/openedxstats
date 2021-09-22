@@ -6,7 +6,7 @@
 #
 asgiref==3.4.1
     # via django
-astroid==2.7.3
+astroid==2.8.0
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -14,7 +14,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.5
+charset-normalizer==2.0.6
     # via requests
 click==8.0.1
     # via -r requirements/base.in
@@ -75,7 +75,7 @@ py==1.10.0
     # via pytest
 pygments==2.10.0
     # via -r requirements/base.in
-pylint==2.10.2
+pylint==2.11.1
     # via -r requirements/testing.in
 pyparsing==2.4.7
     # via packaging
@@ -114,6 +114,10 @@ toml==0.10.2
     #   pylint
     #   pytest
     #   pytest-cov
+typing-extensions==3.10.0.2
+    # via
+    #   astroid
+    #   pylint
 urllib3==1.26.6
     # via requests
 urwid==2.1.2
