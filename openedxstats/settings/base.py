@@ -54,6 +54,7 @@ PROJECT_APPS = []
 INSTALLED_APPS += PROJECT_APPS
 
 MIDDLEWARE = [
+    'edx_django_utils.monitoring.DeploymentMonitoringMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

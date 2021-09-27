@@ -12,6 +12,7 @@ django-environ-2
 django-filter
 django-model-utils
 djangorestframework
+edx-django-utils
 lazy-object-proxy
 ordereddict
 Pygments
