@@ -28,13 +28,13 @@ django==3.2.7
     #   djangorestframework
 django-bootstrap3==15.0.0
     # via -r requirements/base.in
-git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986#egg=django-datetime-widget
+django-datetime-widget @ git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986
     # via -r requirements/base.in
 django-environ==0.7.0
     # via django-environ-2
 django-environ-2==2.3.0
     # via -r requirements/base.in
-django-filter==2.4.0
+django-filter==21.1
     # via -r requirements/base.in
 django-model-utils==4.1.1
     # via -r requirements/base.in
@@ -73,7 +73,7 @@ slacker==0.14.0
     # via -r requirements/base.in
 sqlparse==0.4.2
     # via django
-urllib3==1.26.6
+urllib3==1.26.7
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
