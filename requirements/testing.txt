@@ -6,7 +6,7 @@
 #
 asgiref==3.4.1
     # via django
-astroid==2.8.2
+astroid==2.8.3
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -35,13 +35,13 @@ django-bootstrap3==15.0.0
     # via -r requirements/base.in
 django-datetime-widget @ git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986
     # via -r requirements/base.in
-django-environ==0.7.0
+django-environ==0.8.0
     # via django-environ-2
 django-environ-2==2.3.0
     # via -r requirements/base.in
 django-filter==21.1
     # via -r requirements/base.in
-django-model-utils==4.1.1
+django-model-utils==4.2.0
     # via -r requirements/base.in
 djangorestframework==3.12.4
     # via -r requirements/base.in
@@ -97,7 +97,7 @@ pytz==2021.3
     #   -r requirements/base.in
     #   django
     #   django-datetime-widget
-pyyaml==5.4.1
+pyyaml==6.0
     # via -r requirements/base.in
 requests==2.26.0
     # via
