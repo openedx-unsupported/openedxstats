@@ -20,6 +20,7 @@ dj-database-url==0.5.0
     # via -r requirements/base.in
 django==3.2.9
     # via
+    #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
     #   django-bootstrap3
     #   django-datetime-widget
@@ -48,13 +49,13 @@ lazy-object-proxy==1.6.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
-psycopg2==2.9.1
+psycopg2==2.9.2
     # via -r requirements/production.in
 pygments==2.10.0
     # via -r requirements/base.in
 python-dateutil==2.8.2
     # via -r requirements/base.in
-python-dotenv==0.19.1
+python-dotenv==0.19.2
     # via -r requirements/base.in
 pytz==2021.3
     # via
