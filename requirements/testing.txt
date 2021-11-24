@@ -6,7 +6,7 @@
 #
 asgiref==3.4.1
     # via django
-astroid==2.8.5
+astroid==2.8.6
     # via pylint
 attrs==21.2.0
     # via pytest
@@ -64,7 +64,7 @@ mock==4.0.3
     # via -r requirements/testing.in
 ordereddict==1.1
     # via -r requirements/base.in
-packaging==21.2
+packaging==21.3
     # via pytest
 platformdirs==2.4.0
     # via pylint
@@ -78,7 +78,7 @@ pygments==2.10.0
     # via -r requirements/base.in
 pylint==2.11.1
     # via -r requirements/testing.in
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 pytest==6.2.5
     # via
