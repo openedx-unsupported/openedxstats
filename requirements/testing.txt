@@ -14,7 +14,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.8
+charset-normalizer==2.0.9
     # via requests
 click==8.0.3
     # via -r requirements/base.in
@@ -76,7 +76,7 @@ py==1.11.0
     # via pytest
 pygments==2.10.0
     # via -r requirements/base.in
-pylint==2.12.1
+pylint==2.12.2
     # via -r requirements/testing.in
 pyparsing==3.0.6
     # via packaging
@@ -87,7 +87,7 @@ pytest==6.2.5
     #   pytest-django
 pytest-cov==3.0.0
     # via -r requirements/testing.in
-pytest-django==4.4.0
+pytest-django==4.5.2
     # via -r requirements/testing.in
 python-dateutil==2.8.2
     # via -r requirements/base.in
