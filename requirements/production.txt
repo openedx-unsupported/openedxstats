@@ -39,13 +39,13 @@ django-filter==21.1
     # via -r requirements/base.in
 django-model-utils==4.2.0
     # via -r requirements/base.in
-djangorestframework==3.12.4
+djangorestframework==3.13.0
     # via -r requirements/base.in
 gunicorn==20.1.0
     # via -r requirements/production.in
 idna==3.3
     # via requests
-lazy-object-proxy==1.6.0
+lazy-object-proxy==1.7.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
@@ -62,6 +62,7 @@ pytz==2021.3
     #   -r requirements/base.in
     #   django
     #   django-datetime-widget
+    #   djangorestframework
 pyyaml==6.0
     # via -r requirements/base.in
 requests==2.26.0
