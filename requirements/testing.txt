@@ -6,15 +6,15 @@
 #
 asgiref==3.4.1
     # via django
-astroid==2.9.0
+astroid==2.9.2
     # via pylint
-attrs==21.3.0
+attrs==21.4.0
     # via pytest
 boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.9
+charset-normalizer==2.0.10
     # via requests
 click==8.0.3
     # via -r requirements/base.in
@@ -70,11 +70,11 @@ platformdirs==2.4.1
     # via pylint
 pluggy==1.0.0
     # via pytest
-psycopg2==2.9.2
+psycopg2==2.9.3
     # via -r requirements/production.in
 py==1.11.0
     # via pytest
-pygments==2.10.0
+pygments==2.11.1
     # via -r requirements/base.in
 pylint==2.12.2
     # via -r requirements/testing.in
@@ -101,7 +101,7 @@ pytz==2021.3
     #   djangorestframework
 pyyaml==6.0
     # via -r requirements/base.in
-requests==2.26.0
+requests==2.27.0
     # via
     #   -r requirements/base.in
     #   slacker
