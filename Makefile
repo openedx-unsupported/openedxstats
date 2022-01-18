@@ -1,4 +1,4 @@
-.PHONY: requirements serve tests upgrade help
+.PHONY: requirements serve tests upgrade help check_keywords
 
 ifdef TOXENV
 TOX := tox -- #to isolate each tox environment if TOXENV is defined
@@ -42,3 +42,6 @@ upgrade: $(COMMON_CONSTRAINTS_TXT)  ## update the requirements/*.txt files with 
 	grep -e "^django==" requirements/production.txt > requirements/django.txt
 	sed '/^[dD]jango==/d' requirements/testing.txt > requirements/test.tmp
 	mv requirements/test.tmp requirements/testing.txt
+
+check_keywords: ## Scan the Django models in all installed apps in this project for restricted field names
+	python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml
