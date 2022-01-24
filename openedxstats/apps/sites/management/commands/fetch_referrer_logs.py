@@ -109,9 +109,8 @@ def process_log_file(file_content, log_name):
             continue
 
         logline = LogLine(line)
-        if logline.uri.startswith("/openedx-logos"):
-            line_key = (logline.host, logline.date, log_name)
-            line_counter[line_key] += 1
+        line_key = (logline.host, logline.date, log_name)
+        line_counter[line_key] += 1
 
     for (host, date, log_name), line_count in list(line_counter.items()):
         new_aggregate_log = AccessLogAggregate(
@@ -128,7 +127,7 @@ def process_log_file(file_content, log_name):
             print(f"Ignoring {ex}")
 
 
-def get_accessible_keys(bucket, prefix="openedx-assets-cloudfront/"):
+def get_accessible_keys(bucket, prefix="openedx-logos-cloudfront/"):
     for key in bucket.list(prefix=prefix):
         if key.storage_class != "GLACIER":
             yield key
@@ -164,7 +163,7 @@ def process_keys(accessible_keys):
 
 def run_command():
     conn = boto.connect_s3()
-    bucket = conn.get_bucket("edx-s3-logs", validate=False)
+    bucket = conn.get_bucket("openedx-logs", validate=False)
 
     print("Gathering accessible keys...")
     accessible_keys = get_accessible_keys(bucket)
