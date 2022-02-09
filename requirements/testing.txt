@@ -80,7 +80,7 @@ pylint==2.12.2
     # via -r requirements/testing.in
 pyparsing==3.0.7
     # via packaging
-pytest==6.2.5
+pytest==7.0.0
     # via
     #   -r requirements/testing.in
     #   pytest-cov
@@ -112,11 +112,11 @@ slacker==0.14.0
 sqlparse==0.4.2
     # via django
 toml==0.10.2
+    # via pylint
+tomli==2.0.1
     # via
-    #   pylint
+    #   coverage
     #   pytest
-tomli==2.0.0
-    # via coverage
 typing-extensions==4.0.1
     # via
     #   astroid
