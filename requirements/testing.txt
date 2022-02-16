@@ -14,7 +14,7 @@ boto==2.49.0
     # via -r requirements/base.in
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
     # via requests
 click==8.0.3
     # via -r requirements/base.in
@@ -66,7 +66,7 @@ ordereddict==1.1
     # via -r requirements/base.in
 packaging==21.3
     # via pytest
-platformdirs==2.4.1
+platformdirs==2.5.0
     # via pylint
 pluggy==1.0.0
     # via pytest
@@ -80,7 +80,7 @@ pylint==2.12.2
     # via -r requirements/testing.in
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.0
+pytest==7.0.1
     # via
     #   -r requirements/testing.in
     #   pytest-cov
@@ -117,7 +117,7 @@ tomli==2.0.1
     # via
     #   coverage
     #   pytest
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via
     #   astroid
     #   pylint
@@ -125,7 +125,7 @@ urllib3==1.26.8
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
-whitenoise==5.3.0
+whitenoise==6.0.0
     # via -r requirements/production.in
 wrapt==1.11.0
     # via
