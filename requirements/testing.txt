@@ -80,7 +80,7 @@ pylint==2.12.2
     # via -r requirements/testing.in
 pyparsing==3.0.7
     # via packaging
-pytest==7.0.1
+pytest==7.1.0
     # via
     #   -r requirements/testing.in
     #   pytest-cov
