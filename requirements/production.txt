@@ -57,7 +57,7 @@ python-dateutil==2.8.2
     # via -r requirements/base.in
 python-dotenv==0.19.2
     # via -r requirements/base.in
-pytz==2021.3
+pytz==2022.1
     # via
     #   -r requirements/base.in
     #   django
@@ -75,7 +75,7 @@ slacker==0.14.0
     # via -r requirements/base.in
 sqlparse==0.4.2
     # via django
-urllib3==1.26.8
+urllib3==1.26.9
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
