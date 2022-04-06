@@ -16,7 +16,7 @@ certifi==2021.10.8
     # via requests
 charset-normalizer==2.0.12
     # via requests
-click==8.1.0
+click==8.1.2
     # via -r requirements/base.in
 colorama==0.4.4
     # via -r requirements/base.in
@@ -78,7 +78,7 @@ py==1.11.0
     # via pytest
 pygments==2.11.2
     # via -r requirements/base.in
-pylint==2.13.3
+pylint==2.13.4
     # via -r requirements/testing.in
 pyparsing==3.0.7
     # via packaging
