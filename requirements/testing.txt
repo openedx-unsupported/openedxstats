@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-asgiref==3.5.0
+asgiref==3.5.1
     # via django
-astroid==2.11.3
+astroid==2.11.4
     # via pylint
 attrs==21.4.0
     # via pytest
@@ -16,7 +16,7 @@ certifi==2021.10.8
     # via requests
 charset-normalizer==2.0.12
     # via requests
-click==8.1.2
+click==8.1.3
     # via -r requirements/base.in
 colorama==0.4.4
     # via -r requirements/base.in
@@ -78,7 +78,7 @@ py==1.11.0
     # via pytest
 pygments==2.12.0
     # via -r requirements/base.in
-pylint==2.13.7
+pylint==2.13.8
     # via -r requirements/testing.in
 pyparsing==3.0.8
     # via packaging
