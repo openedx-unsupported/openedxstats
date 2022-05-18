@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-asgiref==3.5.1
+asgiref==3.5.2
     # via django
 boto==2.49.0
     # via -r requirements/base.in
