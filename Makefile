@@ -34,7 +34,10 @@ upgrade: $(COMMON_CONSTRAINTS_TXT)  ## update the requirements/*.txt files with 
 	sed 's/Django<2.3//g' requirements/common_constraints.txt > requirements/common_constraints.tmp
 	mv requirements/common_constraints.tmp requirements/common_constraints.txt
 	pip install -q -r requirements/pip_tools.txt
+	pip-compile --upgrade --rebuild --allow-unsafe -o requirements/pip.txt requirements/pip.in
 	pip-compile --rebuild --upgrade -o requirements/pip_tools.txt requirements/pip_tools.in
+	pip install -qr requirements/pip.txt
+	pip install -qr requirements/pip_tools.txt
 	pip-compile --rebuild --upgrade -o requirements/base.txt requirements/base.in
 	pip-compile --rebuild --upgrade -o requirements/testing.txt requirements/testing.in
 	pip-compile --rebuild --upgrade -o requirements/production.txt requirements/production.in
