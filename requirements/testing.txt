@@ -78,7 +78,7 @@ py==1.11.0
     # via pytest
 pygments==2.12.0
     # via -r requirements/base.in
-pylint==2.14.4
+pylint==2.14.5
     # via -r requirements/testing.in
 pyparsing==3.0.9
     # via packaging
