@@ -71,7 +71,7 @@ slacker==0.14.0
     # via -r requirements/base.in
 sqlparse==0.4.2
     # via django
-urllib3==1.26.10
+urllib3==1.26.11
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
