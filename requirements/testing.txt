@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 astroid==2.11.7
     # via pylint
-attrs==21.4.0
+attrs==22.1.0
     # via pytest
 boto==2.49.0
     # via -r requirements/base.in
@@ -24,11 +24,12 @@ coverage[toml]==6.4.2
     # via pytest-cov
 dill==0.3.5.1
     # via pylint
-dj-database-url==0.5.0
+dj-database-url==1.0.0
     # via -r requirements/base.in
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
+    #   dj-database-url
     #   django-bootstrap3
     #   django-datetime-widget
     #   django-filter
