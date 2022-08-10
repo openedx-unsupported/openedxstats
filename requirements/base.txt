@@ -28,7 +28,7 @@ django==3.2.15
     #   django-filter
     #   django-model-utils
     #   djangorestframework
-django-bootstrap3==21.2
+django-bootstrap3==22.1
     # via -r requirements/base.in
 django-datetime-widget @ git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986
     # via -r requirements/base.in
