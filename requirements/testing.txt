@@ -6,13 +6,13 @@
 #
 asgiref==3.5.2
     # via django
-astroid==2.12.8
+astroid==2.12.9
     # via pylint
 attrs==22.1.0
     # via pytest
 boto==2.49.0
     # via -r requirements/base.in
-certifi==2022.6.15
+certifi==2022.6.15.2
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -51,7 +51,7 @@ djangorestframework==3.13.1
     # via -r requirements/base.in
 gunicorn==20.1.0
     # via -r requirements/production.in
-idna==3.3
+idna==3.4
     # via requests
 iniconfig==1.1.1
     # via pytest
@@ -79,7 +79,7 @@ py==1.11.0
     # via pytest
 pygments==2.13.0
     # via -r requirements/base.in
-pylint==2.15.0
+pylint==2.15.2
     # via -r requirements/testing.in
 pyparsing==3.0.9
     # via packaging

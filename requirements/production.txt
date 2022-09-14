@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 boto==2.49.0
     # via -r requirements/base.in
-certifi==2022.6.15
+certifi==2022.6.15.2
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -44,7 +44,7 @@ djangorestframework==3.13.1
     # via -r requirements/base.in
 gunicorn==20.1.0
     # via -r requirements/production.in
-idna==3.3
+idna==3.4
     # via requests
 lazy-object-proxy==1.7.1
     # via -r requirements/base.in
