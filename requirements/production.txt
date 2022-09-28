@@ -8,7 +8,7 @@ asgiref==3.5.2
     # via django
 boto==2.49.0
     # via -r requirements/base.in
-certifi==2022.9.14
+certifi==2022.9.24
     # via requests
 charset-normalizer==2.1.1
     # via requests
@@ -40,7 +40,7 @@ django-filter==22.1
     # via -r requirements/base.in
 django-model-utils==4.2.0
     # via -r requirements/base.in
-djangorestframework==3.13.1
+djangorestframework==3.14.0
     # via -r requirements/base.in
 gunicorn==20.1.0
     # via -r requirements/production.in
@@ -74,7 +74,7 @@ six==1.16.0
     # via python-dateutil
 slacker==0.14.0
     # via -r requirements/base.in
-sqlparse==0.4.2
+sqlparse==0.4.3
     # via django
 urllib3==1.26.12
     # via requests
