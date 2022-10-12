@@ -6,7 +6,7 @@
 #
 asgiref==3.5.2
     # via django
-astroid==2.12.10
+astroid==2.12.11
     # via pylint
 attrs==22.1.0
     # via pytest
@@ -73,13 +73,13 @@ platformdirs==2.5.2
     # via pylint
 pluggy==1.0.0
     # via pytest
-psycopg2==2.9.3
+psycopg2==2.9.4
     # via -r requirements/production.in
 py==1.11.0
     # via pytest
 pygments==2.13.0
     # via -r requirements/base.in
-pylint==2.15.3
+pylint==2.15.4
     # via -r requirements/testing.in
 pyparsing==3.0.9
     # via packaging
@@ -121,7 +121,7 @@ tomli==2.0.1
     #   pytest
 tomlkit==0.11.5
     # via pylint
-typing-extensions==4.3.0
+typing-extensions==4.4.0
     # via
     #   astroid
     #   pylint
