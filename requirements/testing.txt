@@ -6,7 +6,7 @@
 #
 asgiref==3.5.2
     # via django
-astroid==2.12.12
+astroid==2.12.13
     # via pylint
 attrs==22.1.0
     # via pytest
@@ -35,7 +35,7 @@ dj-database-url==1.0.0
     #   django-filter
     #   django-model-utils
     #   djangorestframework
-django-bootstrap3==22.1
+django-bootstrap3==22.2
     # via -r requirements/base.in
 django-datetime-widget @ git+https://github.com/behype-inc/django-datetime-widget.git@2a123692cf18614a60363cb1828dd29cec9ed986
     # via -r requirements/base.in
@@ -45,11 +45,11 @@ django-environ-2==2.3.0
     # via -r requirements/base.in
 django-filter==22.1
     # via -r requirements/base.in
-django-model-utils==4.2.0
+django-model-utils==4.3.1
     # via -r requirements/base.in
 djangorestframework==3.14.0
     # via -r requirements/base.in
-exceptiongroup==1.0.1
+exceptiongroup==1.0.4
     # via pytest
 gunicorn==20.1.0
     # via -r requirements/production.in
@@ -71,7 +71,7 @@ ordereddict==1.1
     # via -r requirements/base.in
 packaging==21.3
     # via pytest
-platformdirs==2.5.3
+platformdirs==2.5.4
     # via pylint
 pluggy==1.0.0
     # via pytest
@@ -79,7 +79,7 @@ psycopg2==2.9.5
     # via -r requirements/production.in
 pygments==2.13.0
     # via -r requirements/base.in
-pylint==2.15.5
+pylint==2.15.7
     # via -r requirements/testing.in
 pyparsing==3.0.9
     # via packaging
@@ -125,7 +125,7 @@ typing-extensions==4.4.0
     # via
     #   astroid
     #   pylint
-urllib3==1.26.12
+urllib3==1.26.13
     # via requests
 urwid==2.1.2
     # via -r requirements/base.in
