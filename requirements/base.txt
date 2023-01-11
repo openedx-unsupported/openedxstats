@@ -44,7 +44,7 @@ djangorestframework==3.14.0
     # via -r requirements/base.in
 idna==3.4
     # via requests
-lazy-object-proxy==1.8.0
+lazy-object-proxy==1.9.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
