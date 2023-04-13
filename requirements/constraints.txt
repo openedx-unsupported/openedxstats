@@ -11,6 +11,3 @@
 # Common constraints for edx repos
 
 -c common_constraints.txt
-
-# astroid 2.3.3 has requirement wrapt==1.11 thats why pinned it here.
-wrapt==1.11
