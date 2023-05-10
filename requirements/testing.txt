@@ -10,7 +10,7 @@ astroid==2.15.4
     # via pylint
 boto==2.49.0
     # via -r requirements/base.in
-certifi==2022.12.7
+certifi==2023.5.7
     # via requests
 charset-normalizer==3.1.0
     # via requests
@@ -73,7 +73,7 @@ psycopg2==2.9.6
     # via -r requirements/production.in
 pygments==2.15.1
     # via -r requirements/base.in
-pylint==2.17.3
+pylint==2.17.4
     # via -r requirements/testing.in
 pytest==7.3.1
     # via
