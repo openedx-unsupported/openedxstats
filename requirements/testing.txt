@@ -6,7 +6,7 @@
 #
 asgiref==3.6.0
     # via django
-astroid==2.15.4
+astroid==2.15.5
     # via pylint
 boto==2.49.0
     # via -r requirements/base.in
@@ -65,7 +65,7 @@ ordereddict==1.1
     # via -r requirements/base.in
 packaging==23.1
     # via pytest
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via pylint
 pluggy==1.0.0
     # via pytest
