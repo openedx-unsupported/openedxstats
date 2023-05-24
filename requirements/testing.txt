@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-asgiref==3.6.0
+asgiref==3.7.0
     # via django
-astroid==2.15.4
+astroid==2.15.5
     # via pylint
 boto==2.49.0
     # via -r requirements/base.in
@@ -18,7 +18,7 @@ click==8.1.3
     # via -r requirements/base.in
 colorama==0.4.6
     # via -r requirements/base.in
-coverage[toml]==7.2.5
+coverage[toml]==7.2.6
     # via pytest-cov
 dill==0.3.6
     # via pylint
@@ -65,7 +65,7 @@ ordereddict==1.1
     # via -r requirements/base.in
 packaging==23.1
     # via pytest
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via pylint
 pluggy==1.0.0
     # via pytest
@@ -96,7 +96,7 @@ pytz==2023.3
     #   djangorestframework
 pyyaml==6.0
     # via -r requirements/base.in
-requests==2.30.0
+requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
@@ -108,7 +108,7 @@ sqlparse==0.4.4
     # via django
 tomlkit==0.11.8
     # via pylint
-typing-extensions==4.5.0
+typing-extensions==4.6.1
     # via dj-database-url
 urllib3==2.0.2
     # via requests
