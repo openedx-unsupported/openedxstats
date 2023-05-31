@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-asgiref==3.6.0
+asgiref==3.7.2
     # via django
 boto==2.49.0
     # via -r requirements/base.in
@@ -64,7 +64,7 @@ pytz==2023.3
     #   djangorestframework
 pyyaml==6.0
     # via -r requirements/base.in
-requests==2.30.0
+requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
@@ -74,7 +74,7 @@ slacker==0.14.0
     # via -r requirements/base.in
 sqlparse==0.4.4
     # via django
-typing-extensions==4.5.0
+typing-extensions==4.6.2
     # via dj-database-url
 urllib3==2.0.2
     # via requests
