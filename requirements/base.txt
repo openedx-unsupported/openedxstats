@@ -6,8 +6,12 @@
 #
 asgiref==3.7.2
     # via django
-boto==2.49.0
+boto3==1.26.148
     # via -r requirements/base.in
+botocore==1.29.148
+    # via
+    #   boto3
+    #   s3transfer
 certifi==2023.5.7
     # via requests
 charset-normalizer==3.1.0
@@ -42,6 +46,10 @@ djangorestframework==3.14.0
     # via -r requirements/base.in
 idna==3.4
     # via requests
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 lazy-object-proxy==1.9.0
     # via -r requirements/base.in
 ordereddict==1.1
@@ -49,7 +57,9 @@ ordereddict==1.1
 pygments==2.15.1
     # via -r requirements/base.in
 python-dateutil==2.8.2
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   botocore
 python-dotenv==1.0.0
     # via -r requirements/base.in
 pytz==2023.3
@@ -64,16 +74,20 @@ requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
+s3transfer==0.6.1
+    # via boto3
 six==1.16.0
     # via python-dateutil
 slacker==0.14.0
     # via -r requirements/base.in
 sqlparse==0.4.4
     # via django
-typing-extensions==4.6.2
+typing-extensions==4.6.3
     # via dj-database-url
-urllib3==2.0.2
-    # via requests
+urllib3==1.26.16
+    # via
+    #   botocore
+    #   requests
 urwid==2.1.2
     # via -r requirements/base.in
 wrapt==1.15.0

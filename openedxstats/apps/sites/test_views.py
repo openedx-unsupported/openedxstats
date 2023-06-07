@@ -4,8 +4,7 @@ from io import StringIO
 import json
 import os.path
 
-import boto
-from boto.s3.bucket import Bucket, Key
+import boto3
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
 from django.core.management import call_command
@@ -567,64 +566,45 @@ class ReferrerLogTestCase(TestCase):
     """
 
     def setUp(self):
-        self.conn = boto.connect_s3()
-
-    def test_can_connect_to_s3(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
-        self.assertIsInstance(bucket, Bucket)
+        self.s3 = boto3.resource("s3")
+        bucket_name = "edx-s3-logs"
+        self.bucket = self.s3.Bucket(bucket_name)
+        self.prefix = "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
 
     def test_can_download_keys(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
         # Get only today's keys to reduce search time
-        accessible_keys = fetch_referrer_logs.get_accessible_keys(
-            bucket,
-            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
-        )
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(self.bucket, self.prefix)
         self.assertIsNotNone(accessible_keys)
-        self.assertIsInstance(accessible_keys[0], Key)
 
     def test_can_unzip_one_file(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
         # Get only today's keys to reduce search time
-        accessible_keys = fetch_referrer_logs.get_accessible_keys(
-            bucket,
-            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
-        )
-
-        num_files_processed = fetch_referrer_logs.process_keys([accessible_keys[0],])
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(self.bucket, self.prefix)
+        accessible_keys = [k for k in accessible_keys]  # convert generator into list
+        num_files_processed = fetch_referrer_logs.process_keys(self.bucket, [accessible_keys[0]])
         self.assertEqual(num_files_processed, 1)
         self.assertEqual(FilenameLog.objects.all().count(), 1)
         self.assertIsNotNone(AccessLogAggregate.objects.all())
 
     # Reduce number of files processed to reduce test time
     def test_todays_logs(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
         # Get only today's keys to reduce search time
-        accessible_keys = fetch_referrer_logs.get_accessible_keys(
-            bucket,
-            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
-        )
-
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(self.bucket, self.prefix)
         # Process only first 10 files to save time
-        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:10])
+        accessible_keys = [k for k in accessible_keys]  # convert generator into list
+        num_files_processed = fetch_referrer_logs.process_keys(self.bucket, accessible_keys[:10])
         self.assertEqual(num_files_processed, 10)
         self.assertEqual(FilenameLog.objects.all().count(), 10)
         self.assertIsNotNone(AccessLogAggregate.objects.all())
 
     def test_no_duplicate_files_are_processed(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
         # Get only today's keys to reduce search time
-        accessible_keys = fetch_referrer_logs.get_accessible_keys(
-            bucket,
-            "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
-        )
-
-        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:3])
+        accessible_keys = fetch_referrer_logs.get_accessible_keys(self.bucket, self.prefix)
+        accessible_keys = [k for k in accessible_keys] # convert generator into list
+        num_files_processed = fetch_referrer_logs.process_keys(self.bucket, accessible_keys[:3])
         self.assertEqual(num_files_processed, 3)
         self.assertEqual(FilenameLog.objects.all().count(), 3)
         self.assertIsNotNone(AccessLogAggregate.objects.all())
-
         # Now input those 3 files again with an extra, only the extra should be processed
-        num_files_processed = fetch_referrer_logs.process_keys(accessible_keys[:4])
+        num_files_processed = fetch_referrer_logs.process_keys(self.bucket, accessible_keys[:4])
         self.assertEqual(num_files_processed, 1)
         self.assertEqual(FilenameLog.objects.all().count(), 4)
