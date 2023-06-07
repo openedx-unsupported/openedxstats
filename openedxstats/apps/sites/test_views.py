@@ -4,7 +4,7 @@ from io import StringIO
 import json
 import os.path
 
-import boto
+import boto3
 from boto.s3.bucket import Bucket, Key
 from django.contrib.auth.models import User
 from django.core.exceptions import FieldDoesNotExist
@@ -567,14 +567,16 @@ class ReferrerLogTestCase(TestCase):
     """
 
     def setUp(self):
-        self.conn = boto.connect_s3()
+        self.s3 = boto3.resource("s3")
+        bucket = s3.Bucket("openedx-logs")
+
 
     def test_can_connect_to_s3(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        bucket = self.s3.Bucket("edx-s3-logs")
         self.assertIsInstance(bucket, Bucket)
 
     def test_can_download_keys(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        bucket = self.s3.Bucket("edx-s3-logs")
         # Get only today's keys to reduce search time
         accessible_keys = fetch_referrer_logs.get_accessible_keys(
             bucket,
@@ -584,7 +586,7 @@ class ReferrerLogTestCase(TestCase):
         self.assertIsInstance(accessible_keys[0], Key)
 
     def test_can_unzip_one_file(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        bucket = self.s3.Bucket("edx-s3-logs")
         # Get only today's keys to reduce search time
         accessible_keys = fetch_referrer_logs.get_accessible_keys(
             bucket,
@@ -598,7 +600,7 @@ class ReferrerLogTestCase(TestCase):
 
     # Reduce number of files processed to reduce test time
     def test_todays_logs(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        bucket = self.s3.Bucket("edx-s3-logs")
         # Get only today's keys to reduce search time
         accessible_keys = fetch_referrer_logs.get_accessible_keys(
             bucket,
@@ -612,7 +614,7 @@ class ReferrerLogTestCase(TestCase):
         self.assertIsNotNone(AccessLogAggregate.objects.all())
 
     def test_no_duplicate_files_are_processed(self):
-        bucket = self.conn.get_bucket("edx-s3-logs", validate=False)
+        bucket = self.s3.Bucket("edx-s3-logs")
         # Get only today's keys to reduce search time
         accessible_keys = fetch_referrer_logs.get_accessible_keys(
             bucket,
