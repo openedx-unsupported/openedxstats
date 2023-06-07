@@ -2,7 +2,7 @@
 -c constraints.txt
 
 Django
-boto
+boto3
 click
 colorama
 dj-database-url
