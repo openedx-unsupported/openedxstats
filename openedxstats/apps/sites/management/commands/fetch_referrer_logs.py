@@ -4,7 +4,7 @@ import gzip
 import io
 from urllib import parse
 
-import boto
+import boto3
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 
@@ -142,6 +142,7 @@ def get_key_content(key):
             b = gzip.GzipFile(None, 'rb', fileobj=b)
         return b.read().decode('utf8')
 
+
 def process_keys(accessible_keys):
     num_files_processed = 0
     for key in accessible_keys:
@@ -162,13 +163,19 @@ def process_keys(accessible_keys):
 # TODO: Get most recent date already in table, and start next search there - will save time searching
 
 def run_command():
-    conn = boto.connect_s3()
-    bucket = conn.get_bucket("openedx-logs", validate=False)
+    try:
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket("openedx-logs")
 
-    print("Gathering accessible keys...")
-    accessible_keys = get_accessible_keys(bucket)
+        print("Gathering accessible keys...")
+        accessible_keys = get_accessible_keys(bucket)
 
-    print("Processing keys...")
-    num_files_processed = process_keys(accessible_keys)
+        print("Processing keys...")
+        num_files_processed = process_keys(accessible_keys)
 
-    print("Finished! New files processed: %s" % num_files_processed)
+        print("Finished! New files processed: %s" % num_files_processed)
+
+    except botocore.exceptions.ClientError as e:
+        # If a client error is thrown, then check that it was a 404 error.
+        # If it was a 404 error, then the bucket does not exist.
+        print("Bucket not found.")
