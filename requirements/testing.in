@@ -4,6 +4,7 @@
 -r production.in
 
 mock
+moto
 pylint
 pytest
 pytest-cov

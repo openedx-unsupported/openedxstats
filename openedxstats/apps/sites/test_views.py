@@ -1,8 +1,10 @@
 import unittest
 from datetime import datetime, date, timedelta
+import gzip
 from io import StringIO
 import json
 import os.path
+
 
 import boto3
 from django.contrib.auth.models import User
@@ -12,6 +14,8 @@ from django.core.management.base import CommandError
 from django.core.serializers import serialize
 from django.test import TestCase
 from django.urls import reverse
+from moto import mock_s3
+
 
 from openedxstats.apps.sites.forms import SiteForm, GeoZoneForm, LanguageForm
 from openedxstats.apps.sites.management.commands import fetch_referrer_logs
@@ -557,7 +561,7 @@ class UpdateSiteTestCase(TestCase):
         self.assertEqual(response.status_code, 404)
 
 
-@unittest.skip("These tests need valid AWS credentials for edX")
+@mock_s3
 class ReferrerLogTestCase(TestCase):
     """
     Tests for fetch_referrer_logs management script.
@@ -566,15 +570,42 @@ class ReferrerLogTestCase(TestCase):
     """
 
     def setUp(self):
-        self.s3 = boto3.resource("s3")
+        self.s3 = boto3.resource(
+            "s3",
+            aws_access_key_id="fake_access_key",
+            aws_secret_access_key="fake_secret_key",
+            region_name="us-east-1"
+        )
         bucket_name = "edx-s3-logs"
+
+        self.today = date.today().strftime('%Y-%m-%d')
+        self.prefix = "edx-static-cloudfront/E32IHGJJSQ4SLL." + self.today
+
+        self.s3.create_bucket(Bucket=bucket_name)
+        self.s3.Object(bucket_name, self.prefix).put()
+        file_path = os.path.join(BASE, "test_data/s3_data.txt")
+
+        for i in range(1, 10):
+            file_name = f'file_{i}.txt'
+            self.s3.Object(bucket_name, self.prefix + "/" + file_name).upload_file(file_path)
+
+        # one gz file also to see its behaviour
+        file_name_gz = f'file_{10}.gz'
+        file_path_gz = os.path.join(BASE, "test_data/s3_data.gz")
+        self.s3.Object(bucket_name, self.prefix + "/" + file_name_gz).upload_file(file_path_gz)
         self.bucket = self.s3.Bucket(bucket_name)
-        self.prefix = "edx-static-cloudfront/E32IHGJJSQ4SLL." + date.today().strftime('%Y-%m-%d')
+
 
     def test_can_download_keys(self):
         # Get only today's keys to reduce search time
         accessible_keys = fetch_referrer_logs.get_accessible_keys(self.bucket, self.prefix)
+        accessible_keys = [k.key for k in accessible_keys]
+
         self.assertIsNotNone(accessible_keys)
+        assert len(accessible_keys)==11
+        assert f"edx-static-cloudfront/E32IHGJJSQ4SLL.{self.today}/file_1.txt" in accessible_keys
+        assert f"edx-static-cloudfront/E32IHGJJSQ4SLL.{self.today}/file_10.gz" in accessible_keys
+
 
     def test_can_unzip_one_file(self):
         # Get only today's keys to reduce search time
