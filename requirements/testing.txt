@@ -8,8 +8,12 @@ asgiref==3.7.2
     # via django
 astroid==2.15.5
     # via pylint
-boto==2.49.0
+boto3==1.26.148
     # via -r requirements/base.in
+botocore==1.29.148
+    # via
+    #   boto3
+    #   s3transfer
 certifi==2023.5.7
     # via requests
 charset-normalizer==3.1.0
@@ -53,6 +57,10 @@ iniconfig==2.0.0
     # via pytest
 isort==5.12.0
     # via pylint
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 lazy-object-proxy==1.9.0
     # via
     #   -r requirements/base.in
@@ -85,7 +93,9 @@ pytest-cov==4.1.0
 pytest-django==4.5.2
     # via -r requirements/testing.in
 python-dateutil==2.8.2
-    # via -r requirements/base.in
+    # via
+    #   -r requirements/base.in
+    #   botocore
 python-dotenv==1.0.0
     # via -r requirements/base.in
 pytz==2023.3
@@ -100,6 +110,8 @@ requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
+s3transfer==0.6.1
+    # via boto3
 six==1.16.0
     # via python-dateutil
 slacker==0.14.0
@@ -108,10 +120,12 @@ sqlparse==0.4.4
     # via django
 tomlkit==0.11.8
     # via pylint
-typing-extensions==4.6.2
+typing-extensions==4.6.3
     # via dj-database-url
-urllib3==2.0.2
-    # via requests
+urllib3==1.26.16
+    # via
+    #   botocore
+    #   requests
 urwid==2.1.2
     # via -r requirements/base.in
 whitenoise==6.4.0

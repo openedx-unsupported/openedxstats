@@ -4,7 +4,7 @@ import gzip
 import io
 from urllib import parse
 
-import boto
+import boto3
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 
@@ -128,29 +128,31 @@ def process_log_file(file_content, log_name):
 
 
 def get_accessible_keys(bucket, prefix="openedx-logos-cloudfront/"):
-    for key in bucket.list(prefix=prefix):
+    for key in bucket.objects.filter(Prefix=prefix):
         if key.storage_class != "GLACIER":
             yield key
 
 
-def get_key_content(key):
+def get_key_content(bucket, key):
+    s3_object = bucket.Object(key)
     # Create an in-memory bytes IO buffer
-    with io.BytesIO() as b:
-        key.get_file(b)
-        b.seek(0)
-        if key.name.endswith(".gz"):
-            b = gzip.GzipFile(None, 'rb', fileobj=b)
-        return b.read().decode('utf8')
+    with io.BytesIO() as in_memory_object:
+        s3_object.download_fileobj(in_memory_object)
+        in_memory_object.seek(0)
+        if key.endswith(".gz"):
+            in_memory_object = gzip.GzipFile(None, 'rb', fileobj=in_memory_object)
 
-def process_keys(accessible_keys):
+        return in_memory_object.read().decode('utf-8')
+
+def process_keys(bucket, accessible_keys):
     num_files_processed = 0
     for key in accessible_keys:
         if DEBUG:
             print("Processing %r" % (key,))
         # Process in-memory file
-        key_name = key.name
+        key_name = key.key
         if not is_in_filename_log(key_name):
-            file_content = get_key_content(key)
+            file_content = get_key_content(bucket, key_name)
             if DEBUG:
                 print("%s not found, adding!" % key_name)
             process_log_file(file_content, key_name)
@@ -162,13 +164,21 @@ def process_keys(accessible_keys):
 # TODO: Get most recent date already in table, and start next search there - will save time searching
 
 def run_command():
-    conn = boto.connect_s3()
-    bucket = conn.get_bucket("openedx-logs", validate=False)
+    try:
+        bucket_name = "openedx-logs"
+        s3 = boto3.resource("s3")
 
-    print("Gathering accessible keys...")
-    accessible_keys = get_accessible_keys(bucket)
+        bucket = s3.Bucket(bucket_name)
+        print("Gathering accessible keys...")
+        accessible_keys = get_accessible_keys(bucket)
 
-    print("Processing keys...")
-    num_files_processed = process_keys(accessible_keys)
+        print("Processing keys...")
+        num_files_processed = process_keys(bucket, accessible_keys)
 
-    print("Finished! New files processed: %s" % num_files_processed)
+        print("Finished! New files processed: %s" % num_files_processed)
+
+    except Exception as e:
+        error_message = str(e)
+        print("Some error occured:", error_message)
+
+
