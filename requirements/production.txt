@@ -24,7 +24,7 @@ colorama==0.4.6
     # via -r requirements/base.in
 dj-database-url==2.0.0
     # via -r requirements/base.in
-django==3.2.19
+django==3.2.20
     # via
     #   -c requirements/common_constraints.txt
     #   -r requirements/base.in
