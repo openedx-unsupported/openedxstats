@@ -2,6 +2,7 @@ from django.contrib import admin
 from openedxstats.apps.sites.models import *
 
 # Admin classes
+@admin.register(Site)
 class SiteAdmin(admin.ModelAdmin):
     """
     Admin class for Sites.
@@ -14,7 +15,6 @@ class SiteAdmin(admin.ModelAdmin):
 
 
 # Register models
-admin.site.register(Site, SiteAdmin)
 admin.site.register(Language)
 admin.site.register(GeoZone)
 admin.site.register(SiteLanguage)

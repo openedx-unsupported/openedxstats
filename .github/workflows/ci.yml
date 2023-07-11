@@ -17,7 +17,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04]
         python-version: [3.8]
-        toxenv: [django32]
+        toxenv: [django32, django42]
     services:
       postgres:
         image: postgres:10.8
