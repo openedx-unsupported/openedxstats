@@ -8,17 +8,17 @@ asgiref==3.7.2
     # via django
 beautifulsoup4==4.12.2
     # via django-bootstrap3
-boto3==1.27.0
+boto3==1.28.2
     # via -r requirements/base.in
-botocore==1.30.0
+botocore==1.31.2
     # via
     #   boto3
     #   s3transfer
 certifi==2023.5.7
     # via requests
-charset-normalizer==3.1.0
+charset-normalizer==3.2.0
     # via requests
-click==8.1.3
+click==8.1.4
     # via -r requirements/base.in
 colorama==0.4.6
     # via -r requirements/base.in
