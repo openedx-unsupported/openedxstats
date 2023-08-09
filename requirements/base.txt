@@ -8,9 +8,9 @@ asgiref==3.7.2
     # via django
 beautifulsoup4==4.12.2
     # via django-bootstrap3
-boto3==1.28.11
+boto3==1.28.22
     # via -r requirements/base.in
-botocore==1.31.11
+botocore==1.31.22
     # via
     #   boto3
     #   s3transfer
@@ -56,7 +56,7 @@ lazy-object-proxy==1.9.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
-pygments==2.15.1
+pygments==2.16.1
     # via -r requirements/base.in
 python-dateutil==2.8.2
     # via
