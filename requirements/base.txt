@@ -8,9 +8,9 @@ asgiref==3.7.2
     # via django
 beautifulsoup4==4.12.2
     # via django-bootstrap3
-boto3==1.28.11
+boto3==1.28.32
     # via -r requirements/base.in
-botocore==1.31.11
+botocore==1.31.32
     # via
     #   boto3
     #   s3transfer
@@ -18,11 +18,11 @@ certifi==2023.7.22
     # via requests
 charset-normalizer==3.2.0
     # via requests
-click==8.1.6
+click==8.1.7
     # via -r requirements/base.in
 colorama==0.4.6
     # via -r requirements/base.in
-dj-database-url==2.0.0
+dj-database-url==2.1.0
     # via -r requirements/base.in
 django==3.2.20
     # via
@@ -56,7 +56,7 @@ lazy-object-proxy==1.9.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
-pygments==2.15.1
+pygments==2.16.1
     # via -r requirements/base.in
 python-dateutil==2.8.2
     # via
@@ -76,7 +76,7 @@ requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
-s3transfer==0.6.1
+s3transfer==0.6.2
     # via boto3
 six==1.16.0
     # via python-dateutil
