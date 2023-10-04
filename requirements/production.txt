@@ -8,15 +8,15 @@ asgiref==3.7.2
     # via django
 beautifulsoup4==4.12.2
     # via django-bootstrap3
-boto3==1.28.46
+boto3==1.28.59
     # via -r requirements/base.in
-botocore==1.31.46
+botocore==1.31.59
     # via
     #   boto3
     #   s3transfer
 certifi==2023.7.22
     # via requests
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via requests
 click==8.1.7
     # via -r requirements/base.in
@@ -40,7 +40,7 @@ django-datetime-widget @ git+https://github.com/behype-inc/django-datetime-widge
     # via -r requirements/base.in
 django-environ==0.11.2
     # via -r requirements/base.in
-django-filter==23.2
+django-filter==23.3
     # via -r requirements/base.in
 django-model-utils==4.3.1
     # via -r requirements/base.in
@@ -58,9 +58,9 @@ lazy-object-proxy==1.9.0
     # via -r requirements/base.in
 ordereddict==1.1
     # via -r requirements/base.in
-packaging==23.1
+packaging==23.2
     # via gunicorn
-psycopg2==2.9.7
+psycopg2==2.9.9
     # via -r requirements/production.in
 pygments==2.16.1
     # via -r requirements/base.in
@@ -82,7 +82,7 @@ requests==2.31.0
     # via
     #   -r requirements/base.in
     #   slacker
-s3transfer==0.6.2
+s3transfer==0.7.0
     # via boto3
 six==1.16.0
     # via python-dateutil
@@ -92,13 +92,13 @@ soupsieve==2.5
     # via beautifulsoup4
 sqlparse==0.4.4
     # via django
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via dj-database-url
-urllib3==1.26.16
+urllib3==1.26.17
     # via
     #   botocore
     #   requests
-urwid==2.1.2
+urwid==2.2.2
     # via -r requirements/base.in
 whitenoise==6.5.0
     # via -r requirements/production.in
