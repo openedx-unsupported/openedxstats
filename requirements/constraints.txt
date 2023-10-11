@@ -11,3 +11,8 @@
 # Common constraints for edx repos
 
 -c common_constraints.txt
+
+# botocore requires urrlib3<2.0 for Python<3.10
+# For further details, see the issue https://github.com/boto/botocore/issues/2926
+# This can be removed once botocore fixes the issue or we jump to Python 3.10
+urllib3<2.0.0
