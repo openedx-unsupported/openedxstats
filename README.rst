@@ -4,7 +4,7 @@ openedxstats
 
 .. warning::
 
-   This repository is no longe actively being developed or maintained.
+   This repository is no longer being actively developed or maintained.
 
 Intro
 -----
