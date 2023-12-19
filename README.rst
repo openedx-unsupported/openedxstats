@@ -2,6 +2,10 @@
 openedxstats
 ============
 
+.. warning::
+
+   This repository is no longe actively being developed or maintained.
+
 Intro
 -----
 
